@@ -1,0 +1,46 @@
+
+<div class="row">
+  <p></p>
+  <div class="col-md-4">
+    <img class="img-responsive" src="../static/images/Logo.PNG" th:src="@{/images/Logo.PNG}"/>
+  </div>
+  <div class="col-md-5">
+    <p></p>
+    <h1>Welcome to Sports Buddy</h1>
+    <p2>Please login or register</p2>
+    <p> </p>
+
+    <form method="post" action="/login" th:object="${login}">
+      <div class="form-group">
+        <label for="username"></label>
+        <input autocomplete="off" name="username" th:field="*{username}"  type="text" class="form-control" id="username" placeholder="Username">
+
+        <label for="password"></label>
+        <input autocomplete="off" name="password" th:field="*{password}" type="password" class="form-control" id="password" placeholder="Password">
+      </div>
+      <p> </p>
+      <input type="submit" class="btn btn-primary" value="Login">
+      <a href="register_page" class="btn btn-primary">Register</a>
+      <p> </p>
+      <a href="pass-recovery" class="btn btn-secondary" >Password Recovery</a>
+    </form>
+    <p></p>
+
+    <div th:if="${account.feedback} == true">
+
+      <div th:if="${account.getPosition()} == 1">
+        <div class="alert alert-danger" role="alert" >
+          <p5 th:text="${account.getMessage()}">Error logging in, username or password incorrect.</p5>
+        </div>
+      </div>
+      <div th:if="${account.getPosition()} == 2">
+        <div class="alert alert-primary" role="alert" >
+          <p5 th:text="${account.getMessage()}">Account successful created!</p5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2">
+
+  </div>
+</div>
