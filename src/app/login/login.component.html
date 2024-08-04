@@ -4,49 +4,13 @@
   </mat-grid-tile>
 
   <mat-grid-tile title="row 1 column 1-">
-    <!--    <div fxLayout="row" fxLayoutAlign="end center">-->
     <img ngSrc="assets/images/basketball.png" alt="basketball" class="responsive-image" height="718" width="821">
-    <!--    </div>-->
   </mat-grid-tile>
 
   <mat-grid-tile title="row 1 column 2">
 
-    <div class="card" fxLayout="column" fxLayoutAlign="center center">
-      <h2>Welcome to Sports Buddy!</h2>
-      <p class="loginMetadata">To continue, please login</p>
-
-      <mat-card>
-        <!-- First Row -->
-        <!--          <div fxFlex="40%">-->
-        <!--            <div fxLayout="row" fxLayoutAlign="center center" >-->
-        <!-- Content for the first row -->
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <div fxLayout="column" fxLayoutAlign="center center">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Username</mat-label>
-              <input matInput formControlName="username" required>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password" required>
-            </mat-form-field>
-          </div>
-        </form>
-        <!--            </div>-->
-        <!--          </div>-->
-        <!-- Second Row -->
-        <!--          <div fxFlex="40%">-->
-        <div fxLayout="row" fxLayoutAlign="center center">
-          <!-- Content for the second row -->
-          <div class="buttons" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="20px">
-            <button mat-raised-button color="primary" type="submit">Login</button>
-            <button mat-button type="reset">Recover</button>
-          </div>
-        </div>
-        <!--          </div>-->
-      </mat-card>
-
-    </div>
+<!--    Form-->
+    <app-login-form></app-login-form>
 
   </mat-grid-tile>
 

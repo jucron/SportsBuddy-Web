@@ -1,0 +1,15 @@
+.loginMetadata {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.buttons {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.card {
+  display: flex;
+  justify-content: flex-start; /* Align content to the left */
+  align-items: center; /* Center content vertically */
+  width: 100%;
+}
