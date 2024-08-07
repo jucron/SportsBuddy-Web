@@ -1,12 +1,10 @@
 <h2>Welcome to Sports Buddy!</h2>
 <p class="loginMetadata">To continue, please login</p>
 
-<div class="card" fxLayout="column" fxLayoutAlign="center center">
-
-
+<div class="card">
   <mat-card>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div fxLayout="column" fxLayoutAlign="center center">
+    <mat-toolbar> Login </mat-toolbar>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
           <input matInput formControlName="username" required>
@@ -15,14 +13,10 @@
           <mat-label>Password</mat-label>
           <input matInput type="password" formControlName="password" required>
         </mat-form-field>
+      <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
+        <button mat-raised-button color="primary" type="submit">Login</button>
+        <button mat-button type="reset">Create</button>
       </div>
     </form>
-    <div fxLayout="row" fxLayoutAlign="center center">
-      <div class="buttons" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="20px">
-        <button mat-raised-button color="primary" type="submit">Login</button>
-        <button mat-button type="reset">Recover</button>
-      </div>
-    </div>
   </mat-card>
-
 </div>

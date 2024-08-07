@@ -1,20 +1,9 @@
-<mat-grid-list cols="4" rowHeight="1:1" title="Outer block">
-
-  <mat-grid-tile title="empty-first">
-  </mat-grid-tile>
-
-  <mat-grid-tile title="row 1 column 1-">
-    <img ngSrc="assets/images/basketball.png" alt="basketball" class="responsive-image" height="718" width="821">
-  </mat-grid-tile>
-
-  <mat-grid-tile title="row 1 column 2">
-
+<div fxLayout="row" fxLayoutAlign="center center" fxFill>
+<!--    Image-->
+    <div class="image-container" >
+      <img ngSrc="assets/images/basketball.png" alt="basketball" class="responsive-image" height="718" width="821">
+    </div>
 <!--    Form-->
     <app-login-form></app-login-form>
 
-  </mat-grid-tile>
-
-  <mat-grid-tile title="empty-second">
-  </mat-grid-tile>
-
-</mat-grid-list>
+</div>

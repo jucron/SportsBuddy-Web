@@ -7,6 +7,7 @@ import {MatButton} from "@angular/material/button";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgOptimizedImage} from "@angular/common";
+import {MatToolbar} from "@angular/material/toolbar";
 
 @Component({
   selector: 'app-login-form',
@@ -21,7 +22,8 @@ import {NgOptimizedImage} from "@angular/common";
     MatLabel,
     FlexLayoutModule,
     ReactiveFormsModule,
-    NgOptimizedImage
+    NgOptimizedImage,
+    MatToolbar
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'

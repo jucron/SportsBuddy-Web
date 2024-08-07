@@ -2,9 +2,7 @@
   width: 100%;  /* The image will take up 100% of its container's width */
   height: auto;  /* Maintain the aspect ratio */
 }
+.image-container {
+  width: 400px;
+}
 
-
-
-/*.fields {*/
-/*  margin-left: auto;*/
-/*}*/
