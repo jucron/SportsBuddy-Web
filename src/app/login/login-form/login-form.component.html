@@ -8,13 +8,20 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
           <input matInput formControlName="username" required>
+          <app-form-error [control]="loginForm.get('username')"></app-form-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" required>
+            <input matInput type="password" formControlName="password" required>
+          <app-form-error [control]="loginForm.get('password')"></app-form-error>
         </mat-form-field>
+
+
+
       <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
-        <button mat-raised-button color="primary" type="submit">Login</button>
+        <div matTooltip='change this' [matTooltipDisabled]="loginForm.valid">
+          <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Login</button>
+        </div>
         <button mat-button type="reset">Create</button>
       </div>
     </form>
