@@ -3,32 +3,33 @@ import {HttpClient} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {Credentials} from "../model/credentials";
 import {Response} from "../model/response";
-import {catchError, Observable, of} from "rxjs";
+import {catchError, Observable} from "rxjs";
 import {HandleError, HttpErrorHandler} from "./http-error-handler.service";
 import {environment} from "../environments/environments";
+import {MockResponseService} from "./mock-response.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = "http://localhost:8080/api/v1";
   private handleError: HandleError;
 
   constructor(private http: HttpClient,
               httpErrorHandler: HttpErrorHandler,
-              private router: Router) {
+              private router: Router,
+              private mockService: MockResponseService) {
     this.handleError = httpErrorHandler.createHandleError('ApiService')
   }
 
   callLogin(credentials: Credentials): Observable<Response> {
-    console.log('executeLogin triggered')
+    const endpoint = 'login';
+    console.log(endpoint+' triggered from ApiService')
     if (environment.mockResponse) {
-      const mockResponse: Response = { message: 'mockToken' };
-      return of(mockResponse);
+      return this.mockService.getLoginMockResponse();
     } else {
-    return this.http.post<Response>(this.baseUrl + 'login', credentials)
+    return this.http.post<Response>(environment.baseUrl + endpoint, credentials)
       .pipe(
-        catchError(this.handleError<Response>('login'))
+        catchError(this.handleError<Response>(endpoint))
       );
   }
 }
