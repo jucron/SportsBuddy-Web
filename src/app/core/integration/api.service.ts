@@ -33,8 +33,6 @@ export class ApiService {
       );
   }
 }
-
-
   redirectTo(uri:string, hideLocation: boolean){
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
       this.router.navigate([uri], {skipLocationChange: hideLocation}));
