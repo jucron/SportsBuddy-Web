@@ -1,1 +1,42 @@
-<router-outlet></router-outlet>
+@if (isLogged()) {
+  <mat-drawer-container class="app-container" autosize>
+    <mat-drawer #drawer class="app-sidenav" mode="side">
+      <p>Logged in as {{localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME)}}</p>
+      @if (showFiller) {
+        <p>Are you sure you want to logout?</p>
+        <button mat-button (click)="logout()">Yes</button>
+        <button mat-button (click)="drawer.toggle(); changeFiller()">No</button>
+      } @else {
+        <p>Create a new Match</p>
+        <p>My Matches</p>
+        <p>My chats</p>
+        <p>Change account details</p>
+
+      <button (click)="changeFiller()" mat-raised-button>
+        Logout
+      </button>
+      }
+    </mat-drawer>
+
+    <div class="app-sidenav-content">
+      <div fxLayout="column" fxFlexFill>
+        <!-- Button in the top-left corner -->
+        <div fxLayout="row" fxLayoutAlign="start start">
+          <button type="button" mat-button (click)="drawer.toggle()">
+            Menu
+          </button>
+        </div>
+        <!-- Content centered-->
+        <div fxLayout="row" fxLayoutAlign="center center" fxFlex="1 1 auto">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+
+  </mat-drawer-container>
+} @else {
+  <router-outlet></router-outlet>
+}
+
+
+

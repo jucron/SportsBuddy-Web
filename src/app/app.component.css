@@ -1,0 +1,17 @@
+.app-container {
+  /*width: 400px;*/
+  height: 100%;
+  background-color: white;
+  /*border: 1px solid rgba(0, 0, 0, 0.5);*/
+}
+
+.app-sidenav-content {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-sidenav {
+  padding: 20px;
+}

@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import {Response} from "../model/response";
 import {ApiService} from "./api.service";
 import {Credentials} from "../model/credentials";
+import {STORAGE_KEYS} from "../keys/storage-keys";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  private mainUsername_key = "mainUsername_key";
-  private authToken_key = "authToken_key";
   isLoading = false;
   response: Response | null = null;
 
@@ -23,8 +22,8 @@ export class LoginService {
           this.response = observerResponse;
           console.log('Login successful', this.response);
           if (this.response != null) {
-            localStorage.setItem(this.mainUsername_key, credentials.username)
-            localStorage.setItem(this.authToken_key, this.response.message)
+            localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username)
+            localStorage.setItem(STORAGE_KEYS.TOKEN, this.response.message)
           }
           this.apiService.redirectTo('/home', false);
         },
@@ -35,5 +34,9 @@ export class LoginService {
           this.isLoading = false;
         }
       });
+  }
+  executeLogout() {
+    localStorage.clear();
+    this.apiService.redirectTo('', false);
   }
 }
