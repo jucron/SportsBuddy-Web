@@ -3,6 +3,7 @@ import {Response} from "../model/response";
 import {ApiService} from "./api.service";
 import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
+import {RoutingService} from "../routing/routing.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class LoginService {
 
   constructor(
     private apiService: ApiService,
+    private routingService: RoutingService
   ) {}
 
   executeLogin(credentials: Credentials) {
@@ -25,7 +27,7 @@ export class LoginService {
             localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username)
             localStorage.setItem(STORAGE_KEYS.TOKEN, this.response.message)
           }
-          this.apiService.redirectTo('/home', false);
+          this.routingService.redirectTo('home', false);
         },
         error: err => {
           console.error('Login failed', err);
@@ -37,6 +39,6 @@ export class LoginService {
   }
   executeLogout() {
     localStorage.clear();
-    this.apiService.redirectTo('', false);
+    this.routingService.redirectTo('', false);
   }
 }

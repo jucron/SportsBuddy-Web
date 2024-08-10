@@ -12,6 +12,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {FormErrorComponent} from "../../core/form-error/form-error.component";
 import {LoginService} from "../../core/integration/login.service";
 import {Credentials} from "../../core/model/credentials";
+import {RoutingService} from "../../core/routing/routing.service";
 
 @Component({
   selector: 'app-login-form',
@@ -48,7 +49,8 @@ export class LoginFormComponent {
 
   constructor(
     private fb: FormBuilder,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private routingService: RoutingService
   ) {
     this.loginForm = this.fb.group({
       username: ['username', this.usernameValidation],
@@ -61,5 +63,9 @@ export class LoginFormComponent {
       let credentials: Credentials = this.loginForm.value;
       this.loginService.executeLogin(credentials);
     }
+  }
+
+  routeToCreateAccount() {
+    this.routingService.redirectTo('account', false);
   }
 }

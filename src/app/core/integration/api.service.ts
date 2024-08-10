@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Router} from "@angular/router";
 import {Credentials} from "../model/credentials";
 import {Response} from "../model/response";
 import {catchError, Observable} from "rxjs";
@@ -16,7 +15,6 @@ export class ApiService {
 
   constructor(private http: HttpClient,
               httpErrorHandler: HttpErrorHandler,
-              private router: Router,
               private mockService: MockResponseService) {
     this.handleError = httpErrorHandler.createHandleError('ApiService')
   }
@@ -27,15 +25,12 @@ export class ApiService {
     if (environment.mockResponse) {
       return this.mockService.getLoginMockResponse();
     } else {
-    return this.http.post<Response>(environment.baseUrl + endpoint, credentials)
-      .pipe(
-        catchError(this.handleError<Response>(endpoint))
-      );
+      return this.http.post<Response>(environment.baseUrl + endpoint, credentials)
+        .pipe(
+          catchError(this.handleError<Response>(endpoint))
+        );
+    }
   }
-}
-  redirectTo(uri:string, hideLocation: boolean){
-    this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
-      this.router.navigate([uri], {skipLocationChange: hideLocation}));
-  }
+
 }
 

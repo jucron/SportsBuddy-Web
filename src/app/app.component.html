@@ -1,7 +1,7 @@
 @if (isLogged()) {
   <mat-drawer-container class="app-container" autosize>
     <mat-drawer #drawer class="app-sidenav" mode="side">
-      <p>Logged in as {{localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME)}}</p>
+      <p>Logged in as {{getCurrentUsername()}}</p>
       @if (showFiller) {
         <p>Are you sure you want to logout?</p>
         <button mat-button (click)="logout()">Yes</button>

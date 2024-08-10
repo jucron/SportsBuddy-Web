@@ -20,7 +20,7 @@
         <div matTooltip='change this' [matTooltipDisabled]="loginForm.valid">
           <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Login</button>
         </div>
-        <button mat-button type="reset">Create</button>
+        <button mat-button type="reset" (click)="routeToCreateAccount()">Create</button>
       </div>
     </form>
   </mat-card>

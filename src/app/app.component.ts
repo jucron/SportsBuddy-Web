@@ -25,9 +25,6 @@ export class AppComponent {
     return localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME) != null;
   }
 
-  protected readonly localStorage = localStorage;
-  protected readonly STORAGE_KEYS = STORAGE_KEYS;
-
   logout() {
     this.loginService.executeLogout();
     this.changeFiller();
@@ -35,5 +32,9 @@ export class AppComponent {
 
   changeFiller() {
     this.showFiller = !this.showFiller;
+  }
+
+  getCurrentUsername() {
+    return localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME);
   }
 }
