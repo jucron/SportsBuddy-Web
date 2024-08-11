@@ -6,6 +6,7 @@ import {catchError, Observable} from "rxjs";
 import {HandleError, HttpErrorHandler} from "./http-error-handler.service";
 import {environment} from "../environments/environments";
 import {MockResponseService} from "./mock-response.service";
+import {Account} from "../model/account";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class ApiService {
     const endpoint = 'login';
     console.log(endpoint+' triggered from ApiService')
     if (environment.mockResponse) {
-      return this.mockService.getLoginMockResponse();
+      return this.mockService.getLoginMockResponse(credentials);
     } else {
       return this.http.post<Response>(environment.baseUrl + endpoint, credentials)
         .pipe(
@@ -32,5 +33,17 @@ export class ApiService {
     }
   }
 
+  createAccount(account: Account) {
+    const endpoint = 'create-account';
+    console.log(endpoint+' triggered from ApiService')
+    if (environment.mockResponse) {
+      return this.mockService.getCreateAccountMockResponse(account);
+    } else {
+      return this.http.post<Response>(environment.baseUrl + endpoint, account)
+        .pipe(
+          catchError(this.handleError<Response>(endpoint))
+        );
+    }
+  }
 }
 

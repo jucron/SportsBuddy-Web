@@ -2,17 +2,36 @@ import { Injectable } from '@angular/core';
 import {Response} from "../model/response";
 import {Observable, of} from "rxjs";
 import {Match} from "../model/match";
+import {Account} from "../model/account";
+import {Credentials} from "../model/credentials";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockResponseService {
+  accounts: Account[];
 
-  constructor() { }
+  constructor() {
+    this.accounts = [
+      {username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: []}
+    ]
+  }
 
-  getLoginMockResponse(): Observable<Response> {
-    const mockResponse: Response = { message: 'mockToken' };
+  getLoginMockResponse(credentials: Credentials): Observable<Response> {
+    let mockResponse: Response = { message: 'login-failed' };
+    if (this.validateLogin(credentials.username, credentials.password)) {
+      mockResponse = { message: 'mockValidToken' };
+    }
     return of(mockResponse);
+  }
+
+  private validateLogin(username: string, password: string) {
+    for (const credentials of this.accounts) {
+      if (credentials.username === username) {
+        return credentials.password === password;
+      }
+    }
+    return false; // Username not found
   }
   getMockMatches(): Match[] {
     return [
@@ -59,4 +78,9 @@ export class MockResponseService {
     ];
   }
 
+  getCreateAccountMockResponse(account: Account): Observable<Response> {
+    this.accounts.push(account);
+    let mockResponse: Response = { message: 'account-created' };
+    return of(mockResponse);
+  }
 }

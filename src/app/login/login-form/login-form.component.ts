@@ -39,13 +39,7 @@ import {RoutingService} from "../../core/routing/routing.service";
 })
 export class LoginFormComponent {
   loginForm: FormGroup;
-  private usernameValidation = Validators.required;  // Username must be filled
-  private passwordValidation = [
-    Validators.required, // Password must be filled
-    Validators.minLength(8), // Password must be at least 8 characters long
-    Validators.pattern(/^(?=.*[0-9])(?=.*[!@#$%^&*._])/), // Must contain at least one number and one special character
-  ];
-
+  private requiredValidation = Validators.required;  // Username must be filled
 
   constructor(
     private fb: FormBuilder,
@@ -53,8 +47,8 @@ export class LoginFormComponent {
     private routingService: RoutingService
   ) {
     this.loginForm = this.fb.group({
-      username: ['username', this.usernameValidation],
-      password: ['password', this.passwordValidation]
+      username: ['', this.requiredValidation],
+      password: ['', this.requiredValidation]
     });
   }
 

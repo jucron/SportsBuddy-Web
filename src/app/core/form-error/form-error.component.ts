@@ -41,6 +41,8 @@ export class FormErrorComponent implements OnInit{
           this.errorMessage = `Minimum length is ${minLength} characters`;
         } else if (errors['pattern']) {
           this.errorMessage = 'You must enter at least one special character';
+        } else if (errors['email']) {
+          this.errorMessage = 'You must enter a correct email format';
         }
         // Add more error types as needed
       }
