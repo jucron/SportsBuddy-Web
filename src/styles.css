@@ -10,6 +10,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .success-snackbar {
   --mdc-snackbar-supporting-text-color: black;
-  --mdc-snackbar-container-color: white;
+  --mdc-snackbar-container-color: #a7d6cf;
   --mat-snack-bar-button-color: blue;
 }

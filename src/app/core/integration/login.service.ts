@@ -13,6 +13,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 export class LoginService {
   isLoading = false;
   response: Response | null = null;
+  notificationTimeMls = 15000;
 
   constructor(
     private apiService: ApiService,
@@ -73,28 +74,28 @@ export class LoginService {
   notificationCreateAccountSuccessfully() {
     const message = 'New account created successfully!';
     this._snackBar.open(message, 'Nice!',{
-      duration: 10000,
+      duration: this.notificationTimeMls,
       panelClass: ['success-snackbar']
     });
   }
   notificationCreateAccountFailed() {
     const message = 'Some error was found while creating the new account, please try again later';
     this._snackBar.open(message, 'Dang!',{
-      duration: 10000,
+      duration: this.notificationTimeMls,
       panelClass: ['fail-snackbar']
     });
   }
   notificationLoginSuccessfully() {
-    const message = 'Welcome to Your Account! 😁';
+    const message = 'Welcome! 😁';
     this._snackBar.open(message, 'Great!',{
-      duration: 10000,
+      duration: this.notificationTimeMls,
       panelClass: ['success-snackbar']
     });
   }
   notificationLoginFailed() {
     const message = 'Login failed.. 😔';
     this._snackBar.open(message, 'Oh no!',{
-      duration: 10000,
+      duration: this.notificationTimeMls,
       panelClass: ['fail-snackbar']
     });
   }

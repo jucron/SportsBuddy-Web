@@ -40,7 +40,7 @@ import {RoutingService} from "../../core/routing/routing.service";
 })
 export class LoginFormComponent {
   loginForm: FormGroup;
-  private requiredValidation = Validators.required;  // Username must be filled
+  private requiredValidation = Validators.required;  // Must be filled
 
   constructor(
     private fb: FormBuilder,
