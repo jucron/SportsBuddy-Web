@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {MatError, MatFormField, MatLabel} from "@angular/material/form-field";
+import {MatError, MatFormField, MatHint, MatLabel} from "@angular/material/form-field";
 import {MatGridList, MatGridTile} from "@angular/material/grid-list";
 import {MatCard} from "@angular/material/card";
 import {MatInput} from "@angular/material/input";
@@ -32,7 +32,8 @@ import {RoutingService} from "../../core/routing/routing.service";
     MatTooltip,
     MatError,
     NgIf,
-    FormErrorComponent
+    FormErrorComponent,
+    MatHint
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
