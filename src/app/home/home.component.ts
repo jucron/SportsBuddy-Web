@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {MockResponseService} from "../core/integration/mock-response.service";
 import {Match} from "../core/model/match";
 import {
   MatCell,
@@ -15,6 +14,8 @@ import {MatCard} from "@angular/material/card";
 import {MatButton} from "@angular/material/button";
 import {Router} from "@angular/router";
 import {RoutingService} from "../core/routing/routing.service";
+import {MatchService} from "../core/integration/match.service";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-home',
@@ -32,21 +33,50 @@ import {RoutingService} from "../core/routing/routing.service";
         MatRowDef,
         FlexModule,
         MatCard,
-        MatButton
+        MatButton,
+      MatProgressSpinnerModule
     ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  mockTable: Match[];
+  isLoadingTable = false;
+  matchesTable: Match[];
   displayedColumns: string[] = ['name', 'date', 'hour', 'location','comments','sport','owner','participants'];
-  constructor(private mockService: MockResponseService,
+
+  constructor(private matchService: MatchService,
               private routingService: RoutingService
   ) {
-    this.mockTable = mockService.getMockMatches();
+    this.matchesTable = [];
   }
 
+  ngOnInit(): void {
+    this.updateMatchTable();
+  }
   routeToCreateMatch() {
     this.routingService.redirectTo('match', false);
+  }
+
+
+  updateMatchTable() {
+    this.isLoadingTable = true;
+    this.matchService.getMatches()
+      .subscribe({
+    next: matches => {
+      this.matchesTable = matches;
+    },
+      error: error => {
+      console.error('error in updating updateMatchTable'+error)
+      this.matchService.notificationGetMatchError();
+    },
+      complete: () => {
+      this.isLoadingTable = false; // Hide the loading spinner
+    }
+  });
+
+  }
+
+  getMatchTable(){
+    return this.matchesTable;
   }
 }

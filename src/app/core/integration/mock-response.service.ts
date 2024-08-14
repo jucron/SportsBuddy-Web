@@ -4,17 +4,18 @@ import {Observable, of} from "rxjs";
 import {Match} from "../model/match";
 import {Account} from "../model/account";
 import {Credentials} from "../model/credentials";
+import {MatchResponse} from "../model/matchResponse";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockResponseService {
   accounts: Account[];
+  mockMatches: Match[];
 
   constructor() {
-    this.accounts = [
-      {username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: []}
-    ]
+    this.accounts = this.bootstrapMockAccounts();
+  this.mockMatches = this.bootstrapMockMatches();
   }
 
   getLoginMockResponse(credentials: Credentials): Observable<Response> {
@@ -33,7 +34,21 @@ export class MockResponseService {
     }
     return false; // Username not found
   }
-  getMockMatches(): Match[] {
+
+  getCreateAccountMockResponse(account: Account): Observable<Response> {
+    this.accounts.push(account);
+    let mockResponse: Response = { message: 'account-created' };
+    return of(mockResponse);
+  }
+
+  getMockMatchResponse(): Observable<MatchResponse> {
+    const matchResponse = {
+      message: 'getMatch-success',
+      matches: this.mockMatches
+    }
+    return of(matchResponse);
+  }
+  private bootstrapMockMatches(): Match[] {
     return [
       {
         name: '3 on 3',
@@ -77,10 +92,9 @@ export class MockResponseService {
       }
     ];
   }
-
-  getCreateAccountMockResponse(account: Account): Observable<Response> {
-    this.accounts.push(account);
-    let mockResponse: Response = { message: 'account-created' };
-    return of(mockResponse);
+  private bootstrapMockAccounts() {
+    return [
+      {username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: []}
+    ];
   }
 }

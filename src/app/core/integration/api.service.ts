@@ -7,6 +7,7 @@ import {HandleError, HttpErrorHandler} from "./http-error-handler.service";
 import {environment} from "../environments/environments";
 import {MockResponseService} from "./mock-response.service";
 import {Account} from "../model/account";
+import {MatchResponse} from "../model/matchResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class ApiService {
 
   callLogin(credentials: Credentials): Observable<Response> {
     const endpoint = 'login';
-    console.log(endpoint+' triggered from ApiService')
+    console.log(endpoint + ' triggered from ApiService')
     if (environment.mockResponse) {
       return this.mockService.getLoginMockResponse(credentials);
     } else {
@@ -35,7 +36,7 @@ export class ApiService {
 
   createAccount(account: Account) {
     const endpoint = 'create-account';
-    console.log(endpoint+' triggered from ApiService')
+    console.log(endpoint + ' triggered from ApiService')
     if (environment.mockResponse) {
       return this.mockService.getCreateAccountMockResponse(account);
     } else {
@@ -43,6 +44,21 @@ export class ApiService {
         .pipe(
           catchError(this.handleError<Response>(endpoint))
         );
+    }
+  }
+
+  getMatches() {
+    {
+      const endpoint = 'get-matches';
+      console.log(endpoint + ' triggered from ApiService')
+      if (environment.mockResponse) {
+        return this.mockService.getMockMatchResponse();
+      } else {
+        return this.http.get<MatchResponse>(environment.baseUrl + endpoint)
+          .pipe(
+            catchError(this.handleError<MatchResponse>(endpoint))
+          );
+      }
     }
   }
 }
