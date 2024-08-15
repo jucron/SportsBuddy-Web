@@ -16,6 +16,7 @@ import {Sports} from "../core/model/sports";
 import {KeyValuePipe, NgForOf} from "@angular/common";
 import {AccountState, CreateState, ReadOnlyState, UpdateState} from "../core/model/account-state/accountState";
 import {FactoryService} from "../core/factory/factory.service";
+import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
 
 @Component({
   selector: 'app-account',
@@ -86,10 +87,10 @@ export class AccountComponent implements OnInit {
     this.routingService.getActivatedRoute().data
       .subscribe(data => {
         switch (data['state']) {
-          case 'create':
+          case ACCOUNT_STATE_KEYS.CREATE_STATE:
             this.currentState = new CreateState();
             break;
-          case 'update':
+          case ACCOUNT_STATE_KEYS.UPDATE_STATE:
             this.currentState = new UpdateState();
             break;
           default:
