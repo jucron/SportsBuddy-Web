@@ -9,7 +9,7 @@ import {MatFormField, MatFormFieldModule, MatHint, MatLabel} from "@angular/mate
 import {MatInput, MatInputModule} from "@angular/material/input";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {RoutingService} from "../core/routing/routing.service";
 import {
   MatDatepicker,
@@ -19,6 +19,7 @@ import {
 } from "@angular/material/datepicker";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {Sports} from "../core/model/sports";
+import {FactoryService} from "../core/factory/factory.service";
 
 @Component({
   selector: 'app-match',
@@ -53,20 +54,12 @@ import {Sports} from "../core/model/sports";
 })
 export class MatchComponent {
   matchForm: FormGroup;
-  private requiredValidation = Validators.required;  // Must be filled
 
   constructor(
-    private fb: FormBuilder,
+    private factoryService: FactoryService,
     private routingService: RoutingService
   ) {
-    this.matchForm = this.fb.group({
-      name: ['', this.requiredValidation],
-      date: ['', this.requiredValidation],
-      hour: ['', this.requiredValidation],
-      // location: ['', this.requiredValidation],
-      // comments: ['', this.requiredValidation],
-      // sport: ['', this.requiredValidation]
-    });
+    this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
   onSubmit() {
     if (this.matchForm.valid) {

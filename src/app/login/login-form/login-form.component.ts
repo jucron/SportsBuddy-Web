@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {MatError, MatFormField, MatHint, MatLabel} from "@angular/material/form-field";
 import {MatGridList, MatGridTile} from "@angular/material/grid-list";
 import {MatCard} from "@angular/material/card";
 import {MatInput} from "@angular/material/input";
 import {MatButton} from "@angular/material/button";
 import {FlexLayoutModule} from "@angular/flex-layout";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {NgIf, NgOptimizedImage} from "@angular/common";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
@@ -13,6 +13,7 @@ import {FormErrorComponent} from "../../core/helper-components/form-error/form-e
 import {LoginService} from "../../core/integration/login.service";
 import {Credentials} from "../../core/model/credentials";
 import {RoutingService} from "../../core/routing/routing.service";
+import {FactoryService} from "../../core/factory/factory.service";
 
 @Component({
   selector: 'app-login-form',
@@ -40,18 +41,14 @@ import {RoutingService} from "../../core/routing/routing.service";
 })
 export class LoginFormComponent {
   loginForm: FormGroup;
-  private requiredValidation = Validators.required;  // Must be filled
   isLoadingLogin: boolean;
 
   constructor(
-    private fb: FormBuilder,
+    private factoryService: FactoryService,
     private loginService: LoginService,
     private routingService: RoutingService
   ) {
-    this.loginForm = this.fb.group({
-      username: ['', this.requiredValidation],
-      password: ['', this.requiredValidation]
-    });
+    this.loginForm = this.factoryService.getFormFactory().createLoginForm();
     this.isLoadingLogin = this.loginService.isLoading;
   }
 
@@ -63,6 +60,6 @@ export class LoginFormComponent {
   }
 
   routeToCreateAccount() {
-    this.routingService.redirectTo('account', false);
+    this.routingService.redirectTo('account/create', false);
   }
 }

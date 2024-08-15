@@ -1,4 +1,4 @@
-import {Component,  Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {MatError} from "@angular/material/form-field";
 import {NgIf} from "@angular/common";
 import {FormControl} from "@angular/forms";
@@ -40,7 +40,7 @@ export class FormErrorComponent implements OnInit{
           const minLength = errors['minlength'].requiredLength;
           this.errorMessage = `Minimum length is ${minLength} characters`;
         } else if (errors['pattern']) {
-          this.errorMessage = 'You must enter at least one special character';
+          this.errorMessage = 'You must enter at least one number and a special character';
         } else if (errors['email']) {
           this.errorMessage = 'You must enter a correct email format';
         }
