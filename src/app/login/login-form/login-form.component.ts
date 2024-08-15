@@ -9,7 +9,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {NgIf, NgOptimizedImage} from "@angular/common";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
-import {FormErrorComponent} from "../../core/form-error/form-error.component";
+import {FormErrorComponent} from "../../core/helper-components/form-error/form-error.component";
 import {LoginService} from "../../core/integration/login.service";
 import {Credentials} from "../../core/model/credentials";
 import {RoutingService} from "../../core/routing/routing.service";
@@ -41,6 +41,7 @@ import {RoutingService} from "../../core/routing/routing.service";
 export class LoginFormComponent {
   loginForm: FormGroup;
   private requiredValidation = Validators.required;  // Must be filled
+  isLoadingLogin: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +52,7 @@ export class LoginFormComponent {
       username: ['', this.requiredValidation],
       password: ['', this.requiredValidation]
     });
+    this.isLoadingLogin = this.loginService.isLoading;
   }
 
   onSubmit() {

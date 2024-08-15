@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FlexModule} from "@angular/flex-layout";
-import {FormErrorComponent} from "../core/form-error/form-error.component";
+import {FormErrorComponent} from "../core/helper-components/form-error/form-error.component";
 import {KeyValuePipe, NgForOf} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {MatCard} from "@angular/material/card";
@@ -10,9 +10,7 @@ import {MatInput, MatInputModule} from "@angular/material/input";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {LoginService} from "../core/integration/login.service";
 import {RoutingService} from "../core/routing/routing.service";
-import {Credentials} from "../core/model/credentials";
 import {
   MatDatepicker,
   MatDatepickerInput,

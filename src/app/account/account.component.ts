@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {FlexModule} from "@angular/flex-layout";
-import {FormErrorComponent} from "../core/form-error/form-error.component";
+import {FormErrorComponent} from "../core/helper-components/form-error/form-error.component";
 import {MatButton} from "@angular/material/button";
 import {MatCard} from "@angular/material/card";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
@@ -10,7 +10,6 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {LoginService} from "../core/integration/login.service";
 import {RoutingService} from "../core/routing/routing.service";
-import {Credentials} from "../core/model/credentials";
 import {Account} from "../core/model/account";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {Sports} from "../core/model/sports";

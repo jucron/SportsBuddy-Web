@@ -12,7 +12,6 @@ import {
 import {FlexModule} from "@angular/flex-layout";
 import {MatCard} from "@angular/material/card";
 import {MatButton} from "@angular/material/button";
-import {Router} from "@angular/router";
 import {RoutingService} from "../core/routing/routing.service";
 import {MatchService} from "../core/integration/match.service";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
@@ -67,7 +66,6 @@ export class HomeComponent {
     },
       error: error => {
       console.error('error in updating updateMatchTable'+error)
-      this.matchService.notificationGetMatchError();
     },
       complete: () => {
       this.isLoadingTable = false; // Hide the loading spinner
