@@ -2,31 +2,34 @@
   <div class="card">
     <mat-card>
 <!--      todo: work with the States-->
+
       <mat-toolbar> Create a new account  </mat-toolbar>
       <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Username</mat-label>
-          <input matInput formControlName="username" required>
-          <app-form-error [control]="accountForm.get('username')"></app-form-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" required>
-          <app-form-error [control]="accountForm.get('password')"></app-form-error>
-        </mat-form-field>
+
+        @if (currentState.isCreateState()){
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" required>
+            <app-form-error [control]="accountForm.get('username')"></app-form-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            <app-form-error [control]="accountForm.get('password')"></app-form-error>
+          </mat-form-field>
+        }
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Name</mat-label>
-          <input matInput formControlName="name" required>
+          <input matInput formControlName="name" required [disabled]="currentState.isReadOnlyState()">
           <app-form-error [control]="accountForm.get('name')"></app-form-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" required>
+          <input matInput formControlName="email" required [disabled]="currentState.isReadOnlyState()">
           <app-form-error [control]="accountForm.get('email')"></app-form-error>
         </mat-form-field>
 
         <h3>⚽ Favourite Sports 🏀 </h3>
-
         <div *ngFor="let sport of (sports | keyvalue)">
           <mat-checkbox
             [checked]="isSportSelected(sport.value)"
@@ -37,10 +40,12 @@
         </div>
 
         <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
-          <div matTooltip='change this' [matTooltipDisabled]="accountForm.valid">
-            <button mat-raised-button color="primary" type="submit" [disabled]="accountForm.invalid">Create</button>
+          @if (! currentState.isReadOnlyState()) {
+          <div matTooltip='Error in fields' [matTooltipDisabled]="accountForm.valid">
+            <button mat-raised-button color="primary" type="submit" [disabled]="accountForm.invalid">{{getSubmitButtonLabel()}}</button>
           </div>
-          <button mat-button type="reset" (click)="routeToLogin()">Cancel</button>
+          }
+          <button mat-button type="reset" (click)="routeToLogin()">{{getReturnButtonLabel()}}</button>
         </div>
       </form>
     </mat-card>

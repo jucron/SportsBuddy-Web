@@ -9,8 +9,8 @@ export const routes: Routes = [
   {path: '', component: LoginComponent},
   {path: 'home', component: HomeComponent},
   { path: 'account/create', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.CREATE_STATE } },
-  { path: 'account/update', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.UPDATE_STATE } },
-  { path: 'account/read-only', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.READONLY_STATE } },
+  { path: 'account/update/:id', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.UPDATE_STATE } },
+  { path: 'account/read-only/:id', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.READONLY_STATE } },
   {path: 'match', component: MatchComponent}
 ];
 

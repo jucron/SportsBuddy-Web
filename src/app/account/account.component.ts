@@ -17,6 +17,7 @@ import {KeyValuePipe, NgForOf} from "@angular/common";
 import {AccountState, CreateState, ReadOnlyState, UpdateState} from "../core/model/account-state/accountState";
 import {FactoryService} from "../core/factory/factory.service";
 import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-account',
@@ -45,24 +46,39 @@ export class AccountComponent implements OnInit {
   sportsSelected: Sports[];
   protected currentState: AccountState;
 
+
   constructor(
     private factoryService: FactoryService,
     private loginService: LoginService,
     private routingService: RoutingService,
+    private activatedRoute: ActivatedRoute
   ) {
-    this.accountForm = this.factoryService.getFormFactory().createAccountForm();
+    this.accountForm = this.factoryService.getFormFactory().createAccountFormCreate();
     this.sportsSelected = [];
     this.currentState = new ReadOnlyState();
   }
 
   ngOnInit(): void {
     this.setCurrentStateBasedOnRoute();
+    if (! this.currentState.isCreateState()) {
+      if (this.currentState.isUpdateState()){
+        this.accountForm = this.factoryService.getFormFactory().createAccountFormUpdate();
+      }
+      this.loadAccountData();
+    }
   }
   onSubmit() {
     if (this.accountForm.valid) {
       let account: Account = this.accountForm.value;
       account.favouriteSports = this.sportsSelected;
-      this.loginService.createAccount(account);
+
+      if (this.currentState.isCreateState()) {
+        this.loginService.createAccount(account);
+      } else{
+        //todo
+        // this.loginService.updateAccount(account);
+      }
+
       this.routeToLogin();
     }
   }
@@ -83,8 +99,8 @@ export class AccountComponent implements OnInit {
     }
   }
 
-  setCurrentStateBasedOnRoute(){
-    this.routingService.getActivatedRoute().data
+  private setCurrentStateBasedOnRoute(){
+    this.activatedRoute.data
       .subscribe(data => {
         switch (data['state']) {
           case ACCOUNT_STATE_KEYS.CREATE_STATE:
@@ -98,5 +114,54 @@ export class AccountComponent implements OnInit {
             break;
         }
       });
+  }
+
+  private loadAccountData() {
+    const accountId = this.activatedRoute.snapshot.paramMap.get('id');
+    console.log('loadAccountData triggered with id: '+accountId);
+    if (accountId != null) {
+      this.loginService.getAccount(accountId)
+        .subscribe({
+          next: (account: Account | null) => {
+            if (account) {
+              this.accountForm.patchValue(
+                {
+                  id: account?.id,
+                  username: account?.username,
+                  name: account?.name,
+                  email: account?.email,
+                  favouriteSports:account?.favouriteSports
+                }
+              );
+              this.sportsSelected = account.favouriteSports;
+            }
+          },
+          error: (err) => {
+            console.error('Error loading account - integration error', err);
+          }
+        });
+    } else {
+      console.error('Error loading account - account not found with current Id');
+    }
+  }
+
+  getSubmitButtonLabel() {
+    let label: string;
+    if (this.currentState.isCreateState()) {
+      label = 'Create';
+    } else {
+      label = 'Update'
+    }
+    return label;
+  }
+
+  getReturnButtonLabel() {
+    let label: string;
+    if (this.currentState.isReadOnlyState()) {
+      label = 'Go back';
+    } else {
+      label = 'Cancel'
+    }
+    return label;
   }
 }

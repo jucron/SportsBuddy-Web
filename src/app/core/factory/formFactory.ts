@@ -20,7 +20,7 @@ export class FormFactory {
     });
     return loginForm;
   }
-  createAccountForm(){
+  createAccountFormCreate(){
     return this.fb.group({
       username: ['', this.requiredValidation],
       password: ['', this.passwordValidation],
@@ -40,4 +40,10 @@ export class FormFactory {
     });
   }
 
+  createAccountFormUpdate() {
+    return this.fb.group({
+      name: ['', this.requiredValidation],
+      email: ['', this.emailValidation]
+    });
+  }
 }

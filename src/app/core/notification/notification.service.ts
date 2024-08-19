@@ -44,4 +44,11 @@ export class NotificationService {
       panelClass: ['fail-snackbar']
     });
   }
+  notificationGetAccountFailed() {
+    const message = 'Some error was found while getting the existing account, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.notificationTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
 }

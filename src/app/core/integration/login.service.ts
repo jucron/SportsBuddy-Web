@@ -1,20 +1,22 @@
 import {Injectable} from '@angular/core';
-import {Response} from "../model/response";
+import {LoginResponse} from "../model/loginResponse";
 import {ApiService} from "./api.service";
 import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
-import {delay} from "rxjs";
+import {catchError, delay, finalize, map, of} from "rxjs";
 import {LoadingDialogService} from "../helper-components/loading-dialog/loading-dialog.service";
 import {NotificationService} from "../notification/notification.service";
+import {AccountResponse} from "../model/accountResponse";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
   isLoading = false;
-  response: Response | null = null;
+  response: LoginResponse | null = null;
+  accountResponse: AccountResponse | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -34,7 +36,8 @@ export class LoginService {
           console.log('Login successful', this.response);
           if (this.response != null && this.response.message != 'login-failed') {
             localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
-            localStorage.setItem(STORAGE_KEYS.TOKEN, this.response.message);
+            localStorage.setItem(STORAGE_KEYS.TOKEN, this.response.token);
+            localStorage.setItem(STORAGE_KEYS.MAIN_ID, this.response.id);
             this.notificationService.notificationLoginSuccessfully();
             this.routingService.redirectTo('home', false);
           } else {
@@ -79,6 +82,32 @@ export class LoginService {
           this.loadingDialogService.closeLoadingDialog();
         }
       });
+  }
+
+  getAccount(accountId: string) {
+    this.isLoading = true;
+    this.loadingDialogService.showLoadingDialog();
+    return this.apiService.getAccount(accountId).pipe(
+      delay(1000),
+      map(observerResponse => {
+        this.accountResponse = observerResponse;
+        if (this.accountResponse && this.accountResponse.message === 'account-found') {
+          return this.accountResponse.account;
+        } else {
+          this.notificationService.notificationGetAccountFailed();
+          return null;
+        }
+      }),
+      catchError(err => {
+        console.error('getAccount failed', err);
+        this.notificationService.notificationGetAccountFailed();
+        return of(null); // Return null on error
+      }),
+      finalize(() => {
+        this.isLoading = false;
+        this.loadingDialogService.closeLoadingDialog();
+      })
+    );
   }
 
 }

@@ -7,10 +7,11 @@
         <button mat-button (click)="logout()">Yes</button>
         <button mat-button (click)="drawer.toggle(); changeFiller()">No</button>
       } @else {
+        <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">Update My Account</button>
         <p>Create a new Match</p>
         <p>My Matches</p>
         <p>My chats</p>
-        <p>Change account details</p>
+
 
       <button (click)="changeFiller()" mat-raised-button>
         Logout

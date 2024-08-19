@@ -6,6 +6,7 @@ import {MatButton} from "@angular/material/button";
 import {FlexModule} from "@angular/flex-layout";
 import {LoginService} from "./core/integration/login.service";
 import {STORAGE_KEYS} from "./core/keys/storage-keys";
+import {RoutingService} from "./core/routing/routing.service";
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent {
   title = 'SportsBuddy-Web';
   showFiller = false;
 
-  constructor(private loginService: LoginService) {
+  constructor(private loginService: LoginService,
+              private routingService: RoutingService) {
   }
 
   isLogged(): boolean {
@@ -36,5 +38,12 @@ export class AppComponent {
 
   getCurrentUsername() {
     return localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME);
+  }
+
+  routeToUpdateMyAccount() {
+    const id = localStorage.getItem(STORAGE_KEYS.MAIN_ID);
+    if (id) {
+    this.routingService.navigateWithParam('account/update/',false,id);
+    }
   }
 }

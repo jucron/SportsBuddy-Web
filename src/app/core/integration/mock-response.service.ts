@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-import {Response} from "../model/response";
+import {Injectable} from '@angular/core';
+import {LoginResponse} from "../model/loginResponse";
 import {Observable, of} from "rxjs";
 import {Match} from "../model/match";
 import {Account} from "../model/account";
 import {Credentials} from "../model/credentials";
 import {MatchResponse} from "../model/matchResponse";
+import {AccountResponse} from "../model/accountResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -12,32 +13,46 @@ import {MatchResponse} from "../model/matchResponse";
 export class MockResponseService {
   accounts: Account[];
   mockMatches: Match[];
+  accountMockId = 1;
 
   constructor() {
     this.accounts = this.bootstrapMockAccounts();
   this.mockMatches = this.bootstrapMockMatches();
   }
 
-  getLoginMockResponse(credentials: Credentials): Observable<Response> {
-    let mockResponse: Response = { message: 'login-failed' };
-    if (this.validateLogin(credentials.username, credentials.password)) {
-      mockResponse = { message: 'mockValidToken' };
+  getLoginMockResponse(credentials: Credentials): Observable<LoginResponse> {
+    let mockResponse: LoginResponse = {
+      id: '',
+      token: '',
+      message: 'login-failed' };
+    let id = this.validateLoginAndReturnId(credentials.username, credentials.password);
+    if (id) {
+      mockResponse.id = id;
+      mockResponse.token = 'mockValidToken';
+      mockResponse.message = '';
     }
     return of(mockResponse);
   }
 
-  private validateLogin(username: string, password: string) {
+  private validateLoginAndReturnId(username: string, password: string): string | null {
     for (const credentials of this.accounts) {
       if (credentials.username === username) {
-        return credentials.password === password;
+        if (credentials.password === password){
+          return credentials.id;
+        } else {
+          //wrong pass for this user
+          return null;
+        }
       }
     }
-    return false; // Username not found
+    return null; // Username not found
   }
 
-  getCreateAccountMockResponse(account: Account): Observable<Response> {
+  getCreateAccountMockResponse(account: Account): Observable<LoginResponse> {
+    this.accountMockId++;
+    account.id = (this.accountMockId).toString();
     this.accounts.push(account);
-    let mockResponse: Response = { message: 'account-created' };
+    let mockResponse: LoginResponse = { id: '', token: '', message: 'account-created' };
     return of(mockResponse);
   }
 
@@ -92,9 +107,21 @@ export class MockResponseService {
       }
     ];
   }
-  private bootstrapMockAccounts() {
+  private bootstrapMockAccounts(): Account[] {
     return [
-      {username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: []}
+      {id: '1', username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: []}
     ];
+  }
+
+  getAccountMockResponse(accountId: string) {
+    let account = this.accounts.find(account => account.id === accountId);
+    if (account == undefined) {
+      account = this.accounts[1];
+    }
+    let accountResponse: AccountResponse = {
+      message: 'account-found',
+      account: account
+    };
+    return accountResponse;
   }
 }
