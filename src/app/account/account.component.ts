@@ -41,7 +41,7 @@ import {ActivatedRoute} from "@angular/router";
   styleUrl: './account.component.css'
 })
 export class AccountComponent implements OnInit {
-  accountForm: FormGroup;
+  accountForm!: FormGroup;
   sports = Sports;
   sportsSelected: Sports[];
   protected currentState: AccountState;
@@ -53,22 +53,17 @@ export class AccountComponent implements OnInit {
     private routingService: RoutingService,
     private activatedRoute: ActivatedRoute
   ) {
-    this.accountForm = this.factoryService.getFormFactory().createAccountFormCreate();
     this.sportsSelected = [];
     this.currentState = new ReadOnlyState();
   }
 
   ngOnInit(): void {
-    this.setCurrentStateBasedOnRoute();
-    if (! this.currentState.isCreateState()) {
-      if (this.currentState.isUpdateState()){
-        this.accountForm = this.factoryService.getFormFactory().createAccountFormUpdate();
-      }
-      this.loadAccountData();
-    }
+    this.setCurrentStateBasedOnRouteData();
+    this.accountForm = this.factoryService.getFormFactory().createAccountForm(this.currentState);
+    this.loadAccountData();
   }
   onSubmit() {
-    if (this.accountForm.valid) {
+    if (this.accountForm && this.accountForm.valid) {
       let account: Account = this.accountForm.value;
       account.favouriteSports = this.sportsSelected;
 
@@ -79,12 +74,16 @@ export class AccountComponent implements OnInit {
         // this.loginService.updateAccount(account);
       }
 
-      this.routeToLogin();
+      this.clickReturnButton();
     }
   }
 
-  routeToLogin() {
-    this.routingService.redirectTo('', false);
+  clickReturnButton() {
+    if (this.currentState.isCreateState()) {
+      this.routingService.redirectTo('', false);
+    } else {
+      this.routingService.redirectTo('home', false);
+    }
   }
 
   isSportSelected(sport: Sports): boolean {
@@ -99,7 +98,7 @@ export class AccountComponent implements OnInit {
     }
   }
 
-  private setCurrentStateBasedOnRoute(){
+  private setCurrentStateBasedOnRouteData(){
     this.activatedRoute.data
       .subscribe(data => {
         switch (data['state']) {
@@ -123,7 +122,7 @@ export class AccountComponent implements OnInit {
       this.loginService.getAccount(accountId)
         .subscribe({
           next: (account: Account | null) => {
-            if (account) {
+            if (account && this.accountForm) {
               this.accountForm.patchValue(
                 {
                   id: account?.id,
@@ -145,23 +144,11 @@ export class AccountComponent implements OnInit {
     }
   }
 
-  getSubmitButtonLabel() {
-    let label: string;
-    if (this.currentState.isCreateState()) {
-      label = 'Create';
-    } else {
-      label = 'Update'
-    }
-    return label;
+  getSubmitButtonLabel(): string {
+    return this.currentState.isCreateState() ? 'Create' : 'Update';
   }
 
-  getReturnButtonLabel() {
-    let label: string;
-    if (this.currentState.isReadOnlyState()) {
-      label = 'Go back';
-    } else {
-      label = 'Cancel'
-    }
-    return label;
+  getReturnButtonLabel(): string {
+    return this.currentState.isReadOnlyState() ? 'Go back' : 'Cancel';
   }
 }

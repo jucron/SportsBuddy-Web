@@ -1,16 +1,9 @@
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AccountFormFactory, AccountFormFactoryCreate, AccountFormFactoryUpdate} from "./AccountFormFactory";
+import {AccountState} from "../model/account-state/accountState";
 
 export class FormFactory {
   private requiredValidation = Validators.required;  // Must be filled
-  private emailValidation =  [
-    Validators.required,
-    Validators.email
-  ];
-  private passwordValidation = [
-    Validators.required, // Password must be filled
-    Validators.minLength(8), // Password must be at least 8 characters long
-    Validators.pattern(/^(?=.*[0-9])(?=.*[!@#$%^&*._])/), // Must contain at least one number and one special character
-  ];
 
   constructor(private fb: FormBuilder) {}
   createLoginForm(){
@@ -20,15 +13,10 @@ export class FormFactory {
     });
     return loginForm;
   }
-  createAccountFormCreate(){
-    return this.fb.group({
-      username: ['', this.requiredValidation],
-      password: ['', this.passwordValidation],
-      name: ['', this.requiredValidation],
-      email: ['', this.emailValidation]
-  });
+  createAccountForm(state: AccountState){
+    let accountForm: AccountFormFactory = state.isCreateState() ? new AccountFormFactoryCreate(this.fb):new AccountFormFactoryUpdate(this.fb);
+    return accountForm.createAccountForm();
   }
-
   createMatchForm(){
     return this.fb.group({
       name: ['', this.requiredValidation],
@@ -37,13 +25,6 @@ export class FormFactory {
       // location: ['', this.requiredValidation],
       // comments: ['', this.requiredValidation],
       // sport: ['', this.requiredValidation]
-    });
-  }
-
-  createAccountFormUpdate() {
-    return this.fb.group({
-      name: ['', this.requiredValidation],
-      email: ['', this.emailValidation]
     });
   }
 }
