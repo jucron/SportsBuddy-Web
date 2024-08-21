@@ -21,7 +21,7 @@ export class FormFactory {
     return this.fb.group({
       name: ['', this.requiredValidation],
       date: ['', this.requiredValidation],
-      hour: ['', this.requiredValidation],
+      time: ['', this.requiredValidation],
       // location: ['', this.requiredValidation],
       // comments: ['', this.requiredValidation],
       // sport: ['', this.requiredValidation]

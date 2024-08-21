@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Match} from "../core/model/match";
 import {
   MatCell,
   MatCellDef,
   MatColumnDef,
   MatHeaderCell,
-  MatHeaderCellDef, MatHeaderRow,
-  MatHeaderRowDef, MatRow, MatRowDef,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
   MatTable
 } from "@angular/material/table";
 import {FlexModule} from "@angular/flex-layout";
@@ -15,6 +18,7 @@ import {MatButton} from "@angular/material/button";
 import {RoutingService} from "../core/routing/routing.service";
 import {MatchService} from "../core/integration/match.service";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {Account} from "../core/model/account";
 
 @Component({
   selector: 'app-home',
@@ -38,10 +42,10 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   isLoadingTable = false;
   matchesTable: Match[];
-  displayedColumns: string[] = ['name', 'date', 'hour', 'location','comments','sport','owner','participants'];
+  displayedColumns: string[] = ['name', 'date', 'time', 'location','comments','sport','owner','participants'];
 
   constructor(private matchService: MatchService,
               private routingService: RoutingService
@@ -55,8 +59,6 @@ export class HomeComponent {
   routeToCreateMatch() {
     this.routingService.redirectTo('match', false);
   }
-
-
   updateMatchTable() {
     this.isLoadingTable = true;
     this.matchService.getMatches()
@@ -76,5 +78,34 @@ export class HomeComponent {
 
   getMatchTable(){
     return this.matchesTable;
+  }
+  getDateLabel(date: Date){
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+  getTimeLabel(date: Date){
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    });
+  }
+
+  getOwnerLabel(owner: Account) {
+    return owner.name;
+  }
+  getParticipantsLabel(participants: Account[]) {
+    let label = '';
+    let separator = ', ';
+    participants.forEach(account =>{
+      if (participants.indexOf(account) === participants.length -1){
+        separator = '';
+      }
+      label = label.concat(account.name+separator);
+    })
+    return label;
   }
 }

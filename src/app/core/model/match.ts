@@ -1,10 +1,11 @@
+import {Account} from "./account";
+
 export interface Match {
   name: string,
-  date: string,
-  hour: string,
+  date: Date,
   location: string,
   comments: string,
   sport: string,
-  participants: string,
-  owner: string
+  participants: Account[],
+  owner: Account
 }

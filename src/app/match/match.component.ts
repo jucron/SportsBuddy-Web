@@ -20,6 +20,8 @@ import {
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {Sports} from "../core/model/sports";
 import {FactoryService} from "../core/factory/factory.service";
+import {Match} from "../core/model/match";
+import {DateUtils} from "../core/utils/dateUtils";
 
 @Component({
   selector: 'app-match',
@@ -54,6 +56,7 @@ import {FactoryService} from "../core/factory/factory.service";
 })
 export class MatchComponent {
   matchForm: FormGroup;
+  protected readonly sports = Sports;
 
   constructor(
     private factoryService: FactoryService,
@@ -63,6 +66,14 @@ export class MatchComponent {
   }
   onSubmit() {
     if (this.matchForm.valid) {
+      const date = this.matchForm.get('date')?.value;
+      const time = this.matchForm.get('time')?.value;
+      const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
+      console.log(combinedDateTime);
+      let match: Match = this.matchForm.value;
+      match.date = combinedDateTime ?? match.date;
+      console.log(JSON.stringify(match));
+
       // let credentials: Credentials = this.loginForm.value;
       // this.loginService.executeLogin(credentials);
     }
@@ -71,6 +82,4 @@ export class MatchComponent {
   routeBackToHome() {
     this.routingService.redirectTo('home', false);
   }
-
-  protected readonly sports = Sports;
 }

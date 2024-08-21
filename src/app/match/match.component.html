@@ -20,9 +20,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Hour</mat-label>
-          <input matInput formControlName="hour" required>
-          <app-form-error [control]="matchForm.get('hour')"></app-form-error>
+          <mat-label>Time</mat-label>
+          <input matInput type="time" formControlName="time">
+          <app-form-error [control]="matchForm.get('time')"></app-form-error>
         </mat-form-field>
 
         <mat-radio-group aria-label="⚽ Sports 🏀">
