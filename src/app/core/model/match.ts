@@ -1,6 +1,7 @@
 import {Account} from "./account";
 
 export interface Match {
+  id: string,
   name: string,
   date: Date,
   location: string,

@@ -108,4 +108,9 @@ export class HomeComponent implements OnInit {
     })
     return label;
   }
+
+  test(row: Match) {
+
+    console.log('TEST CLICK: '+row.id+' - '+row.name);
+  }
 }

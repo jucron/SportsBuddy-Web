@@ -73,6 +73,7 @@ export class MatchComponent {
       let match: Match = this.matchForm.value;
       match.date = combinedDateTime ?? match.date;
       console.log(JSON.stringify(match));
+      //todo: createMatch()
 
       // let credentials: Credentials = this.loginForm.value;
       // this.loginService.executeLogin(credentials);

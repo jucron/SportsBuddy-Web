@@ -68,6 +68,7 @@ export class MockResponseService {
   private bootstrapMockMatches(): Match[] {
     return [
       {
+        id: '1',
         name: '3 on 3',
         date: this.getRandomDate(),
         location: 'Plaza sports center',
@@ -77,6 +78,7 @@ export class MockResponseService {
         participants: [this.accounts[2],this.accounts[3]]
       },
       {
+        id: '2',
         name: 'Soccer relax',
         date: this.getRandomDate(),
         location: 'Main field',
@@ -86,6 +88,7 @@ export class MockResponseService {
         participants: [this.accounts[4],this.accounts[5]]
       },
       {
+        id: '3',
         name: 'Tennis with friends',
         date: this.getRandomDate(),
         location: 'Tennis club',
@@ -95,6 +98,7 @@ export class MockResponseService {
         participants: [this.accounts[5],this.accounts[6],this.accounts[3]]
       },
       {
+        id: '4',
         name: 'Beach Volleyball!',
         date: this.getRandomDate(),
         location: 'Long beach',
