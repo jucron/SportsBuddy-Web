@@ -4,16 +4,19 @@
       <p>Logged in as {{getCurrentUsername()}}</p>
       @if (showFiller) {
         <p>Are you sure you want to logout?</p>
+
         <button mat-button (click)="logout()">Yes</button>
         <button mat-button (click)="drawer.toggle(); changeFiller()">No</button>
       } @else {
-        <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">Update My Account</button>
+        <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">
+          <mat-icon aria-hidden="false" aria-label="update-icon" fontIcon="update"></mat-icon>
+          Update My Account</button>
         <p>Create a new Match</p>
         <p>My Matches</p>
         <p>My chats</p>
 
-
       <button (click)="changeFiller()" mat-raised-button>
+        <mat-icon aria-hidden="false" aria-label="logout-icon" fontIcon="logout"></mat-icon>
         Logout
       </button>
       }
@@ -24,6 +27,7 @@
         <!-- Button in the top-left corner -->
         <div fxLayout="row" fxLayoutAlign="start start">
           <button type="button" mat-button (click)="drawer.toggle()">
+            <mat-icon aria-hidden="false" aria-label="menu-icon" fontIcon="menu"></mat-icon>
             Menu
           </button>
         </div>

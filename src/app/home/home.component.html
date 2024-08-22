@@ -16,12 +16,12 @@
 
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef> Date </th>
-          <td mat-cell *matCellDef="let element"> {{getDateLabel(element.date)}} </td>
+          <td mat-cell *matCellDef="let element"> {{DateUtils.getDateLabel(element.date)}} </td>
         </ng-container>
 
         <ng-container matColumnDef="time">
           <th mat-header-cell *matHeaderCellDef> Time </th>
-          <td mat-cell *matCellDef="let element"> {{getTimeLabel(element.date)}} </td>
+          <td mat-cell *matCellDef="let element"> {{DateUtils.getTimeLabel(element.date)}} </td>
         </ng-container>
 
         <ng-container matColumnDef="location">

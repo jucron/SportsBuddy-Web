@@ -7,11 +7,12 @@ import {FlexModule} from "@angular/flex-layout";
 import {LoginService} from "./core/integration/login.service";
 import {STORAGE_KEYS} from "./core/keys/storage-keys";
 import {RoutingService} from "./core/routing/routing.service";
+import {MatIconModule} from "@angular/material/icon";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatSlideToggleModule, RouterModule, MatSidenavModule, MatButton, FlexModule],
+  imports: [RouterOutlet, MatSlideToggleModule, RouterModule, MatSidenavModule, MatButton, FlexModule, MatIconModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

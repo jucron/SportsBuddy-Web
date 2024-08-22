@@ -8,4 +8,19 @@ export class DateUtils {
     }
     return null;
   }
+  static getDateLabel(date: Date){
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+  static getTimeLabel(date: Date){
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    });
+  }
+
 }

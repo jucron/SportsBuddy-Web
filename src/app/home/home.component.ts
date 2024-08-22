@@ -19,6 +19,8 @@ import {RoutingService} from "../core/routing/routing.service";
 import {MatchService} from "../core/integration/match.service";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {Account} from "../core/model/account";
+import {DialogService} from "../core/dialog/dialog.service";
+import {DateUtils} from "../core/utils/dateUtils";
 
 @Component({
   selector: 'app-home',
@@ -47,8 +49,10 @@ export class HomeComponent implements OnInit {
   matchesTable: Match[];
   displayedColumns: string[] = ['name', 'date', 'time', 'location','comments','sport','owner','participants'];
 
+
   constructor(private matchService: MatchService,
-              private routingService: RoutingService
+              private routingService: RoutingService,
+              private dialogService: DialogService
   ) {
     this.matchesTable = [];
   }
@@ -75,23 +79,8 @@ export class HomeComponent implements OnInit {
   });
 
   }
-
   getMatchTable(){
     return this.matchesTable;
-  }
-  getDateLabel(date: Date){
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-  getTimeLabel(date: Date){
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true
-    });
   }
 
   getOwnerLabel(owner: Account) {
@@ -110,7 +99,8 @@ export class HomeComponent implements OnInit {
   }
 
   test(row: Match) {
-
-    console.log('TEST CLICK: '+row.id+' - '+row.name);
+    this.dialogService.showMatchDialog(row);
   }
+
+  protected readonly DateUtils = DateUtils;
 }

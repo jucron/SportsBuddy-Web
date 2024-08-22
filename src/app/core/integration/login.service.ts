@@ -6,7 +6,7 @@ import {STORAGE_KEYS} from "../keys/storage-keys";
 import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
 import {catchError, delay, finalize, map, of} from "rxjs";
-import {LoadingDialogService} from "../helper-components/loading-dialog/loading-dialog.service";
+import {DialogService} from "../dialog/dialog.service";
 import {NotificationService} from "../notification/notification.service";
 import {AccountResponse} from "../model/accountResponse";
 
@@ -22,7 +22,7 @@ export class LoginService {
     private apiService: ApiService,
     private routingService: RoutingService,
     private notificationService: NotificationService,
-    private loadingDialogService: LoadingDialogService
+    private loadingDialogService: DialogService
   ) {}
 
   executeLogin(credentials: Credentials) {
