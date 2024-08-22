@@ -75,7 +75,8 @@ export class MockResponseService {
         comments: 'Bring all friends!',
         sport: Sports.basketball,
         owner: this.accounts[1],
-        participants: [this.accounts[2],this.accounts[3]]
+        participants: [this.accounts[2],this.accounts[3]],
+        matchRequests: []
       },
       {
         id: '2',
@@ -85,7 +86,8 @@ export class MockResponseService {
         comments: 'I have the ball already, so just come =)',
         sport: Sports.soccer,
         owner: this.accounts[2],
-        participants: [this.accounts[4],this.accounts[5]]
+        participants: [this.accounts[4],this.accounts[5]],
+        matchRequests: []
       },
       {
         id: '3',
@@ -95,7 +97,8 @@ export class MockResponseService {
         comments: 'Everyone is welcome!',
         sport: Sports.tennis,
         owner: this.accounts[3],
-        participants: [this.accounts[5],this.accounts[6],this.accounts[3]]
+        participants: [this.accounts[5],this.accounts[6],this.accounts[3]],
+        matchRequests: []
       },
       {
         id: '4',
@@ -105,7 +108,8 @@ export class MockResponseService {
         comments: 'Were starting when we have 4',
         sport: Sports.volleyball,
         owner: this.accounts[5],
-        participants: [this.accounts[1],this.accounts[2],this.accounts[4]]
+        participants: [this.accounts[1],this.accounts[2],this.accounts[4]],
+        matchRequests: []
       }
     ];
   }

@@ -1,4 +1,4 @@
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, Validators} from "@angular/forms";
 import {AccountFormFactory, AccountFormFactoryCreate, AccountFormFactoryUpdate} from "./AccountFormFactory";
 import {AccountState} from "../model/account-state/accountState";
 
@@ -7,11 +7,10 @@ export class FormFactory {
 
   constructor(private fb: FormBuilder) {}
   createLoginForm(){
-    let loginForm: FormGroup = this.fb.group({
+    return this.fb.group({
       username: ['', this.requiredValidation],
       password: ['', this.requiredValidation]
     });
-    return loginForm;
   }
   createAccountForm(state: AccountState){
     let accountForm: AccountFormFactory = state.isCreateState() ? new AccountFormFactoryCreate(this.fb):new AccountFormFactoryUpdate(this.fb);
@@ -25,6 +24,11 @@ export class FormFactory {
       // location: ['', this.requiredValidation],
       // comments: ['', this.requiredValidation],
       // sport: ['', this.requiredValidation]
+    });
+  }
+  createMatchRequestForm(){
+    return this.fb.group({
+      comments: ['Can I participate?', this.requiredValidation],
     });
   }
 }

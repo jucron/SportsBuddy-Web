@@ -8,6 +8,12 @@ import {Match} from "../../model/match";
 import {MatCard} from "@angular/material/card";
 import {DateUtils} from "../../utils/dateUtils";
 import {Sports} from "../../model/sports";
+import {STORAGE_KEYS} from "../../keys/storage-keys";
+import {FormErrorComponent} from "../../helper-components/form-error/form-error.component";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FactoryService} from "../../factory/factory.service";
 
 interface MatchDialogData {
   match: Match
@@ -21,7 +27,12 @@ interface MatchDialogData {
     MatButton,
     FlexModule,
     MatTooltip,
-    MatCard
+    MatCard,
+    FormErrorComponent,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    ReactiveFormsModule
   ],
   templateUrl: './match-dialog.component.html',
   styleUrl: './match-dialog.component.css'
@@ -30,17 +41,22 @@ export class MatchDialogComponent {
   readonly dialogRef = inject(MatDialogRef<MatchDialogComponent>);
   readonly data = inject<MatchDialogData>(MAT_DIALOG_DATA);
   readonly match = model(this.data.match);
+  loggedUser =  localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME);
+  showFiller = false;
+  matchRequestForm: FormGroup;
+  protected readonly DateUtils = DateUtils;
+
+  constructor(private factoryService: FactoryService) {
+    this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
+  }
 
   onCloseClick(): void {
     this.dialogRef.close();
   }
-
-  isUserParticipating() {
-    return false;
+  isUserParticipating(): boolean {
+    return this.match().matchRequests.some(request =>
+      request.user.username === this.loggedUser);
   }
-
-  protected readonly DateUtils = DateUtils;
-
   getParticipants() {
     let participants = '';
     let separator = ', ';
@@ -52,7 +68,6 @@ export class MatchDialogComponent {
     });
     return participants;
   }
-
   getSportIcon() {
     switch (this.match().sport) {
       case Sports.soccer:
@@ -68,5 +83,20 @@ export class MatchDialogComponent {
       default:
         return '🏓';
     }
+  }
+  getMatchRequestDate() {
+    let date = this.match().matchRequests.find(request => {
+      return request.user.username === this.loggedUser
+    })?.date;
+    if (date) {
+      return DateUtils.getDateLabel(date)+', '+DateUtils.getTimeLabel(date);
+    }
+    return '';
+  }
+  changeFiller() {
+    this.showFiller = !this.showFiller;
+  }
+  onSubmit() {
+    //todo
   }
 }
