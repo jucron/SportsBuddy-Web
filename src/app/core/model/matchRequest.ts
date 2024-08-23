@@ -1,7 +1,6 @@
-import {Account} from "./account";
-
 export interface MatchRequest {
   date: Date
-  user: Account
+  usernameRequested: string
+  usernameOwner: string
   comment: string
 }

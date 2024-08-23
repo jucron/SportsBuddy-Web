@@ -4,7 +4,7 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatButton} from "@angular/material/button";
 import {FlexModule} from "@angular/flex-layout";
-import {LoginService} from "./core/integration/login.service";
+import {AccountService} from "./core/integration/account.service";
 import {STORAGE_KEYS} from "./core/keys/storage-keys";
 import {RoutingService} from "./core/routing/routing.service";
 import {MatIconModule} from "@angular/material/icon";
@@ -20,7 +20,7 @@ export class AppComponent {
   title = 'SportsBuddy-Web';
   showFiller = false;
 
-  constructor(private loginService: LoginService,
+  constructor(private loginService: AccountService,
               private routingService: RoutingService) {
   }
 

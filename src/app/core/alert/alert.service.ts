@@ -4,51 +4,65 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 @Injectable({
   providedIn: 'root'
 })
-export class NotificationService {
-  notificationTimeMls = 15000;
+export class AlertService {
+  alertTimeMls = 15000;
 
   constructor(private _snackBar: MatSnackBar,) { }
 
-  notificationCreateAccountSuccessfully() {
+  alertCreateAccountSuccess() {
     const message = 'New account created successfully!';
     this._snackBar.open(message, 'Nice!',{
-      duration: this.notificationTimeMls,
+      duration: this.alertTimeMls,
       panelClass: ['success-snackbar']
     });
   }
-  notificationCreateAccountFailed() {
+  alertCreateAccountFailed() {
     const message = 'Some error was found while creating the new account, please try again later';
     this._snackBar.open(message, 'Dang!',{
-      duration: this.notificationTimeMls,
+      duration: this.alertTimeMls,
       panelClass: ['fail-snackbar']
     });
   }
-  notificationLoginSuccessfully() {
+  alertLoginSuccess() {
     const message = 'Welcome! 😁';
     this._snackBar.open(message, 'Great!',{
-      duration: this.notificationTimeMls,
+      duration: this.alertTimeMls,
       panelClass: ['success-snackbar']
     });
   }
-  notificationLoginFailed() {
+  alertLoginFailed() {
     const message = 'Login failed.. 😔';
     this._snackBar.open(message, 'Oh no!',{
-      duration: this.notificationTimeMls,
+      duration: this.alertTimeMls,
       panelClass: ['fail-snackbar']
     });
   }
-  notificationGetMatchError() {
+  alertGetMatchError() {
     const message = 'Some error was found while getting the Matches List, please try again later';
     this._snackBar.open(message, 'Ai ai ai!',{
-      duration: this.notificationTimeMls,
+      duration: this.alertTimeMls,
       panelClass: ['fail-snackbar']
     });
   }
-  notificationGetAccountFailed() {
+  alertGetAccountFailed() {
     const message = 'Some error was found while getting the existing account, please try again later';
     this._snackBar.open(message, 'Dang!',{
-      duration: this.notificationTimeMls,
+      duration: this.alertTimeMls,
       panelClass: ['fail-snackbar']
+    });
+  }
+  alertMatchRequestFailed() {
+    const message = 'Some error was found while requesting to participate in this Match, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.alertTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
+  alertMatchRequestSuccess() {
+    const message = 'The request has been sent to the Owner of this Match! 🚀';
+    this._snackBar.open(message, 'Oh yeah!',{
+      duration: this.alertTimeMls,
+      panelClass: ['success-snackbar']
     });
   }
 }

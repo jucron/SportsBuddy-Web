@@ -28,7 +28,7 @@ export class FormFactory {
   }
   createMatchRequestForm(){
     return this.fb.group({
-      comments: ['Can I participate?', this.requiredValidation],
+      comments: ['', this.requiredValidation],
     });
   }
 }

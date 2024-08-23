@@ -10,7 +10,7 @@ import {NgIf, NgOptimizedImage} from "@angular/common";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
 import {FormErrorComponent} from "../../core/helper-components/form-error/form-error.component";
-import {LoginService} from "../../core/integration/login.service";
+import {AccountService} from "../../core/integration/account.service";
 import {Credentials} from "../../core/model/credentials";
 import {RoutingService} from "../../core/routing/routing.service";
 import {FactoryService} from "../../core/factory/factory.service";
@@ -45,17 +45,17 @@ export class LoginFormComponent {
 
   constructor(
     private factoryService: FactoryService,
-    private loginService: LoginService,
+    private accountService: AccountService,
     private routingService: RoutingService
   ) {
     this.loginForm = this.factoryService.getFormFactory().createLoginForm();
-    this.isLoadingLogin = this.loginService.isLoading;
+    this.isLoadingLogin = this.accountService.isLoading;
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
       let credentials: Credentials = this.loginForm.value;
-      this.loginService.executeLogin(credentials);
+      this.accountService.executeLogin(credentials);
     }
   }
 

@@ -8,6 +8,8 @@ import {MatchResponse} from "../model/matchResponse";
 import {AccountResponse} from "../model/accountResponse";
 import {DateUtils} from "../utils/dateUtils";
 import {Sports} from "../model/sports";
+import {MatchRequest} from "../model/matchRequest";
+import {HttpResponse} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -146,5 +148,21 @@ export class MockResponseService {
     let daysInMillisecondsAheadFromNow = this.getRandomInt(1,15)* 24 * 60 * 60 * 1000;
     let dateFromFuture = new Date(new Date().getTime() + daysInMillisecondsAheadFromNow);
     return DateUtils.getCombinedDateTime(dateFromFuture,time) ?? new Date();
+  }
+
+  mockMatchRequest(matchRequest: MatchRequest) {
+    //todo: handling matchRequestNotification to Owner-user
+    let matchOfOwner = this.mockMatches.find(match => {
+      return match.owner.username  === matchRequest.usernameOwner;
+    });
+    // let matchOfOwner = this.mockMatches.find(match => {
+    //   return match.matchRequests.some(request => {
+    //     return request.usernameOwner === matchRequest.usernameOwner;
+    //   });
+    // });
+    console.log('found match in mock with name: '+matchOfOwner?.name);
+    matchOfOwner?.matchRequests.push(matchRequest);
+    let response = new HttpResponse<null>;
+    return of(response);
   }
 }

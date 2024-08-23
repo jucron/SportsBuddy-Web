@@ -1,11 +1,17 @@
 <mat-card class="content">
   <h1>{{getSportIcon()}}  <b>{{match().name}}</b></h1>
-  @if (isUserParticipating()){
-    <h4>Request sent on {{getMatchRequestDate()}}</h4>
-  }
+
+      @if (isUserRequesting()){
+        <h4>⚠️ You requested to participate in {{getMatchRequestDate()}}</h4>
+      } @else if (isUserParticipating()) {
+        <h4>You are participating in this match! 😎👌🔥</h4>
+      } @else if (isUserOwner()) {
+        <h4>You are the Owner of this Match! 🤩 </h4>
+      }
+
   <h3><b>When: </b>
-  <i>{{DateUtils.getDateLabel(match().date)}}</i>
-  <i>, at {{DateUtils.getTimeLabel(match().date)}}</i>
+    <i>{{DateUtils.getDateLabel(match().date)}}</i>
+    <i>, at {{DateUtils.getTimeLabel(match().date)}}</i>
   </h3>
   <h3><b>Sport being played: </b><i>{{match().sport}}</i></h3>
 
@@ -17,26 +23,23 @@
 
   <h3><b>Who's participating: </b><i>{{getParticipants()}}</i></h3>
 
-<!--  just to make sure is re-rendering this section-->
-  @if (showFiller || !showFiller){
   <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
-    <button (click)="changeFiller()" mat-raised-button color="primary" type="submit" [disabled]="isUserParticipating() || showFiller">Ask to participate</button>
+    <button (click)="changeFiller()" mat-raised-button color="primary" type="submit" [disabled]="isButtonAskToParticipateDisabled()">Ask to participate</button>
     <button mat-button type="reset" (click)="onCloseClick()">Close</button>
   </div>
-  }
-  @if (showFiller) {
+  <div *ngIf="showFiller" class="confirmSection">
     <p></p>
     <p>Enter a message to the owner of this Match:</p>
     <form [formGroup]="matchRequestForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Comments</mat-label>
-<!--      <input matInput formControlName="comments" required>-->
-      <textarea matInput formControlName="comments" required></textarea>
-      <app-form-error [control]="matchRequestForm.get('comments')"></app-form-error>
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Comments</mat-label>
+        <textarea placeholder="Can I participate?" matInput formControlName="comments" required></textarea>
+        <app-form-error [control]="matchRequestForm.get('comments')"></app-form-error>
+      </mat-form-field>
+      <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
+        <button mat-button type="submit" [disabled]="!matchRequestForm.valid" color="primary">Send</button>
+        <button mat-button type="reset" (click)="changeFiller()">Cancel</button>
+      </div>
     </form>
-
-    <button mat-button type="submit" [disabled]="!matchRequestForm.valid">Send</button>
-    <button mat-button (click)="changeFiller()">Cancel</button>
-  }
+  </div>
 </mat-card>

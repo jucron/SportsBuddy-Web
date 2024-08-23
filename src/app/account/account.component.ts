@@ -8,7 +8,7 @@ import {MatInput} from "@angular/material/input";
 import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {LoginService} from "../core/integration/login.service";
+import {AccountService} from "../core/integration/account.service";
 import {RoutingService} from "../core/routing/routing.service";
 import {Account} from "../core/model/account";
 import {MatCheckbox} from "@angular/material/checkbox";
@@ -49,7 +49,7 @@ export class AccountComponent implements OnInit {
 
   constructor(
     private factoryService: FactoryService,
-    private loginService: LoginService,
+    private loginService: AccountService,
     private routingService: RoutingService,
     private activatedRoute: ActivatedRoute
   ) {

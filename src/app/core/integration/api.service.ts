@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {Credentials} from "../model/credentials";
 import {LoginResponse} from "../model/loginResponse";
 import {catchError, Observable, of} from "rxjs";
@@ -9,6 +9,7 @@ import {MockResponseService} from "./mock-response.service";
 import {Account} from "../model/account";
 import {MatchResponse} from "../model/matchResponse";
 import {AccountResponse} from "../model/accountResponse";
+import {MatchRequest} from "../model/matchRequest";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class ApiService {
     this.handleError = httpErrorHandler.createHandleError('ApiService')
   }
 
-  callLogin(credentials: Credentials): Observable<LoginResponse> {
+  executeLogin(credentials: Credentials): Observable<LoginResponse> {
     const endpoint = 'login';
     console.log(endpoint + ' triggered from ApiService')
     if (environment.mockResponse) {
@@ -73,6 +74,19 @@ export class ApiService {
       return this.http.get<AccountResponse>(environment.baseUrl + endpoint+'/'+accountId)
         .pipe(
           catchError(this.handleError<AccountResponse>(endpoint))
+        );
+    }
+  }
+
+  submitMatchRequest(matchRequest: MatchRequest) {
+    const endpoint = 'match-request';
+    console.log(endpoint + ' triggered from ApiService')
+    if (environment.mockResponse) {
+      return this.mockService.mockMatchRequest(matchRequest);
+    } else {
+      return this.http.post<HttpResponse<null>>(environment.baseUrl + endpoint, matchRequest, { observe: 'response' })
+        .pipe(
+          catchError(this.handleError<HttpResponse<null>>(endpoint))
         );
     }
   }

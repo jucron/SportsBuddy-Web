@@ -7,13 +7,13 @@ import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
 import {catchError, delay, finalize, map, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
-import {NotificationService} from "../notification/notification.service";
+import {AlertService} from "../alert/alert.service";
 import {AccountResponse} from "../model/accountResponse";
 
 @Injectable({
   providedIn: 'root'
 })
-export class LoginService {
+export class AccountService {
   isLoading = false;
   response: LoginResponse | null = null;
   accountResponse: AccountResponse | null = null;
@@ -21,14 +21,14 @@ export class LoginService {
   constructor(
     private apiService: ApiService,
     private routingService: RoutingService,
-    private notificationService: NotificationService,
+    private notificationService: AlertService,
     private loadingDialogService: DialogService
   ) {}
 
   executeLogin(credentials: Credentials) {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();
-    this.apiService.callLogin(credentials)
+    this.apiService.executeLogin(credentials)
       .pipe(delay(2000))
       .subscribe({
         next: observerResponse => {
@@ -38,15 +38,15 @@ export class LoginService {
             localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
             localStorage.setItem(STORAGE_KEYS.TOKEN, this.response.token);
             localStorage.setItem(STORAGE_KEYS.MAIN_ID, this.response.id);
-            this.notificationService.notificationLoginSuccessfully();
+            this.notificationService.alertLoginSuccess();
             this.routingService.redirectTo('home', false);
           } else {
-            this.notificationService.notificationLoginFailed();
+            this.notificationService.alertLoginFailed();
           }
         },
         error: err => {
           console.error('Login failed', err);
-          this.notificationService.notificationLoginFailed();
+          this.notificationService.alertLoginFailed();
         },
         complete: () => {
           this.isLoading = false;
@@ -67,15 +67,15 @@ export class LoginService {
         next: observerResponse => {
           this.response = observerResponse;
           if (this.response != null && this.response.message === 'account-created') {
-            this.notificationService.notificationCreateAccountSuccessfully();
+            this.notificationService.alertCreateAccountSuccess();
             this.routingService.redirectTo('', false);
           } else {
-            this.notificationService.notificationCreateAccountFailed();
+            this.notificationService.alertCreateAccountFailed();
           }
         },
         error: err => {
           console.error('createAccount failed', err);
-          this.notificationService.notificationCreateAccountFailed();
+          this.notificationService.alertCreateAccountFailed();
         },
         complete: () => {
           this.isLoading = false;
@@ -94,13 +94,13 @@ export class LoginService {
         if (this.accountResponse && this.accountResponse.message === 'account-found') {
           return this.accountResponse.account;
         } else {
-          this.notificationService.notificationGetAccountFailed();
+          this.notificationService.alertGetAccountFailed();
           return null;
         }
       }),
       catchError(err => {
         console.error('getAccount failed', err);
-        this.notificationService.notificationGetAccountFailed();
+        this.notificationService.alertGetAccountFailed();
         return of(null); // Return null on error
       }),
       finalize(() => {
