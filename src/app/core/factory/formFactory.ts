@@ -1,6 +1,6 @@
 import {FormBuilder, Validators} from "@angular/forms";
 import {AccountFormFactory, AccountFormFactoryCreate, AccountFormFactoryUpdate} from "./AccountFormFactory";
-import {AccountState} from "../model/account-state/accountState";
+import {AccountState} from "../model/accountState";
 
 export class FormFactory {
   private requiredValidation = Validators.required;  // Must be filled

@@ -1,4 +1,5 @@
 import {Sports} from "./sports";
+import {UserNotification} from "./userNotification";
 
 export interface Account {
   id: string,
@@ -6,5 +7,6 @@ export interface Account {
   password: string,
   name: string,
   email: string,
-  favouriteSports: Sports[];
+  favouriteSports: Sports[],
+  notifications: UserNotification[]
 }

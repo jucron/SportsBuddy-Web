@@ -16,7 +16,7 @@ import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {FactoryService} from "../../factory/factory.service";
 import {NgIf} from "@angular/common";
 import {MatchService} from "../../integration/match.service";
-import {MatchRequest} from "../../model/matchRequest";
+import {MatchRequest} from "../../model/requests/matchRequest";
 
 interface MatchDialogData {
   match: Match

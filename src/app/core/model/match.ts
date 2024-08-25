@@ -1,5 +1,5 @@
 import {Account} from "./account";
-import {MatchRequest} from "./matchRequest";
+import {MatchRequest} from "./requests/matchRequest";
 
 export interface Match {
   id: string

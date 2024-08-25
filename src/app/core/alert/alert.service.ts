@@ -65,4 +65,12 @@ export class AlertService {
       panelClass: ['success-snackbar']
     });
   }
+
+  alertGetUserNotificationsError() {
+    const message = 'Some error was found while fetching the User Notifications, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.alertTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
 }

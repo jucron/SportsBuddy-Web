@@ -1,15 +1,19 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {Credentials} from "../model/credentials";
-import {LoginResponse} from "../model/loginResponse";
+import {LoginResponse} from "../model/responses/loginResponse";
 import {catchError, Observable, of} from "rxjs";
 import {HandleError, HttpErrorHandler} from "./http-error-handler.service";
 import {environment} from "../environments/environments";
 import {MockResponseService} from "./mock-response.service";
 import {Account} from "../model/account";
-import {MatchResponse} from "../model/matchResponse";
-import {AccountResponse} from "../model/accountResponse";
-import {MatchRequest} from "../model/matchRequest";
+import {MatchResponse} from "../model/responses/matchResponse";
+import {AccountResponse} from "../model/responses/accountResponse";
+import {MatchRequest} from "../model/requests/matchRequest";
+import {NotificationsResponse} from "../model/responses/notificationsResponse";
+import {UserNotification} from "../model/userNotification";
+import {UpdateUserNotificationsRequest} from "../model/requests/updateUserNotificationsRequest";
+import {STORAGE_KEYS} from "../keys/storage-keys";
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +54,6 @@ export class ApiService {
   }
 
   getMatches() {
-    {
       const endpoint = 'get-matches';
       console.log(endpoint + ' triggered from ApiService')
       if (environment.mockResponse) {
@@ -61,7 +64,6 @@ export class ApiService {
             catchError(this.handleError<MatchResponse>(endpoint))
           );
       }
-    }
   }
 
   getAccount(accountId: string)  {
@@ -82,9 +84,40 @@ export class ApiService {
     const endpoint = 'match-request';
     console.log(endpoint + ' triggered from ApiService')
     if (environment.mockResponse) {
-      return this.mockService.mockMatchRequest(matchRequest);
+      return this.mockService.mockMatchRequestResponse(matchRequest);
     } else {
       return this.http.post<HttpResponse<null>>(environment.baseUrl + endpoint, matchRequest, { observe: 'response' })
+        .pipe(
+          catchError(this.handleError<HttpResponse<null>>(endpoint))
+        );
+    }
+  }
+
+  getUserNotifications() {
+    const userId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'userId_not_found_in_storage';
+    const endpoint = 'get-user-notifications';
+    console.log(endpoint + ' triggered from ApiService')
+    if (environment.mockResponse) {
+      return this.mockService.getMockUserNotificationsResponse(userId);
+    } else {
+      return this.http.get<NotificationsResponse>(environment.baseUrl + endpoint+'/'+userId)
+        .pipe(
+          catchError(this.handleError<NotificationsResponse>(endpoint))
+        );
+    }
+  }
+
+  updateUserNotifications(accountId: string, notifications: UserNotification[]) {
+    const endpoint = 'update-user-notifications';
+    console.log(endpoint + ' triggered from ApiService')
+    let request: UpdateUserNotificationsRequest = {
+      userId: accountId,
+      notifications: notifications
+    }
+    if (environment.mockResponse) {
+      return this.mockService.mockUpdateUserNotificationsResponse(request);
+    } else {
+      return this.http.post<HttpResponse<null>>(environment.baseUrl + endpoint, request, { observe: 'response' })
         .pipe(
           catchError(this.handleError<HttpResponse<null>>(endpoint))
         );

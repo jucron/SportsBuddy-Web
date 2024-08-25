@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {RoutingService} from "../routing/routing.service";
-import {MatchResponse} from "../model/matchResponse";
+import {MatchResponse} from "../model/responses/matchResponse";
 import {Match} from "../model/match";
 import {catchError, delay, finalize, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
-import {MatchRequest} from "../model/matchRequest";
+import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
 import {HttpResponse} from "@angular/common/http";
 

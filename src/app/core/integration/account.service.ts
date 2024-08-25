@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {LoginResponse} from "../model/loginResponse";
+import {LoginResponse} from "../model/responses/loginResponse";
 import {ApiService} from "./api.service";
 import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
@@ -8,7 +8,7 @@ import {Account} from "../model/account";
 import {catchError, delay, finalize, map, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
-import {AccountResponse} from "../model/accountResponse";
+import {AccountResponse} from "../model/responses/accountResponse";
 
 @Injectable({
   providedIn: 'root'

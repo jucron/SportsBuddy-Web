@@ -8,3 +8,17 @@
   padding: 20px;
   max-width: 400px;
 }
+.topNote {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  padding-top: 20px;
+  background-color: #bfd3f1;
+}
+.topNoteOwner {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  padding-top: 20px;
+  background-color: #f1eabf;
+}

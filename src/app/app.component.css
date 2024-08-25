@@ -1,5 +1,7 @@
 .app-container {
   /*width: 400px;*/
+  /*margin-top: 20px;*/
+  padding: 20px;
   height: 100%;
   background-color: white;
   /*border: 1px solid rgba(0, 0, 0, 0.5);*/
@@ -14,4 +16,8 @@
 
 .app-sidenav {
   padding: 20px;
+}
+.notification-item {
+  font-size: small;
+  /*width: 400px;*/
 }

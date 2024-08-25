@@ -1,15 +1,18 @@
 import {Injectable} from '@angular/core';
-import {LoginResponse} from "../model/loginResponse";
+import {LoginResponse} from "../model/responses/loginResponse";
 import {Observable, of} from "rxjs";
 import {Match} from "../model/match";
 import {Account} from "../model/account";
 import {Credentials} from "../model/credentials";
-import {MatchResponse} from "../model/matchResponse";
-import {AccountResponse} from "../model/accountResponse";
+import {MatchResponse} from "../model/responses/matchResponse";
+import {AccountResponse} from "../model/responses/accountResponse";
 import {DateUtils} from "../utils/dateUtils";
 import {Sports} from "../model/sports";
-import {MatchRequest} from "../model/matchRequest";
+import {MatchRequest} from "../model/requests/matchRequest";
 import {HttpResponse} from "@angular/common/http";
+import {NotificationStatus, UserNotification} from "../model/userNotification";
+import {NotificationsResponse} from "../model/responses/notificationsResponse";
+import {UpdateUserNotificationsRequest} from "../model/requests/updateUserNotificationsRequest";
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +21,12 @@ export class MockResponseService {
   accounts: Account[];
   mockMatches: Match[];
   accountMockId = 1;
+  // userNotifications: UserNotification[];
 
   constructor() {
     this.accounts = this.bootstrapMockAccounts();
     this.mockMatches = this.bootstrapMockMatches();
+    // this.userNotifications = this.bootstrapMockNotifications();
   }
 
   getLoginMockResponse(credentials: Credentials): Observable<LoginResponse> {
@@ -117,13 +122,31 @@ export class MockResponseService {
   }
   private bootstrapMockAccounts(): Account[] {
     return [
-      {id: '1', username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: []},
-      {id: '2', username: 'john', password: '123', name: 'John Masters', email: 'john@email.com', favouriteSports: [Sports.baseball,Sports.soccer]},
-      {id: '3', username: 'larissa', password: '123', name: 'Larissa Lurdes', email: 'larissa@email.com', favouriteSports: [Sports.basketball,Sports.soccer]},
-      {id: '4', username: 'larissa', password: '123', name: 'Larissa Lurdes', email: 'larissa@email.com', favouriteSports: [Sports.tennis,Sports.volleyball]},
-      {id: '5', username: 'rebecca', password: '123', name: 'Rebecca Lunes', email: 'rebecca@email.com', favouriteSports: [Sports.tennis,Sports.volleyball]},
-      {id: '6', username: 'bruna', password: '123', name: 'Bruna Mello', email: 'bruna@email.com', favouriteSports: [Sports.soccer,Sports.baseball]},
-      {id: '7', username: 'larry', password: '123', name: 'Larry London', email: 'larry@email.com', favouriteSports: [Sports.soccer,Sports.tennis,Sports.basketball,Sports.volleyball]}
+      {id: '1', username: 'admin', password: 'admin', name: 'admin', email: 'admin@email.com', favouriteSports: [], notifications: []},
+      {id: '2', username: 'john', password: '123', name: 'John Masters', email: 'john@email.com', favouriteSports: [Sports.baseball,Sports.soccer], notifications: []},
+      {id: '3', username: 'larissa', password: '123', name: 'Larissa Lurdes', email: 'larissa@email.com', favouriteSports: [Sports.basketball,Sports.soccer], notifications: []},
+      {id: '4', username: 'larissa', password: '123', name: 'Larissa Lurdes', email: 'larissa@email.com', favouriteSports: [Sports.tennis,Sports.volleyball], notifications: []},
+      {id: '5', username: 'rebecca', password: '123', name: 'Rebecca Lunes', email: 'rebecca@email.com', favouriteSports: [Sports.tennis,Sports.volleyball], notifications: []},
+      {id: '6', username: 'bruna', password: '123', name: 'Bruna Mello', email: 'bruna@email.com', favouriteSports: [Sports.soccer,Sports.baseball], notifications: []},
+      {id: '7', username: 'larry', password: '123', name: 'Larry London', email: 'larry@email.com', favouriteSports: [Sports.soccer,Sports.tennis,Sports.basketball,Sports.volleyball], notifications: []}
+    ];
+  }
+  private bootstrapMockNotifications(): UserNotification[]{
+    return [
+      { id: '1',
+        link: 'match',
+        date: new Date(),
+        type: 'account-participation',
+        message: 'A new user wants to participate in your match!',
+        status: NotificationStatus.UNREAD
+      },
+      { id: '2',
+        link: 'match',
+        date: new Date(),
+        type: 'account-participation',
+        message: 'A new user wants to participate in your match!',
+        status: NotificationStatus.READ
+      }
     ];
   }
 
@@ -150,18 +173,41 @@ export class MockResponseService {
     return DateUtils.getCombinedDateTime(dateFromFuture,time) ?? new Date();
   }
 
-  mockMatchRequest(matchRequest: MatchRequest) {
-    //todo: handling matchRequestNotification to Owner-user
+  mockMatchRequestResponse(matchRequest: MatchRequest) {
+    //Updating match with new participant
     let matchOfOwner = this.mockMatches.find(match => {
       return match.owner.username  === matchRequest.usernameOwner;
     });
-    // let matchOfOwner = this.mockMatches.find(match => {
-    //   return match.matchRequests.some(request => {
-    //     return request.usernameOwner === matchRequest.usernameOwner;
-    //   });
-    // });
-    console.log('found match in mock with name: '+matchOfOwner?.name);
     matchOfOwner?.matchRequests.push(matchRequest);
+    //Creating new notification for Owner
+    //todo
+    //response with 200 status
+    let response = new HttpResponse<null>;
+    return of(response);
+  }
+
+  getMockUserNotificationsResponse(userId: string) {
+    //create response
+    let notificationsResponse: NotificationsResponse = {
+      message: 'success',
+      userNotifications: []
+    }
+    //lookup for User and assign value to response
+    let account = this.accounts.find(account => account.id === userId);
+    if (account) {
+      notificationsResponse.userNotifications = account.notifications;
+    }
+    //
+    return of(notificationsResponse);
+  }
+
+  mockUpdateUserNotificationsResponse(request: UpdateUserNotificationsRequest) {
+    //find user and replace notifications
+    let account = this.accounts.find(account => account.id === request.userId);
+    if (account) {
+      account.notifications = request.notifications;
+    }
+    //
     let response = new HttpResponse<null>;
     return of(response);
   }

@@ -14,7 +14,7 @@ import {Account} from "../core/model/account";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {Sports} from "../core/model/sports";
 import {KeyValuePipe, NgForOf} from "@angular/common";
-import {AccountState, CreateState, ReadOnlyState, UpdateState} from "../core/model/account-state/accountState";
+import {AccountState, CreateState, ReadOnlyState, UpdateState} from "../core/model/accountState";
 import {FactoryService} from "../core/factory/factory.service";
 import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
 import {ActivatedRoute} from "@angular/router";

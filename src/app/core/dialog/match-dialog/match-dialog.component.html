@@ -1,13 +1,21 @@
+
+@if (isUserRequesting()){
+  <div class="topNote">
+    <h4>⚠️ You requested to participate in {{getMatchRequestDate()}}</h4>
+  </div>
+} @else if (isUserParticipating()) {
+  <div class="topNote">
+    <h4>You are participating in this match! 😎👌🔥</h4>
+  </div>
+} @else if (isUserOwner()) {
+  <div class="topNoteOwner">
+    <h4>You are the Owner of this Match! 🤩 </h4>
+  </div>
+}
+
+
 <mat-card class="content">
   <h1>{{getSportIcon()}}  <b>{{match().name}}</b></h1>
-
-      @if (isUserRequesting()){
-        <h4>⚠️ You requested to participate in {{getMatchRequestDate()}}</h4>
-      } @else if (isUserParticipating()) {
-        <h4>You are participating in this match! 😎👌🔥</h4>
-      } @else if (isUserOwner()) {
-        <h4>You are the Owner of this Match! 🤩 </h4>
-      }
 
   <h3><b>When: </b>
     <i>{{DateUtils.getDateLabel(match().date)}}</i>
