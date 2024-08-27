@@ -56,6 +56,7 @@ export class AccountService {
   }
   executeLogout() {
     localStorage.clear();
+    //todo: call logout to backend
     this.routingService.redirectTo('', false);
   }
   createAccount(account: Account) {

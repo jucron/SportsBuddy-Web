@@ -10,9 +10,9 @@ import {DateUtils} from "../utils/dateUtils";
 import {Sports} from "../model/sports";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {HttpResponse} from "@angular/common/http";
-import {NotificationStatus, UserNotification} from "../model/userNotification";
 import {NotificationsResponse} from "../model/responses/notificationsResponse";
 import {UpdateUserNotificationsRequest} from "../model/requests/updateUserNotificationsRequest";
+import {FactoryService} from "../factory/factory.service";
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +21,10 @@ export class MockResponseService {
   accounts: Account[];
   mockMatches: Match[];
   accountMockId = 1;
-  // userNotifications: UserNotification[];
 
-  constructor() {
+  constructor(private factoryService: FactoryService) {
     this.accounts = this.bootstrapMockAccounts();
     this.mockMatches = this.bootstrapMockMatches();
-    // this.userNotifications = this.bootstrapMockNotifications();
   }
 
   getLoginMockResponse(credentials: Credentials): Observable<LoginResponse> {
@@ -131,25 +129,6 @@ export class MockResponseService {
       {id: '7', username: 'larry', password: '123', name: 'Larry London', email: 'larry@email.com', favouriteSports: [Sports.soccer,Sports.tennis,Sports.basketball,Sports.volleyball], notifications: []}
     ];
   }
-  private bootstrapMockNotifications(): UserNotification[]{
-    return [
-      { id: '1',
-        link: 'match',
-        date: new Date(),
-        type: 'account-participation',
-        message: 'A new user wants to participate in your match!',
-        status: NotificationStatus.UNREAD
-      },
-      { id: '2',
-        link: 'match',
-        date: new Date(),
-        type: 'account-participation',
-        message: 'A new user wants to participate in your match!',
-        status: NotificationStatus.READ
-      }
-    ];
-  }
-
   getAccountMockResponse(accountId: string) {
     let account = this.accounts.find(account => account.id === accountId);
     if (account == undefined) {
@@ -174,13 +153,21 @@ export class MockResponseService {
   }
 
   mockMatchRequestResponse(matchRequest: MatchRequest) {
-    //Updating match with new participant
+    //Updating match with new matchRequest
     let matchOfOwner = this.mockMatches.find(match => {
       return match.owner.username  === matchRequest.usernameOwner;
     });
     matchOfOwner?.matchRequests.push(matchRequest);
     //Creating new notification for Owner
-    //todo
+    let notifications = this.accounts.find(account => {
+      return account.username === matchRequest.usernameOwner;
+    })?.notifications;
+    notifications?.push(this.factoryService.getNotificationFactory().createMatchRequestNotification());
+
+    //
+    let account = this.accounts.find(account => {
+      return account.username === matchRequest.usernameOwner;
+    });
     //response with 200 status
     let response = new HttpResponse<null>;
     return of(response);
@@ -200,7 +187,6 @@ export class MockResponseService {
     //
     return of(notificationsResponse);
   }
-
   mockUpdateUserNotificationsResponse(request: UpdateUserNotificationsRequest) {
     //find user and replace notifications
     let account = this.accounts.find(account => account.id === request.userId);

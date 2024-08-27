@@ -94,20 +94,21 @@ export class ApiService {
   }
 
   getUserNotifications() {
-    const userId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'userId_not_found_in_storage';
+    const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
     const endpoint = 'get-user-notifications';
     console.log(endpoint + ' triggered from ApiService')
     if (environment.mockResponse) {
-      return this.mockService.getMockUserNotificationsResponse(userId);
+      return this.mockService.getMockUserNotificationsResponse(accountId);
     } else {
-      return this.http.get<NotificationsResponse>(environment.baseUrl + endpoint+'/'+userId)
+      return this.http.get<NotificationsResponse>(environment.baseUrl + endpoint+'/'+accountId)
         .pipe(
           catchError(this.handleError<NotificationsResponse>(endpoint))
         );
     }
   }
 
-  updateUserNotifications(accountId: string, notifications: UserNotification[]) {
+  updateUserNotifications(notifications: UserNotification[]) {
+    const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
     const endpoint = 'update-user-notifications';
     console.log(endpoint + ' triggered from ApiService')
     let request: UpdateUserNotificationsRequest = {

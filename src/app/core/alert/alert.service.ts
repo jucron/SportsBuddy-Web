@@ -67,7 +67,14 @@ export class AlertService {
   }
 
   alertGetUserNotificationsError() {
-    const message = 'Some error was found while fetching the User Notifications, please try again later';
+    const message = 'Some error was found while FETCHING the User Notifications, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.alertTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
+  alertUpdateNotificationsError() {
+    const message = 'Some error was found while UPDATING the User Notifications, please try again later';
     this._snackBar.open(message, 'Dang!',{
       duration: this.alertTimeMls,
       panelClass: ['fail-snackbar']
