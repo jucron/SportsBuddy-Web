@@ -25,19 +25,21 @@ import {NotificationHelper} from "./core/helper-components/notificationHelper";
 export class AppComponent implements OnInit {
   title = 'SportsBuddy-Web';
   showFiller = false;
-  userNotifications: UserNotification[];
+  userNotifications: UserNotification[] = [];
   protected isLoadingNotifications: boolean = false;
   protected notificationHelper: NotificationHelper
 
   constructor(private loginService: AccountService,
               private routingService: RoutingService,
               private notificationService: NotificationService) {
-    this.userNotifications = [];
+    this.notificationService.userNotifications$.subscribe(notifications => {
+      this.userNotifications = notifications;
+    });
     this.notificationHelper = new NotificationHelper();
   }
 
   ngOnInit(): void {
-    this.getAndUpdateUserNotifications();
+    this.notificationService.loadUserNotifications();
   }
 
   isLogged(): boolean {
@@ -72,21 +74,6 @@ export class AppComponent implements OnInit {
     }
     this.notificationService.updateUserNotifications(this.userNotifications);
     this.routingService.redirectTo(notification.link,false);
-  }
-  private getAndUpdateUserNotifications() {
-    this.isLoadingNotifications = true;
-    this.notificationService.getUserNotifications()
-      .subscribe({
-        next: notifications => {
-          this.userNotifications = notifications;
-        },
-        error: error => {
-          console.error('error in updating updateMatchTable'+error)
-        },
-        complete: () => {
-          this.isLoadingNotifications = false;
-        }
-      });
   }
 
   readNotifications() {

@@ -21,6 +21,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {Account} from "../core/model/account";
 import {DialogService} from "../core/dialog/dialog.service";
 import {DateUtils} from "../core/utils/dateUtils";
+import {NotificationService} from "../core/integration/notification.service";
 
 @Component({
   selector: 'app-home',
@@ -52,7 +53,8 @@ export class HomeComponent implements OnInit {
 
   constructor(private matchService: MatchService,
               private routingService: RoutingService,
-              private dialogService: DialogService
+              private dialogService: DialogService,
+              private notificationService: NotificationService
   ) {
     this.matchesTable = [];
 
@@ -60,6 +62,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateMatchTable();
+    this.notificationService.loadUserNotifications();
   }
   routeToCreateMatch() {
     this.routingService.redirectTo('match', false);

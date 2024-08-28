@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {catchError, delay, finalize, map, of} from "rxjs";
+import {BehaviorSubject, catchError, delay, finalize, map, Observable, of} from "rxjs";
 import {ApiService} from "./api.service";
 import {AlertService} from "../alert/alert.service";
 import {UserNotification} from "../model/userNotification";
@@ -10,11 +10,14 @@ import {HttpResponse} from "@angular/common/http";
 })
 export class NotificationService {
   isLoading = false;
+  private userNotificationsSubject: BehaviorSubject<UserNotification[]> = new BehaviorSubject<UserNotification[]>([]);
+  userNotifications$: Observable<UserNotification[]> = this.userNotificationsSubject.asObservable();
+
 
   constructor(private apiService: ApiService,
               private alertService: AlertService) { }
 
-  getUserNotifications() {
+    loadUserNotifications() {
     this.isLoading = true;
     return this.apiService.getUserNotifications().pipe(
       delay(1000),
@@ -34,7 +37,9 @@ export class NotificationService {
       finalize(() => {
         this.isLoading = false;
       })
-    );
+    ).subscribe(notifications => {
+      this.userNotificationsSubject.next(notifications);
+    });
   }
 
   updateUserNotifications(userNotifications: UserNotification[]) {
