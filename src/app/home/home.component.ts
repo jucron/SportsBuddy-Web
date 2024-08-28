@@ -48,13 +48,14 @@ export class HomeComponent implements OnInit {
   isLoadingTable = false;
   matchesTable: Match[];
   displayedColumns: string[] = ['name', 'date', 'time', 'location','comments','sport','owner','participants'];
-
+  protected readonly DateUtils = DateUtils;
 
   constructor(private matchService: MatchService,
               private routingService: RoutingService,
               private dialogService: DialogService
   ) {
     this.matchesTable = [];
+
   }
 
   ngOnInit(): void {
@@ -98,9 +99,9 @@ export class HomeComponent implements OnInit {
     return label;
   }
 
-  test(row: Match) {
+  showMatch(row: Match) {
     this.dialogService.showMatchDialog(row);
   }
 
-  protected readonly DateUtils = DateUtils;
+
 }

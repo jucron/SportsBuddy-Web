@@ -51,7 +51,7 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row
-            (click)="test(row)"
+            (click)="showMatch(row)"
             *matRowDef="let row; columns: displayedColumns;"
         ></tr>
       </table>

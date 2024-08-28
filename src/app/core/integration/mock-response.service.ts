@@ -13,20 +13,21 @@ import {HttpResponse} from "@angular/common/http";
 import {NotificationsResponse} from "../model/responses/notificationsResponse";
 import {UpdateUserNotificationsRequest} from "../model/requests/updateUserNotificationsRequest";
 import {FactoryService} from "../factory/factory.service";
+import {UserNotification} from "../model/userNotification";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockResponseService {
-  accounts: Account[];
-  mockMatches: Match[];
+  accounts: Account[] = [];
+  matches: Match[] = [];
   accountMockId = 1;
+  accountKeys = 'account-keys';
+  matchesKeys = 'matches-keys';
 
   constructor(private factoryService: FactoryService) {
-    this.accounts = this.bootstrapMockAccounts();
-    this.mockMatches = this.bootstrapMockMatches();
+    this.loadData();
   }
-
   getLoginMockResponse(credentials: Credentials): Observable<LoginResponse> {
     let mockResponse: LoginResponse = {
       id: '',
@@ -56,17 +57,20 @@ export class MockResponseService {
   }
 
   getCreateAccountMockResponse(account: Account): Observable<LoginResponse> {
+    //create new account
     this.accountMockId++;
     account.id = (this.accountMockId).toString();
     this.accounts.push(account);
+    //save mockUp data
+    this.saveData();
+    //response
     let mockResponse: LoginResponse = { id: '', token: '', message: 'account-created' };
     return of(mockResponse);
   }
-
   getMockMatchResponse(): Observable<MatchResponse> {
     const matchResponse = {
       message: 'getMatch-success',
-      matches: this.mockMatches
+      matches: this.matches
     }
     return of(matchResponse);
   }
@@ -154,7 +158,7 @@ export class MockResponseService {
 
   mockMatchRequestResponse(matchRequest: MatchRequest) {
     //Updating match with new matchRequest
-    let matchOfOwner = this.mockMatches.find(match => {
+    let matchOfOwner = this.matches.find(match => {
       return match.owner.username  === matchRequest.usernameOwner;
     });
     matchOfOwner?.matchRequests.push(matchRequest);
@@ -163,11 +167,8 @@ export class MockResponseService {
       return account.username === matchRequest.usernameOwner;
     })?.notifications;
     notifications?.push(this.factoryService.getNotificationFactory().createMatchRequestNotification());
-
-    //
-    let account = this.accounts.find(account => {
-      return account.username === matchRequest.usernameOwner;
-    });
+    //save mockUp data
+    this.saveData();
     //response with 200 status
     let response = new HttpResponse<null>;
     return of(response);
@@ -193,8 +194,55 @@ export class MockResponseService {
     if (account) {
       account.notifications = request.notifications;
     }
+    //save mockUp data
+    this.saveData();
     //
     let response = new HttpResponse<null>;
     return of(response);
+  }
+
+  private loadData() {
+    console.log('loadData from MockService triggered')
+
+    let dataCreated = false;
+    const storedAccounts = sessionStorage.getItem(this.accountKeys);
+    const storedMatches = sessionStorage.getItem(this.matchesKeys);
+
+    if (storedAccounts) {
+      this.accounts = JSON.parse(storedAccounts);
+      this.accounts.forEach(account => {
+        // Convert the date strings in notifications back to Date objects
+        account.notifications = account.notifications.map((n: UserNotification) => {
+          n.date = new Date(n.date);
+          return n;
+        });
+      });
+    } else {
+      this.accounts = this.bootstrapMockAccounts();
+      dataCreated = true;
+    }
+
+    if (storedMatches) {
+      this.matches = JSON.parse(storedMatches);
+      this.matches.map((match: any) => {
+        // Convert date strings back to Date objects
+        match.date = new Date(match.date);
+        return match;
+      });
+      this.matches.forEach(match =>{
+        match.matchRequests.map(request => {
+          return request.date = new Date(request.date)
+        })
+      });
+    } else {
+      this.matches = this.bootstrapMockMatches();
+      dataCreated = true;
+    }
+    if (dataCreated) { this.saveData();}
+    // console.log('debug users data: '+JSON.stringify(this.accounts[2]));
+  }
+  private saveData(): void {
+    sessionStorage.setItem(this.accountKeys, JSON.stringify(this.accounts));
+    sessionStorage.setItem(this.matchesKeys, JSON.stringify(this.matches));
   }
 }
