@@ -22,6 +22,7 @@ import {Sports} from "../core/model/sports";
 import {FactoryService} from "../core/factory/factory.service";
 import {Match} from "../core/model/match";
 import {DateUtils} from "../core/utils/dateUtils";
+import {MatchService} from "../core/integration/match.service";
 
 @Component({
   selector: 'app-match',
@@ -60,7 +61,8 @@ export class MatchComponent {
 
   constructor(
     private factoryService: FactoryService,
-    private routingService: RoutingService
+    private routingService: RoutingService,
+    private matchService: MatchService
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
@@ -69,14 +71,9 @@ export class MatchComponent {
       const date = this.matchForm.get('date')?.value;
       const time = this.matchForm.get('time')?.value;
       const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
-      console.log(combinedDateTime);
       let match: Match = this.matchForm.value;
       match.date = combinedDateTime ?? match.date;
-      console.log(JSON.stringify(match));
-      //todo: createMatch()
-
-      // let credentials: Credentials = this.loginForm.value;
-      // this.loginService.executeLogin(credentials);
+      this.matchService.createMatch(match);
     }
   }
 

@@ -1,6 +1,7 @@
-import {FormBuilder, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {AccountFormFactory, AccountFormFactoryCreate, AccountFormFactoryUpdate} from "./AccountFormFactory";
 import {AccountState} from "../model/accountState";
+import {DateUtils} from "../utils/dateUtils";
 
 export class FormFactory {
   private requiredValidation = Validators.required;  // Must be filled
@@ -19,16 +20,27 @@ export class FormFactory {
   createMatchForm(){
     return this.fb.group({
       name: ['', this.requiredValidation],
-      date: ['', this.requiredValidation],
+      date: ['', [this.requiredValidation, this.dateAtLeastTomorrowValidator()]],
       time: ['', this.requiredValidation],
-      // location: ['', this.requiredValidation],
-      // comments: ['', this.requiredValidation],
-      // sport: ['', this.requiredValidation]
+      location: ['', this.requiredValidation],
+      comments: ['', this.requiredValidation],
+      sport: ['', this.requiredValidation]
     });
   }
   createMatchRequestForm(){
     return this.fb.group({
       comments: ['', this.requiredValidation],
     });
+  }
+  private dateAtLeastTomorrowValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const selectedDate = new Date(control.value);
+      const tomorrow = DateUtils.getTomorrow();
+
+      if (selectedDate < tomorrow) {
+        return { dateInvalid: 'The date must be at least tomorrow.' };
+      }
+      return null;
+    };
   }
 }

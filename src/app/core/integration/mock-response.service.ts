@@ -14,6 +14,8 @@ import {NotificationsResponse} from "../model/responses/notificationsResponse";
 import {UpdateUserNotificationsRequest} from "../model/requests/updateUserNotificationsRequest";
 import {FactoryService} from "../factory/factory.service";
 import {UserNotification} from "../model/userNotification";
+import {CreateMatchRequest} from "../model/requests/createMatchRequest";
+import {v4 as uuidv4} from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -191,12 +193,13 @@ export class MockResponseService {
   mockUpdateUserNotificationsResponse(request: UpdateUserNotificationsRequest) {
     //find user and replace notifications
     let account = this.accounts.find(account => account.id === request.userId);
-    if (account) {
-      account.notifications = request.notifications;
+    if (!account) {
+      return this.create404AccountResponse();
     }
+    account.notifications = request.notifications;
     //save mockUp data
     this.saveData();
-    //
+    //return 200 response
     let response = new HttpResponse<null>;
     return of(response);
   }
@@ -244,5 +247,29 @@ export class MockResponseService {
   private saveData(): void {
     sessionStorage.setItem(this.accountKeys, JSON.stringify(this.accounts));
     sessionStorage.setItem(this.matchesKeys, JSON.stringify(this.matches));
+  }
+
+  mockCreateMatchResponse(request: CreateMatchRequest) {
+    let account = this.accounts.find(account => account.id === request.userId);
+    if (!account) {
+      return this.create404AccountResponse();
+    }
+    //Create new match in repo
+    let newMatch = request.match;
+    newMatch.owner = account;
+    newMatch.id = uuidv4();
+    this.matches.push(newMatch);
+    //save mockUp data
+    this.saveData();
+    //return 200 response
+    let response = new HttpResponse<null>;
+    return of(response);
+  }
+  private create404AccountResponse(){
+    return new HttpResponse<null>({
+      status: 404,
+      statusText: 'Account not Found',
+      body: null
+    });
   }
 }

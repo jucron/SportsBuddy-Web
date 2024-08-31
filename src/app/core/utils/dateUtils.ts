@@ -22,5 +22,12 @@ export class DateUtils {
       hour12: true
     });
   }
+  static getTomorrow(): Date {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Clear time portion of today's date
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1); // Set to tomorrow
+    return tomorrow;
+  }
 
 }

@@ -54,7 +54,6 @@ export class MatchService {
       .pipe(delay(1000))
       .subscribe({
         next: (response: HttpResponse<any>) => {
-          console.log('matchRequest with response: ', JSON.stringify(response));
           if (response != null && response.status === 200) {
             this.notificationService.alertMatchRequestSuccess();
             this.routingService.redirectTo('home', false);
@@ -65,6 +64,31 @@ export class MatchService {
         error: err => {
           console.error('matchRequest failed', err);
           this.notificationService.alertMatchRequestFailed();
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.loadingDialogService.closeLoadingDialog();
+        }
+      });
+  }
+
+  createMatch(match: Match) {
+    this.isLoading = true;
+    this.loadingDialogService.showLoadingDialog();
+    this.apiService.submitCreateMatch(match)
+      .pipe(delay(1000))
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          if (response != null && response.status === 200) {
+            this.notificationService.alertMatchRequestSuccess();
+            this.routingService.redirectTo('home', false);
+          } else {
+            this.notificationService.alertCreateMatchFailed();
+          }
+        },
+        error: err => {
+          console.error('matchRequest failed', err);
+          this.notificationService.alertCreateMatchFailed();
         },
         complete: () => {
           this.isLoading = false;

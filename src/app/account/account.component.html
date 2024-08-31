@@ -41,7 +41,7 @@
 
         <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
           @if (! currentState.isReadOnlyState()) {
-          <div matTooltip='Error in fields' [matTooltipDisabled]="accountForm.valid">
+          <div matTooltip='fields not valid' [matTooltipDisabled]="accountForm.valid">
             <button mat-raised-button color="primary" type="submit" [disabled]="accountForm.invalid">{{getSubmitButtonLabel()}}</button>
           </div>
           }

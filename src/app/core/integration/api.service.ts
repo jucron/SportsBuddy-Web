@@ -14,6 +14,8 @@ import {NotificationsResponse} from "../model/responses/notificationsResponse";
 import {UserNotification} from "../model/userNotification";
 import {UpdateUserNotificationsRequest} from "../model/requests/updateUserNotificationsRequest";
 import {STORAGE_KEYS} from "../keys/storage-keys";
+import {Match} from "../model/match";
+import {CreateMatchRequest} from "../model/requests/createMatchRequest";
 
 @Injectable({
   providedIn: 'root'
@@ -117,6 +119,24 @@ export class ApiService {
     }
     if (environment.mockResponse) {
       return this.mockService.mockUpdateUserNotificationsResponse(request);
+    } else {
+      return this.http.post<HttpResponse<null>>(environment.baseUrl + endpoint, request, { observe: 'response' })
+        .pipe(
+          catchError(this.handleError<HttpResponse<null>>(endpoint))
+        );
+    }
+  }
+
+  submitCreateMatch(match: Match) {
+    const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
+    const endpoint = 'create-match';
+    console.log(endpoint + ' triggered from ApiService')
+    let request: CreateMatchRequest = {
+      userId: accountId,
+      match: match
+    }
+    if (environment.mockResponse) {
+      return this.mockService.mockCreateMatchResponse(request);
     } else {
       return this.http.post<HttpResponse<null>>(environment.baseUrl + endpoint, request, { observe: 'response' })
         .pipe(

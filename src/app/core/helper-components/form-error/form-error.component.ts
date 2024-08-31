@@ -43,6 +43,8 @@ export class FormErrorComponent implements OnInit{
           this.errorMessage = 'You must enter at least one number and a special character';
         } else if (errors['email']) {
           this.errorMessage = 'You must enter a correct email format';
+        } else if (errors['dateInvalid']) {
+          this.errorMessage = errors['dateInvalid'];
         }
         // Add more error types as needed
       }

@@ -13,7 +13,7 @@
         <mat-form-field>
           <mat-label>Choose a date</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="date" required>
-          <mat-hint>MM/DD/YYYY</mat-hint>
+<!--          <mat-hint>MM/DD/YYYY</mat-hint>-->
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <app-form-error [control]="matchForm.get('date')"></app-form-error>
@@ -25,16 +25,26 @@
           <app-form-error [control]="matchForm.get('time')"></app-form-error>
         </mat-form-field>
 
-        <mat-radio-group aria-label="⚽ Sports 🏀">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Leave some notes of this match</mat-label>
+          <input matInput formControlName="comments" required>
+          <app-form-error [control]="matchForm.get('comments')"></app-form-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Location</mat-label>
+          <input matInput formControlName="location" required>
+          <app-form-error [control]="matchForm.get('location')"></app-form-error>
+        </mat-form-field>
+
+        <mat-radio-group aria-label="⚽ Sports 🏀" formControlName="sport">
           <div *ngFor="let sport of (sports | keyvalue)">
-            <mat-radio-button value="1"> {{ sport.value }}</mat-radio-button>
-            <!--            [checked]="isSportSelected(sport.value)"-->
-            <!--            (change)="toggleFavouriteSport(sport.value)"-->
+            <mat-radio-button value="{{sport.value}}"> {{ sport.value }}</mat-radio-button>
           </div>
         </mat-radio-group>
 
         <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
-          <div matTooltip='change this' [matTooltipDisabled]="matchForm.valid">
+          <div matTooltip='fields not valid' [matTooltipDisabled]="matchForm.valid">
             <button mat-raised-button color="primary" type="submit" [disabled]="matchForm.invalid">Create</button>
           </div>
           <button mat-button type="reset" (click)="routeBackToHome()">Cancel</button>

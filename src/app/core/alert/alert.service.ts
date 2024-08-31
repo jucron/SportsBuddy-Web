@@ -80,4 +80,12 @@ export class AlertService {
       panelClass: ['fail-snackbar']
     });
   }
+
+  alertCreateMatchFailed() {
+    const message = 'Some error was found while CREATING a new Match, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.alertTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
 }
