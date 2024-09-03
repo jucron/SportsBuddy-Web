@@ -14,7 +14,6 @@ import {HttpResponse} from "@angular/common/http";
 })
 export class MatchService {
   isLoading = false;
-  matchResponse: MatchResponse | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -24,27 +23,33 @@ export class MatchService {
   ) {
   }
 
-  getMatches(): Observable<Match[]> {
+  getMatches(): Observable<MatchResponse> {
     return this.apiService.getMatches().pipe(
       delay(1000),
-      map(observerResponse => {
-        this.matchResponse = observerResponse;
-        if (this.matchResponse != null && this.matchResponse.message !== 'getMatches-failed') {
-          return  this.matchResponse.matches;
+      map(matchResponse => {
+        if (matchResponse != null && matchResponse.message !== 'getMatches-failed') {
+          return matchResponse;
         } else {
           this.notificationService.alertGetMatchError();
-          return [];
+          return this.getEmptyMatchResponse();
         }
       }),
       catchError(err => {
         console.error('getMatches failed', err);
         this.notificationService.alertGetMatchError();
-        return of([]); // Return an empty array in case of error
+        return of(this.getEmptyMatchResponse());
       }),
       finalize(() => {
         this.isLoading = false;
       })
     );
+  }
+  private getEmptyMatchResponse(): MatchResponse {
+    return {
+      message: 'getMatches-failed',
+      matches: [],
+      hasMatch: false
+    };
   }
 
   matchRequest(matchRequest: MatchRequest) {

@@ -59,7 +59,7 @@ export class ApiService {
       const endpoint = 'get-matches';
       console.log(endpoint + ' triggered from ApiService')
       if (environment.mockResponse) {
-        return this.mockService.getMockMatchResponse();
+        return this.mockService.getMockMatchesResponse();
       } else {
         return this.http.get<MatchResponse>(environment.baseUrl + endpoint)
           .pipe(

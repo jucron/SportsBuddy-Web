@@ -47,7 +47,8 @@ import {NotificationService} from "../core/integration/notification.service";
 })
 export class HomeComponent implements OnInit {
   isLoadingTable = false;
-  matchesTable: Match[];
+  matchesTable: Match[] = [];
+  hasMatch = false;
   displayedColumns: string[] = ['name', 'date', 'time', 'location','comments','sport','owner','participants'];
   protected readonly DateUtils = DateUtils;
 
@@ -55,24 +56,26 @@ export class HomeComponent implements OnInit {
               private routingService: RoutingService,
               private dialogService: DialogService,
               private notificationService: NotificationService
-  ) {
-    this.matchesTable = [];
-
-  }
+  ) {}
 
   ngOnInit(): void {
     this.updateMatchTable();
     this.notificationService.loadUserNotifications();
   }
-  routeToCreateMatch() {
-    this.routingService.redirectTo('match', false);
+  routeToCreateMatchOrMatchRoom() {
+    if (this.hasMatch) {
+      this.routingService.redirectTo('match-room/owner', false);
+    } else {
+      this.routingService.redirectTo('match', false);
+    }
   }
   updateMatchTable() {
     this.isLoadingTable = true;
     this.matchService.getMatches()
       .subscribe({
-    next: matches => {
-      this.matchesTable = matches;
+    next: matchResponse => {
+      this.matchesTable = matchResponse.matches;
+      this.hasMatch = matchResponse.hasMatch;
     },
       error: error => {
       console.error('error in updating updateMatchTable'+error)
@@ -81,12 +84,10 @@ export class HomeComponent implements OnInit {
       this.isLoadingTable = false; // Hide the loading spinner
     }
   });
-
   }
-  getMatchTable(){
+  getMatchTable() {
     return this.matchesTable;
   }
-
   getOwnerLabel(owner: Account) {
     return owner.name;
   }
@@ -106,5 +107,10 @@ export class HomeComponent implements OnInit {
     this.dialogService.showMatchDialog(row);
   }
 
-
+  getMyMatchLabel() {
+    if (this.hasMatch) {
+      return "Go to my Match-Room";
+    }
+    return "Create a new Match";
+  }
 }

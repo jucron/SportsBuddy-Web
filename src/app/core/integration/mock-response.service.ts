@@ -16,6 +16,7 @@ import {FactoryService} from "../factory/factory.service";
 import {UserNotification} from "../model/userNotification";
 import {CreateMatchRequest} from "../model/requests/createMatchRequest";
 import {v4 as uuidv4} from 'uuid';
+import {STORAGE_KEYS} from "../keys/storage-keys";
 
 @Injectable({
   providedIn: 'root'
@@ -69,10 +70,13 @@ export class MockResponseService {
     let mockResponse: LoginResponse = { id: '', token: '', message: 'account-created' };
     return of(mockResponse);
   }
-  getMockMatchResponse(): Observable<MatchResponse> {
+  getMockMatchesResponse(): Observable<MatchResponse> {
+    //backend note: the username will be taken from the JWT token
+    const hasMatch = this.matches.some(match => match.owner.username == localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME));
     const matchResponse = {
       message: 'getMatch-success',
-      matches: this.matches
+      matches: this.matches,
+      hasMatch: hasMatch
     }
     return of(matchResponse);
   }
@@ -194,7 +198,7 @@ export class MockResponseService {
     //find user and replace notifications
     let account = this.accounts.find(account => account.id === request.userId);
     if (!account) {
-      return this.create404AccountResponse();
+      return of(this.create404AccountResponse());
     }
     account.notifications = request.notifications;
     //save mockUp data
@@ -252,7 +256,7 @@ export class MockResponseService {
   mockCreateMatchResponse(request: CreateMatchRequest) {
     let account = this.accounts.find(account => account.id === request.userId);
     if (!account) {
-      return this.create404AccountResponse();
+      return of(this.create404AccountResponse());
     }
     //Create new match in repo
     let newMatch = request.match;
