@@ -111,4 +111,7 @@ export class AccountService {
     );
   }
 
+  isAuthenticated() {
+    return localStorage.getItem(STORAGE_KEYS.TOKEN) != null;
+  }
 }
