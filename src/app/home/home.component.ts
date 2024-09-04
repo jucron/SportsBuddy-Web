@@ -63,11 +63,9 @@ export class HomeComponent implements OnInit {
     this.notificationService.loadUserNotifications();
   }
   routeToCreateMatchOrMatchRoom() {
-    if (this.hasMatch) {
-      this.routingService.redirectTo('match-room/owner', false);
-    } else {
-      this.routingService.redirectTo('match', false);
-    }
+    const direction = this.hasMatch ? 'match-room/owner' : 'match';
+    console.log('routeToCreateMatchOrMatchRoom triggered with direction: '+direction);
+    this.routingService.redirectTo(direction, false);
   }
   updateMatchTable() {
     this.isLoadingTable = true;

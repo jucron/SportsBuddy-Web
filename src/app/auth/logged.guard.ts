@@ -8,7 +8,9 @@ export const loggedGuard: CanActivateFn = (route, state) => {
   const routerService = inject(RoutingService);
   const isAuthenticated = authService.isAuthenticated();
   if (isAuthenticated) {
+    console.log('loggedGuard: user is authenticated, redirecting to home');
     routerService.redirectTo('home', false);
+    return false;
   }
-  return !isAuthenticated;
+  return true;
 };

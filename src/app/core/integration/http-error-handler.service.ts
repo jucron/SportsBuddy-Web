@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpErrorResponse} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {MessageService} from "../message/message.service";
+import {RoutingService} from "../routing/routing.service";
 
 export type HandleError =
   <T> (operation?: string, result?: T) => (error: HttpErrorResponse) => Observable<T>;
@@ -11,7 +12,8 @@ export type HandleError =
   providedIn: 'root'
 })
 export class HttpErrorHandler {
-  constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService,
+              private routingService: RoutingService) { }
 
   /** Create curried handleError function that already knows the service name */
   createHandleError = (serviceName = '') =>
@@ -26,11 +28,17 @@ export class HttpErrorHandler {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  handleError<T>(serviceName = '', operation = 'operation', result = {} as T) {
+
+   handleError<T>(serviceName = '', operation = 'operation', result = {} as T) {
 
     return (error: HttpErrorResponse): Observable<T> => {
-      // TODO: send the error to remote logging infrastructure
+
       console.error(error); // log to console instead
+      //logging out user if 403 forbidden error
+      if (error.status === 403) {
+        localStorage.clear();
+        this.routingService.redirectTo('', false);
+      }
 
       const message = (error.error instanceof ErrorEvent) ?
         error.error.message :

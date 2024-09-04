@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
   protected isLoadingNotifications: boolean = false;
   protected notificationHelper: NotificationHelper
 
-  constructor(private loginService: AccountService,
+  constructor(private accountService: AccountService,
               private routingService: RoutingService,
               private notificationService: NotificationService) {
     this.notificationService.userNotifications$.subscribe(notifications => {
@@ -43,11 +43,11 @@ export class AppComponent implements OnInit {
   }
 
   isLogged(): boolean {
-    return localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME) != null;
+    return this.accountService.isAuthenticated();
   }
 
   logout() {
-    this.loginService.executeLogout();
+    this.accountService.executeLogout();
     this.changeFiller();
   }
 

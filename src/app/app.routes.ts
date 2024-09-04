@@ -10,7 +10,8 @@ import {authGuard} from "./auth/auth.guard";
 import {loggedGuard} from "./auth/logged.guard";
 
 export const routes: Routes = [
-  {path: '', component: LoginComponent, canActivate: [loggedGuard]},
+  {path: '', redirectTo: 'login', pathMatch: 'full'},
+  {path: 'login', component: LoginComponent, canActivate: [loggedGuard]},
   {path: 'home', component: HomeComponent, canActivate: [authGuard]},
   { path: 'account/create', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.CREATE_STATE }, canActivate: [authGuard] },
   { path: 'account/update/:id', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.UPDATE_STATE }, canActivate: [authGuard] },

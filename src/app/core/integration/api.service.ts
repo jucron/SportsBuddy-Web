@@ -41,7 +41,6 @@ export class ApiService {
         );
     }
   }
-
   createAccount(account: Account) {
     const endpoint = 'create-account';
     console.log(endpoint + ' triggered from ApiService')
@@ -54,7 +53,6 @@ export class ApiService {
         );
     }
   }
-
   getMatches() {
       const endpoint = 'get-matches';
       console.log(endpoint + ' triggered from ApiService')
@@ -67,7 +65,6 @@ export class ApiService {
           );
       }
   }
-
   getAccount(accountId: string)  {
     const endpoint = 'get-account';
     console.log(endpoint + ' triggered from ApiService')
@@ -81,7 +78,6 @@ export class ApiService {
         );
     }
   }
-
   submitMatchRequest(matchRequest: MatchRequest) {
     const endpoint = 'match-request';
     console.log(endpoint + ' triggered from ApiService')
@@ -94,7 +90,6 @@ export class ApiService {
         );
     }
   }
-
   getUserNotifications() {
     const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
     const endpoint = 'get-user-notifications';
@@ -108,7 +103,6 @@ export class ApiService {
         );
     }
   }
-
   updateUserNotifications(notifications: UserNotification[]) {
     const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
     const endpoint = 'update-user-notifications';
@@ -126,7 +120,6 @@ export class ApiService {
         );
     }
   }
-
   submitCreateMatch(match: Match) {
     const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
     const endpoint = 'create-match';
@@ -144,5 +137,6 @@ export class ApiService {
         );
     }
   }
+
 }
 
