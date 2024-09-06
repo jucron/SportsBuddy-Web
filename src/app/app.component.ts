@@ -77,10 +77,13 @@ export class AppComponent implements OnInit {
   }
 
   readNotifications() {
-    this.userNotifications.forEach(notification => {
-      notification.status = NotificationStatus.READ;
-    })
-    this.notificationService.updateUserNotifications(this.userNotifications);
+    const hasUnreadNotifications = this.userNotifications.some(notification => notification.status === NotificationStatus.UNREAD);
+    //
+    if (hasUnreadNotifications) {
+      this.userNotifications.forEach(notification => {
+        notification.status = NotificationStatus.READ;
+      })
+      this.notificationService.updateUserNotifications(this.userNotifications);
+    }
   }
-
 }

@@ -64,7 +64,6 @@ export class HomeComponent implements OnInit {
   }
   routeToCreateMatchOrMatchRoom() {
     const direction = this.hasMatch ? 'match-room/owner' : 'match';
-    console.log('routeToCreateMatchOrMatchRoom triggered with direction: '+direction);
     this.routingService.redirectTo(direction, false);
   }
   updateMatchTable() {
