@@ -1,1 +1,50 @@
-<p>match-room works!</p>
+<div fxLayout="row" fxLayoutAlign="center center" fxFill>
+  <div class="card">
+    <mat-card>
+      <mat-toolbar> Create a new Match!  </mat-toolbar>
+      <form [formGroup]="matchForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" required>
+          <app-form-error [control]="matchForm.get('name')"></app-form-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Choose a date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="date" required>
+          <!--          <mat-hint>MM/DD/YYYY</mat-hint>-->
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <app-form-error [control]="matchForm.get('date')"></app-form-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Time</mat-label>
+          <input matInput type="time" formControlName="time">
+          <app-form-error [control]="matchForm.get('time')"></app-form-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Leave some notes of this match</mat-label>
+          <input matInput formControlName="comments" required>
+          <app-form-error [control]="matchForm.get('comments')"></app-form-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Location</mat-label>
+          <input matInput formControlName="location" required>
+          <app-form-error [control]="matchForm.get('location')"></app-form-error>
+        </mat-form-field>
+
+        <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
+          <div matTooltip='fields not valid' [matTooltipDisabled]="matchForm.valid">
+            <button mat-raised-button color="primary" type="submit" [disabled]="matchForm.invalid">Create</button>
+          </div>
+          <button mat-button type="reset" (click)="routeBackToHome()">Cancel</button>
+        </div>
+      </form>
+    </mat-card>
+  </div>
+</div>
+

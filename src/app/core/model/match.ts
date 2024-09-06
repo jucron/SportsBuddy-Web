@@ -9,6 +9,6 @@ export interface Match {
   comments: string
   sport: string
   participants: Account[]
-  owner: Account
+  owner?: Account
   matchRequests: MatchRequest[]
 }

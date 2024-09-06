@@ -8,6 +8,7 @@ import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
 import {HttpResponse} from "@angular/common/http";
+import {MyMatchResponse} from "../model/responses/myMatchResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,7 @@ export class MatchService {
       hasMatch: false
     };
   }
+
 
   matchRequest(matchRequest: MatchRequest) {
     this.isLoading = true;
@@ -100,5 +102,27 @@ export class MatchService {
           this.loadingDialogService.closeLoadingDialog();
         }
       });
+  }
+
+  getMyMatch() {
+    return this.apiService.getMyMatch().pipe(
+      delay(1000),
+      map((myMatchResponse: MyMatchResponse) => {
+        if (myMatchResponse != null ) {
+          return myMatchResponse;
+        } else {
+          this.notificationService.alertGetMyMatchError();
+          return this.apiService.getEmptyMyMatchResponse();
+        }
+      }),
+      catchError(err => {
+        console.error('getMyMatch failed', err);
+        this.notificationService.alertGetMyMatchError();
+        return of(this.apiService.getEmptyMyMatchResponse());
+      }),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    );
   }
 }
