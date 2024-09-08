@@ -5,10 +5,9 @@ import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
-import {catchError, delay, finalize, map, of} from "rxjs";
+import {catchError, finalize, map, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
-import {AccountResponse} from "../model/responses/accountResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +15,6 @@ import {AccountResponse} from "../model/responses/accountResponse";
 export class AccountService {
   isLoading = false;
   response: LoginResponse | null = null;
-  accountResponse: AccountResponse | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -29,15 +27,11 @@ export class AccountService {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();
     this.apiService.executeLogin(credentials)
-      .pipe(delay(2000))
       .subscribe({
-        next: observerResponse => {
-          this.response = observerResponse;
-          console.log('Login successful', this.response);
-          if (this.response != null && this.response.message != 'login-failed') {
+        next: response => {
+          if (response) {
             localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
-            localStorage.setItem(STORAGE_KEYS.TOKEN, this.response.token);
-            localStorage.setItem(STORAGE_KEYS.MAIN_ID, this.response.id);
+            localStorage.setItem(STORAGE_KEYS.MAIN_ID, response.id);
             this.notificationService.alertLoginSuccess();
             this.routingService.redirectTo('home', false);
           } else {
@@ -63,11 +57,9 @@ export class AccountService {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();
     this.apiService.createAccount(account)
-      .pipe(delay(2000))
       .subscribe({
-        next: observerResponse => {
-          this.response = observerResponse;
-          if (this.response != null && this.response.message === 'account-created') {
+        next: response => {
+          if (response) {
             this.notificationService.alertCreateAccountSuccess();
             this.routingService.redirectTo('', false);
           } else {
@@ -75,7 +67,7 @@ export class AccountService {
           }
         },
         error: err => {
-          console.error('createAccount failed', err);
+          console.error('accountService.createAccount() failed', err);
           this.notificationService.alertCreateAccountFailed();
         },
         complete: () => {
@@ -84,16 +76,13 @@ export class AccountService {
         }
       });
   }
-
   getAccount(accountId: string) {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();
     return this.apiService.getAccount(accountId).pipe(
-      delay(1000),
-      map(observerResponse => {
-        this.accountResponse = observerResponse;
-        if (this.accountResponse && this.accountResponse.message === 'account-found') {
-          return this.accountResponse.account;
+      map(account => {
+        if (account) {
+          return account;
         } else {
           this.notificationService.alertGetAccountFailed();
           return null;
@@ -110,7 +99,6 @@ export class AccountService {
       })
     );
   }
-
   isAuthenticated() {
     return localStorage.getItem(STORAGE_KEYS.TOKEN) != null;
   }

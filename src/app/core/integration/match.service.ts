@@ -3,12 +3,10 @@ import {ApiService} from "./api.service";
 import {RoutingService} from "../routing/routing.service";
 import {MatchResponse} from "../model/responses/matchResponse";
 import {Match} from "../model/match";
-import {catchError, delay, finalize, map, Observable, of} from "rxjs";
+import {catchError, finalize, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
-import {HttpResponse} from "@angular/common/http";
-import {MyMatchResponse} from "../model/responses/myMatchResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -23,13 +21,11 @@ export class MatchService {
     private loadingDialogService: DialogService
   ) {
   }
-
   getMatches(): Observable<MatchResponse> {
     return this.apiService.getMatches().pipe(
-      delay(1000),
-      map(matchResponse => {
-        if (matchResponse != null && matchResponse.message !== 'getMatches-failed') {
-          return matchResponse;
+      map(response => {
+        if (response) {
+          return response;
         } else {
           this.notificationService.alertGetMatchError();
           return this.getEmptyMatchResponse();
@@ -52,16 +48,13 @@ export class MatchService {
       hasMatch: false
     };
   }
-
-
   matchRequest(matchRequest: MatchRequest) {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();
     this.apiService.submitMatchRequest(matchRequest)
-      .pipe(delay(1000))
       .subscribe({
-        next: (response: HttpResponse<any>) => {
-          if (response != null && response.status === 200) {
+        next: (response) => {
+          if (response) {
             this.notificationService.alertMatchRequestSuccess();
             this.routingService.redirectTo('home', false);
           } else {
@@ -78,15 +71,13 @@ export class MatchService {
         }
       });
   }
-
   createMatch(match: Match) {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();
     this.apiService.submitCreateMatch(match)
-      .pipe(delay(1000))
       .subscribe({
-        next: (response: HttpResponse<any>) => {
-          if (response != null && response.status === 200) {
+        next: (response) => {
+          if (response) {
             this.notificationService.alertMatchRequestSuccess();
             this.routingService.redirectTo('home', false);
           } else {
@@ -103,26 +94,36 @@ export class MatchService {
         }
       });
   }
-
   getMyMatch() {
     return this.apiService.getMyMatch().pipe(
-      delay(1000),
-      map((myMatchResponse: MyMatchResponse) => {
-        if (myMatchResponse != null ) {
-          return myMatchResponse;
+      map((myMatch) => {
+        if (myMatch) {
+          return myMatch;
         } else {
           this.notificationService.alertGetMyMatchError();
-          return this.apiService.getEmptyMyMatchResponse();
+          return this.getEmptyMatch();
         }
       }),
       catchError(err => {
         console.error('getMyMatch failed', err);
         this.notificationService.alertGetMyMatchError();
-        return of(this.apiService.getEmptyMyMatchResponse());
+        return of(this.getEmptyMatch());
       }),
       finalize(() => {
         this.isLoading = false;
       })
     );
+  }
+  private getEmptyMatch(): Match {
+    return  {
+      id: '-1',
+      name: 'No Match',
+      date: new Date(),
+      location: 'No Match',
+      matchRequests: [],
+      sport: 'No Match',
+      comments: 'No Match',
+      participants: []
+    }
   }
 }

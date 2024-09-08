@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, delay, finalize, map, Observable, of} from "rxjs";
+import {BehaviorSubject, catchError, finalize, map, Observable, of} from "rxjs";
 import {ApiService} from "./api.service";
 import {AlertService} from "../alert/alert.service";
 import {UserNotification} from "../model/userNotification";
-import {HttpResponse} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +16,12 @@ export class NotificationService {
   constructor(private apiService: ApiService,
               private alertService: AlertService) { }
 
-    loadUserNotifications() {
+  loadUserNotifications() {
     this.isLoading = true;
     return this.apiService.getUserNotifications().pipe(
-      delay(1000),
-      map(notificationsResponse => {
-        if (notificationsResponse != null && notificationsResponse.message !== 'getUserNotifications-failed') {
-          return notificationsResponse.userNotifications;
+      map(notifications => {
+        if (notifications) {
+          return notifications;
         } else {
           this.alertService.alertGetUserNotificationsError();
           return [];
@@ -41,15 +39,12 @@ export class NotificationService {
       this.userNotificationsSubject.next(notifications);
     });
   }
-
   updateUserNotifications(userNotifications: UserNotification[]) {
     this.isLoading = true;
     this.apiService.updateUserNotifications(userNotifications)
-      .pipe(delay(1000))
       .subscribe({
-        next: (response: HttpResponse<any>) => {
-          if (response != null && response.status === 200) {
-          } else {
+        next: (response) => {
+          if (!response) {
             this.alertService.alertUpdateNotificationsError();
           }
         },

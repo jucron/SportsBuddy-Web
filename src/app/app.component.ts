@@ -39,7 +39,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.notificationService.loadUserNotifications();
+    if (this.isLogged()) {
+      this.notificationService.loadUserNotifications();
+    }
   }
 
   isLogged(): boolean {

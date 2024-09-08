@@ -1,5 +1,6 @@
 import {Match} from "../match";
 
 export interface MyMatchResponse {
-  myMatch: Match;
+  myMatch: Match | null;
+  message: string;
 }

@@ -30,15 +30,33 @@ export class HttpErrorHandler {
    */
 
    handleError<T>(serviceName = '', operation = 'operation', result = {} as T) {
-
     return (error: HttpErrorResponse): Observable<T> => {
 
       console.error(error); // log to console instead
-      //logging out user if 403 forbidden error
-      if (error.status === 403) {
-        localStorage.clear();
-        this.routingService.redirectTo('', false);
+      switch (error.status) {
+        case 401:
+          console.error('Unauthorized request');
+          localStorage.clear();
+          break;
+        case 403:
+          console.error('Forbidden request');
+          localStorage.clear();
+          break;
+        case 404:
+          console.error('Resource not found');
+          break;
+        case 409:
+          console.error('Username is already taken');
+          break;
+        case 500:
+          console.error('Internal server error');
+          break;
+        default:
+          console.error('Unknown error');
+          break;
       }
+      //Always send to default page if error occurs
+      this.routingService.redirectTo('', false);
 
       const message = (error.error instanceof ErrorEvent) ?
         error.error.message :

@@ -1,4 +1,6 @@
 export const environment = {
-  mockResponse: true,
-  baseUrl: "http://localhost:8080/api/v1"
+  isActiveMockResponse: true,
+  baseUrl: "http://localhost:8080/api/v1/",
+  mockDelay_ms: 500,
+  enableConsoleLogs: true
 };

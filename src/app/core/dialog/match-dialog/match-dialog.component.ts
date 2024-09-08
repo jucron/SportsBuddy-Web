@@ -67,7 +67,7 @@ export class MatchDialogComponent {
       request.usernameRequested === this.loggedUsername);
   }
   isUserOwner(){
-    return this.match().owner.username === this.loggedUsername;
+    return this.match().owner!.username === this.loggedUsername;
   }
   isUserParticipating(): boolean {
     return this.match().participants.some(participant =>
@@ -117,7 +117,7 @@ export class MatchDialogComponent {
       let matchRequest: MatchRequest = this.matchRequestForm.value;
       matchRequest.usernameRequested = this.loggedUsername ?? 'not-found';
       matchRequest.date = new Date();
-      matchRequest.usernameOwner = this.match().owner.username;
+      matchRequest.usernameOwner = this.match().owner!.username;
       console.log('matchRequest: '+JSON.stringify(matchRequest))
       this.matchService.matchRequest(matchRequest);
     }
