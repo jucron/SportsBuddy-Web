@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpErrorResponse} from "@angular/common/http";
+import {HttpErrorResponse, HttpStatusCode} from "@angular/common/http";
 import {Observable, of} from "rxjs";
 import {MessageService} from "../message/message.service";
 import {RoutingService} from "../routing/routing.service";
@@ -32,29 +32,32 @@ export class HttpErrorHandler {
    handleError<T>(serviceName = '', operation = 'operation', result = {} as T) {
     return (error: HttpErrorResponse): Observable<T> => {
 
-      console.error(error); // log to console instead
+      let errorType ;
       switch (error.status) {
-        case 401:
-          console.error('Unauthorized request');
+        case HttpStatusCode.Unauthorized:
+          errorType = 'Unauthorized';
           localStorage.clear();
           break;
-        case 403:
-          console.error('Forbidden request');
+        case HttpStatusCode.Forbidden:
+          errorType = 'Forbidden';
           localStorage.clear();
           break;
-        case 404:
-          console.error('Resource not found');
+        case HttpStatusCode.NotFound:
+          errorType = 'Resource not found';
           break;
-        case 409:
-          console.error('Username is already taken');
+        case HttpStatusCode.Conflict:
+          errorType = 'Username is already taken';
           break;
-        case 500:
-          console.error('Internal server error');
+        case HttpStatusCode.InternalServerError:
+          errorType = 'Internal server error';
           break;
         default:
-          console.error('Unknown error');
+          errorType = 'Unknown error';
           break;
       }
+      //log error in console
+      console.error(`${errorType} request with status: ${error.status} and error: \n${JSON.stringify(error)}`);
+
       //Always send to default page if error occurs
       this.routingService.redirectTo('', false);
 
@@ -66,7 +69,7 @@ export class HttpErrorHandler {
       this.messageService.add(`${serviceName}: ${operation} failed: ${message}`);
 
       // Let the app keep running by returning a safe result.
-      return of( result );
+      return of( null as T);
     };
 
   }

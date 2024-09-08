@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {Credentials} from "../model/credentials";
 import {LoginResponse} from "../model/responses/loginResponse";
 import {catchError, map, Observable} from "rxjs";
@@ -42,15 +42,14 @@ export class ApiService {
       loginRequest, {observe: 'response' })
       .pipe(
         map(response => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.body) {
             console.log('Login 200 ok');
             this.authService.storeToken(response.headers);
             return response.body;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<LoginResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   createAccount(account: Account):  Observable<boolean | null> {
@@ -58,7 +57,7 @@ export class ApiService {
     const endpoint = 'create-account';
     console.log(endpoint + ' triggered from ApiService')
     let headers = this.authService.getHeaderWithToken();
-    return this.http.post<HttpResponse<GenericResponse>>(`${environment.baseUrl}${endpoint}`,
+    return this.http.post<GenericResponse>(`${environment.baseUrl}${endpoint}`,
       createAccountRequest, {headers, observe: 'response' })
       .pipe(
         map(response => {
@@ -69,27 +68,25 @@ export class ApiService {
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<GenericResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   getMatches(): Observable<MatchResponse | null> {
     const endpoint = 'get-matches';
     console.log(endpoint + ' triggered from ApiService');
     let headers = this.authService.getHeaderWithToken();
-    return this.http.get<HttpResponse<MatchResponse>>(`${environment.baseUrl}${endpoint}`,
+    return this.http.get<MatchResponse>(`${environment.baseUrl}${endpoint}`,
       {headers, observe: 'response' })
       .pipe(
         map(response => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.body) {
             console.log('getMatches 200 Ok');
             this.authService.storeToken(response.headers);
             return response.body;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<MatchResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   getAccount(accountId: string): Observable<Account | null>  {
@@ -100,15 +97,14 @@ export class ApiService {
       {headers, observe: 'response' })
       .pipe(
         map(response => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.body) {
             console.log('getAccount 200 Ok');
             this.authService.storeToken(response.headers);
-            return response.body!.account;
+            return response.body.account;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<AccountResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   submitMatchRequest(matchRequest: MatchRequest): Observable<boolean | null> {
@@ -126,8 +122,7 @@ export class ApiService {
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<AccountResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   getUserNotifications(): Observable<UserNotification[] | null> {
@@ -139,15 +134,14 @@ export class ApiService {
       {headers, observe: 'response' })
       .pipe(
         map(response => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.body) {
             console.log('getUserNotifications 200 Ok');
             this.authService.storeToken(response.headers);
-            return response.body?.userNotifications;
+            return response.body.userNotifications;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<NotificationsResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   updateUserNotifications(notifications: UserNotification[]): Observable<boolean | null>  {
@@ -170,8 +164,7 @@ export class ApiService {
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<GenericResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   submitCreateMatch(match: Match): Observable<boolean | null> {
@@ -194,8 +187,7 @@ export class ApiService {
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<GenericResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
   getMyMatch(): Observable<Match | null> {
@@ -207,22 +199,30 @@ export class ApiService {
       {headers, observe: 'response' })
       .pipe(
         map(response => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.body) {
             console.log('getMyMatch 200 Ok');
             this.authService.storeToken(response.headers);
-            return response.body?.myMatch;
+            return response.body.myMatch;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),
-        catchError(this.handleError<HttpResponse<MyMatchResponse>>(endpoint)),
-        map(()=> null)
+        catchError(this.handleError<null>(endpoint))
       );
   }
 
   private handleUnexpectedResponse(response: HttpResponse<any>, endpoint: string) {
     const message = `Unexpected response status in ${endpoint} with status code: ${response.status}`;
+    if (response.status > 299) {
+      throw new HttpErrorResponse({
+        headers: response.headers,
+        status: response.status,
+        url: response.url!,
+        error: response,
+        statusText: message
+      });
+    }
     console.log(message);
-    throw new Error(message);
+    return null;
   }
 }
 

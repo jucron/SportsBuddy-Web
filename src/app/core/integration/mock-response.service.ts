@@ -239,6 +239,7 @@ export class MockResponseService {
     return response;
   }
   getMockUserNotificationsResponse(userId: string) {
+    console.log('getMockUserNotificationsResponse triggered with id '+userId)
     //create response
     let notificationsResponse: NotificationsResponse = {
       message: 'notifications-not-found',
@@ -340,11 +341,9 @@ export class MockResponseService {
       myMatch: null,
       message: 'not found'
     }
-    let resourceToFind = 'Account';
     let account = this.accounts.find(account => account.id === accountId);
     if (account) {
       let match = this.matches.find(match => match.owner?.username === account.username);
-      resourceToFind = 'Match';
       if (match) {
         response.message = 'match-found';
         response.myMatch = match;
