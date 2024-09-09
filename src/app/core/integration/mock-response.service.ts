@@ -329,11 +329,14 @@ export class MockResponseService {
     let newMatch = request.match;
     newMatch.owner = account;
     newMatch.id = uuidv4();
+    newMatch.participants = []
+    newMatch.matchRequests = []
     this.matches.push(newMatch);
     //save mockUp data
     this.saveData();
     //return ok response
     response.message = 'match-created';
+    console.log('match created: '+JSON.stringify(newMatch));
     return response;
   }
   getMockMyMatchResponse(accountId: string) {
