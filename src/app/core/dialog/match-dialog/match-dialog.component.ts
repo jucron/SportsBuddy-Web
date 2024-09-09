@@ -14,9 +14,11 @@ import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {FactoryService} from "../../factory/factory.service";
-import {NgIf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 import {MatchService} from "../../integration/match.service";
 import {MatchRequest} from "../../model/requests/matchRequest";
+import {DialogService} from "../dialog.service";
+import {AccountService} from "../../integration/account.service";
 
 interface MatchDialogData {
   match: Match
@@ -37,7 +39,8 @@ interface MatchDialogData {
     MatLabel,
     ReactiveFormsModule,
     NgIf,
-    MatCardContent
+    MatCardContent,
+    NgForOf
   ],
   templateUrl: './match-dialog.component.html',
   styleUrl: './match-dialog.component.css'
@@ -52,7 +55,10 @@ export class MatchDialogComponent {
   protected readonly DateUtils = DateUtils;
 
   constructor(private factoryService: FactoryService,
-              private matchService: MatchService) {
+              private matchService: MatchService,
+              private dialogService: DialogService,
+              private accountService: AccountService
+  ) {
     this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
   }
 
@@ -74,15 +80,10 @@ export class MatchDialogComponent {
       participant.username === this.loggedUsername);
   }
   getParticipants() {
-    let participants = '';
-    let separator = ', ';
-    this.match().participants.forEach(p => {
-      if (this.match().participants.indexOf(p)+1 === this.match().participants.length) {
-        separator = '.';
-      }
-      participants = participants+p.name+separator;
-    });
-    return participants;
+    return this.match().participants.map(participant => ({
+      name: participant.name,
+      id: participant.id
+    }));
   }
   getSportIcon() {
     switch (this.match().sport) {
@@ -122,5 +123,12 @@ export class MatchDialogComponent {
       this.matchService.matchRequest(matchRequest);
     }
     this.onCloseClick();
+  }
+  showAccountDialog(accountId: string) {
+    this.onCloseClick();
+    const account = this.accountService.getAccount(accountId)
+      .subscribe(account => {
+        this.dialogService.showAccountDialog(account!);
+      });
   }
 }

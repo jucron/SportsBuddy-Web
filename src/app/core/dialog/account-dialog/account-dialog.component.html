@@ -1,0 +1,22 @@
+<mat-card class="content">
+
+<h3>Hello, I'm <i>{{account().name}}</i> 😀</h3>
+
+<h3><b>My contact: </b><i>{{account().email}}</i></h3>
+
+<h3><b>My favourite Sports:</b>
+  <div *ngFor="let sport of (account().favouriteSports | keyvalue)">
+    <i>{{sport.value}}</i>
+  </div>
+</h3>
+
+<h3><b>Checkout My Match!</b>
+      <i>todo</i>
+</h3>
+
+<h3><b>Matches I'm in:</b>
+  <i>todo</i>
+</h3>
+
+<button mat-button type="reset" (click)="onCloseClick()">Close</button>
+</mat-card>
