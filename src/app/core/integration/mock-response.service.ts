@@ -336,7 +336,6 @@ export class MockResponseService {
     this.saveData();
     //return ok response
     response.message = 'match-created';
-    console.log('match created: '+JSON.stringify(newMatch));
     return response;
   }
   getMockMyMatchResponse(accountId: string) {
