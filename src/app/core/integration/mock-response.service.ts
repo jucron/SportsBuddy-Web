@@ -32,57 +32,6 @@ export class MockResponseService {
   constructor(private factoryService: FactoryService) {
     this.loadData();
   }
-
-  getLoginMockResponse(loginRequest: LoginRequest): LoginResponse {
-    let mockResponse: LoginResponse = {
-      id: '',
-      message: 'login-failed'
-    };
-    let id = this.validateLoginAndReturnId(loginRequest.credentials!.username, loginRequest.credentials!.password);
-    if (id) {
-      mockResponse.id = id;
-      mockResponse.message = 'login-success';
-    }
-    return mockResponse;
-  }
-  private validateLoginAndReturnId(username: string, password: string): string | null {
-    for (const credentials of this.accounts) {
-      if (credentials.username === username) {
-        if (credentials.password === password) {
-          return credentials.id;
-        } else {
-          //wrong pass for this user
-          return null;
-        }
-      }
-    }
-    return null; // Username not found
-  }
-  getCreateAccountMockResponse(createAccountRequest: CreateAccountRequest): GenericResponse {
-    //check if username is taken
-    let usernameTaken = this.accounts.some(account => createAccountRequest.account!.username === account.username);
-    if (usernameTaken) {
-      return {message: 'username-taken'};
-    }
-    //if username available, create new account
-    this.accountMockId++;
-    createAccountRequest.account!.id = (this.accountMockId).toString();
-    this.accounts.push(createAccountRequest.account!);
-    //save mockUp data
-    this.saveData();
-    //response
-    return {
-      message: 'account-created'};
-  }
-  getMockMatchesResponse(): MatchResponse {
-    //backend note: the username will be taken from the JWT token
-    const hasMatch = this.matches.some(match => match.owner?.username == localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME));
-    return {
-      message: 'getMatch-success',
-      matches: this.matches,
-      hasMatch: hasMatch
-    };
-  }
   private bootstrapMockMatches(): Match[] {
     return [
       {
@@ -140,7 +89,9 @@ export class MockResponseService {
         name: 'admin',
         email: 'admin@email.com',
         favouriteSports: [],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       },
       {
         id: '2',
@@ -149,7 +100,9 @@ export class MockResponseService {
         name: 'John Masters',
         email: 'john@email.com',
         favouriteSports: [Sports.baseball, Sports.soccer],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       },
       {
         id: '3',
@@ -158,7 +111,9 @@ export class MockResponseService {
         name: 'Larissa Lurdes',
         email: 'larissa@email.com',
         favouriteSports: [Sports.basketball, Sports.soccer],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       },
       {
         id: '4',
@@ -167,7 +122,9 @@ export class MockResponseService {
         name: 'Larissa Lurdes',
         email: 'larissa@email.com',
         favouriteSports: [Sports.tennis, Sports.volleyball],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       },
       {
         id: '5',
@@ -176,7 +133,9 @@ export class MockResponseService {
         name: 'Rebecca Lunes',
         email: 'rebecca@email.com',
         favouriteSports: [Sports.tennis, Sports.volleyball],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       },
       {
         id: '6',
@@ -185,7 +144,9 @@ export class MockResponseService {
         name: 'Bruna Mello',
         email: 'bruna@email.com',
         favouriteSports: [Sports.soccer, Sports.baseball],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       },
       {
         id: '7',
@@ -194,20 +155,80 @@ export class MockResponseService {
         name: 'Larry London',
         email: 'larry@email.com',
         favouriteSports: [Sports.soccer, Sports.tennis, Sports.basketball, Sports.volleyball],
-        notifications: []
+        notifications: [],
+        myMatch: null,
+        participatingMatches: []
       }
     ];
   }
-  getAccountMockResponse(accountId: string) {
-    let account = this.accounts.find(account => account.id === accountId);
-    if (account == undefined) {
-      account = this.accounts[1];
+  getLoginMockResponse(loginRequest: LoginRequest): LoginResponse {
+    let mockResponse: LoginResponse = {
+      id: '',
+      message: 'login-failed'
+    };
+    let id = this.validateLoginAndReturnId(loginRequest.credentials!.username, loginRequest.credentials!.password);
+    if (id) {
+      mockResponse.id = id;
+      mockResponse.message = 'login-success';
     }
-    let accountResponse: AccountResponse = {
+    return mockResponse;
+  }
+  private validateLoginAndReturnId(username: string, password: string): string | null {
+    for (const credentials of this.accounts) {
+      if (credentials.username === username) {
+        if (credentials.password === password) {
+          return credentials.id;
+        } else {
+          //wrong pass for this user
+          return null;
+        }
+      }
+    }
+    return null; // Username not found
+  }
+  getCreateAccountMockResponse(createAccountRequest: CreateAccountRequest): GenericResponse {
+    //check if username is taken
+    let usernameTaken = this.accounts.some(account => createAccountRequest.account!.username === account.username);
+    if (usernameTaken) {
+      return {message: 'username-taken'};
+    }
+    //if username available, create new account
+    this.accountMockId++;
+    createAccountRequest.account!.id = (this.accountMockId).toString();
+    this.accounts.push(createAccountRequest.account!);
+    //save mockUp data
+    this.saveData();
+    //response
+    return {
+      message: 'account-created'};
+  }
+  getMockMatchesResponse(): MatchResponse {
+    //backend note: the username will be taken from the JWT token
+    const hasMatch = this.matches.some(match => match.owner?.username == localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME));
+    return {
+      message: 'getMatch-success',
+      matches: this.matches,
+      hasMatch: hasMatch
+    };
+  }
+  getAccountMockResponse(accountId: string): AccountResponse {
+    let account = this.accounts.find(account => account.id === accountId);
+    if (!account) {
+      return {
+        message: 'account-not-found',
+        account: null
+      };
+    }
+    account.participatingMatches = this.matches.filter(match => match.participants.some(participant => participant.username === account.username));
+    account.myMatch = this.matches.find(match => match.owner?.username === account.username) ?? null;
+    //removing bidirectional references
+    // if (account.myMatch) { account.myMatch.owner = null;}
+    // account.participatingMatches.forEach(match => {match.participants = [];});
+    //return response
+    return {
       message: 'account-found',
       account: account
     };
-    return accountResponse;
   }
   private getRandomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;

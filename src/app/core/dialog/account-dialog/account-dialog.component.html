@@ -10,12 +10,22 @@
   </div>
 </h3>
 
-<h3><b>Checkout My Match!</b>
-      <i>todo</i>
-</h3>
+  @if (account().myMatch) {
+    <h3><b>Checkout My Match!</b>
+      <div>
+        <i>{{account().myMatch?.name}} on {{getMyMatchDate()}}</i>
+      </div>
+    </h3>
+  }
 
 <h3><b>Matches I'm in:</b>
-  <i>todo</i>
+  @if (account().participatingMatches.length === 0) {
+    <i>None yet! 😢</i>
+  } @else {
+    <div *ngFor="let match of (account().participatingMatches)">
+      <i>{{match.name}}</i>
+    </div>
+  }
 </h3>
 
 <button mat-button type="reset" (click)="onCloseClick()">Close</button>

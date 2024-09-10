@@ -1,5 +1,6 @@
 import {Sports} from "./sports";
 import {UserNotification} from "./userNotification";
+import {Match} from "./match";
 
 export interface Account {
   id: string,
@@ -8,5 +9,7 @@ export interface Account {
   name: string,
   email: string,
   favouriteSports: Sports[],
-  notifications: UserNotification[]
+  notifications: UserNotification[],
+  myMatch: Match | null, //lazy loaded
+  participatingMatches: Match[], //lazy loaded
 }

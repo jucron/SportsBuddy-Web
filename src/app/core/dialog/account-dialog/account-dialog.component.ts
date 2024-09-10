@@ -6,6 +6,7 @@ import {Sports} from "../../model/sports";
 import {KeyValuePipe, NgForOf} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {MatCard} from "@angular/material/card";
+import {DateUtils} from "../../utils/dateUtils";
 
 
 interface AccountDialogData {
@@ -33,5 +34,9 @@ export class AccountDialogComponent {
 
   onCloseClick(): void {
     this.dialogRef.close();
+  }
+
+  getMyMatchDate() {
+    return DateUtils.getDateLabel(this.account().myMatch!.date);
   }
 }
