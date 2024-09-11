@@ -27,7 +27,11 @@
 
   <h3><b>Remarks: </b><i>{{match().comments}}</i></h3>
 
-  <h3><b>Owner of this match: </b><i>{{match().owner!.name}}</i></h3>
+  <h3><b>Owner of this match: </b>
+    <div class="participant">
+      <a (click)="showAccountDialog(match().owner!.id)"><i>{{match().owner!.name}}</i></a>
+    </div>
+  </h3>
 
   <h3><b>Who's participating: </b>
     <div *ngFor="let participant of getParticipants()">

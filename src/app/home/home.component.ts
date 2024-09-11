@@ -101,7 +101,11 @@ export class HomeComponent implements OnInit {
   }
 
   showMatch(row: Match) {
-    this.dialogService.showMatchDialog(row);
+    console.log('showMatch triggered from HomeComponent: id - '+row.id);
+    this.matchService.getMatch(row.id)
+      .subscribe(match => {
+        this.dialogService.showMatchDialog(match);
+      });
   }
 
   getMyMatchLabel() {

@@ -8,3 +8,10 @@
   padding: 20px;
   max-width: 400px;
 }
+.match {
+  cursor: pointer;
+}
+.match:hover {
+  font-weight: bold;
+  background-color: #7095e7;
+}

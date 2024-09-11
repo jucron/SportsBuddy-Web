@@ -101,8 +101,8 @@ export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => 
       status: (success) ? 200: 404, //OK or Not found
       body: responseBody as GenericResponse
     });
-  } else if (req.url.includes('/get-my-match')) {
-    let responseBody: MyMatchResponse = mockService.getMockMyMatchResponse(UrlHelper.getLastElementFromUrl(req.url));
+  } else if (req.url.includes('/get-match')) {
+    let responseBody: MyMatchResponse = mockService.getMockMatchResponse(UrlHelper.getLastElementFromUrl(req.url));
     const success = responseBody.message === 'match-found';
     mockResponse = new HttpResponse({
       headers: new HttpHeaders({'Authorization': validToken}),

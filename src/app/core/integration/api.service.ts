@@ -72,6 +72,7 @@ export class ApiService {
       );
   }
   getMatches(): Observable<MatchResponse | null> {
+    //todo: get matches with pagination
     const endpoint = 'get-matches';
     console.log(endpoint + ' triggered from ApiService');
     let headers = this.authService.getHeaderWithToken();
@@ -190,17 +191,16 @@ export class ApiService {
         catchError(this.handleError<null>(endpoint))
       );
   }
-  getMyMatch(): Observable<Match | null> {
-    const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
-    const endpoint = 'get-my-match';
+  getMatch(matchId: string): Observable<Match | null> {
+    const endpoint = 'get-match';
     console.log(endpoint + ' triggered from ApiService');
     let headers = this.authService.getHeaderWithToken();
-    return this.http.get<MyMatchResponse>(`${environment.baseUrl}${endpoint}/${accountId}`,
+    return this.http.get<MyMatchResponse>(`${environment.baseUrl}${endpoint}/${matchId}`,
       {headers, observe: 'response' })
       .pipe(
         map(response => {
           if (response.status === 200 && response.body) {
-            console.log('getMyMatch 200 Ok');
+            console.log('getMatch 200 Ok');
             this.authService.storeToken(response.headers);
             return response.body.myMatch;
           }
@@ -209,7 +209,6 @@ export class ApiService {
         catchError(this.handleError<null>(endpoint))
       );
   }
-
   private handleUnexpectedResponse(response: HttpResponse<any>, endpoint: string) {
     const message = `Unexpected response status in ${endpoint} with status code: ${response.status}`;
     if (response.status > 299) {

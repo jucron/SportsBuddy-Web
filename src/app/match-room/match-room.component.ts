@@ -53,9 +53,7 @@ export class MatchRoomComponent implements OnInit {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
   ngOnInit(): void {
-    this.matchService.getMyMatch().subscribe((match: Match) => {
-      this.myMatch = match;
-    });
+    this.myMatch = this.matchService.getMyMatch();
   }
   onSubmit() {
 

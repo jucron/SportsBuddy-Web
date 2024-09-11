@@ -37,7 +37,7 @@ export class AlertService {
       panelClass: ['fail-snackbar']
     });
   }
-  alertGetMatchError() {
+  alertGetMatchesError() {
     const message = 'Some error was found while getting the Matches List, please try again later';
     this._snackBar.open(message, 'Ai ai ai!',{
       duration: this.alertTimeMls,
@@ -88,9 +88,8 @@ export class AlertService {
       panelClass: ['fail-snackbar']
     });
   }
-
-  alertGetMyMatchError() {
-    const message = 'Some error was found while fetching MyMatch, please try again later';
+  alertGetMatchError() {
+    const message = 'Some error was found while fetching the desired Match, please try again later';
     this._snackBar.open(message, 'Dang!',{
       duration: this.alertTimeMls,
       panelClass: ['fail-snackbar']

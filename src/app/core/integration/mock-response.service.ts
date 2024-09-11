@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {LoginResponse} from "../model/responses/loginResponse";
 import {Match} from "../model/match";
 import {Account} from "../model/account";
@@ -22,7 +22,7 @@ import {CreateAccountRequest} from "../model/requests/createAccountRequest";
 @Injectable({
   providedIn: 'root'
 })
-export class MockResponseService {
+export class MockResponseService implements OnInit{
   accounts: Account[] = [];
   matches: Match[] = [];
   accountMockId = 1;
@@ -30,6 +30,9 @@ export class MockResponseService {
   matchesKeys = 'matches-keys';
 
   constructor(private factoryService: FactoryService) {
+    this.loadData();
+  }
+  ngOnInit(): void {
     this.loadData();
   }
   private bootstrapMockMatches(): Match[] {
@@ -42,7 +45,7 @@ export class MockResponseService {
         comments: 'Bring all friends!',
         sport: Sports.basketball,
         owner: this.accounts[1],
-        participants: [this.accounts[2], this.accounts[3]],
+        participants: [this.accounts[2], this.accounts[4]],
         matchRequests: []
       },
       {
@@ -359,19 +362,16 @@ export class MockResponseService {
     response.message = 'match-created';
     return response;
   }
-  getMockMyMatchResponse(accountId: string) {
+  getMockMatchResponse(matchId: string) {
     let response: MyMatchResponse = {
       myMatch: null,
       message: 'not found'
     }
-    let account = this.accounts.find(account => account.id === accountId);
-    if (account) {
-      let match = this.matches.find(match => match.owner?.username === account.username);
-      if (match) {
-        response.message = 'match-found';
-        response.myMatch = match;
-        return response;
-      }
+    let match = this.matches.find(match => match.id === matchId);
+    if (match) {
+      response.message = 'match-found';
+      response.myMatch = match;
+      return response;
     }
     //in case resource not found
     return response;

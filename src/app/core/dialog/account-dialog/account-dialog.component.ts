@@ -7,6 +7,8 @@ import {KeyValuePipe, NgForOf} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {MatCard} from "@angular/material/card";
 import {DateUtils} from "../../utils/dateUtils";
+import {MatchService} from "../../integration/match.service";
+import {DialogService} from "../dialog.service";
 
 
 interface AccountDialogData {
@@ -32,11 +34,27 @@ export class AccountDialogComponent {
 
   protected readonly sports = Sports;
 
+  constructor(private dialogService: DialogService,
+              private matchService: MatchService) {
+  }
+
   onCloseClick(): void {
     this.dialogRef.close();
   }
 
   getMyMatchDate() {
     return DateUtils.getDateLabel(this.account().myMatch!.date);
+  }
+
+  showMatchDialog(matchId: string) {
+    this.onCloseClick();
+    this.matchService.getMatch(matchId)
+      .subscribe(match => {
+        this.dialogService.showMatchDialog(match);
+      });
+  }
+
+  getMyMatchId() {
+    return this.account().myMatch!.id;
   }
 }

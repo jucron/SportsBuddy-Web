@@ -12,7 +12,7 @@
 
   @if (account().myMatch) {
     <h3><b>Checkout My Match!</b>
-      <div>
+      <div class="match" (click)="showMatchDialog(getMyMatchId())">
         <i>{{account().myMatch?.name}} on {{getMyMatchDate()}}</i>
       </div>
     </h3>
@@ -23,7 +23,9 @@
     <i>None yet! 😢</i>
   } @else {
     <div *ngFor="let match of (account().participatingMatches)">
-      <i>{{match.name}}</i>
+      <div class="match" (click)="showMatchDialog(match.id)" >
+        <i>{{match.name}}</i>
+      </div>
     </div>
   }
 </h3>

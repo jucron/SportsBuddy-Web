@@ -7,6 +7,8 @@ import {catchError, finalize, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
+import {STORAGE_KEYS} from "../keys/storage-keys";
+import {AccountService} from "./account.service";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,8 @@ export class MatchService {
     private apiService: ApiService,
     private routingService: RoutingService,
     private notificationService: AlertService,
-    private loadingDialogService: DialogService
+    private loadingDialogService: DialogService,
+    private accountService: AccountService
   ) {
   }
   getMatches(): Observable<MatchResponse> {
@@ -27,13 +30,13 @@ export class MatchService {
         if (response) {
           return response;
         } else {
-          this.notificationService.alertGetMatchError();
+          this.notificationService.alertGetMatchesError();
           return this.getEmptyMatchResponse();
         }
       }),
       catchError(err => {
         console.error('getMatches failed', err);
-        this.notificationService.alertGetMatchError();
+        this.notificationService.alertGetMatchesError();
         return of(this.getEmptyMatchResponse());
       }),
       finalize(() => {
@@ -94,25 +97,23 @@ export class MatchService {
         }
       });
   }
-  getMyMatch() {
-    return this.apiService.getMyMatch().pipe(
-      map((myMatch) => {
-        if (myMatch) {
-          return myMatch;
-        } else {
-          this.notificationService.alertGetMyMatchError();
-          return this.getEmptyMatch();
-        }
-      }),
-      catchError(err => {
-        console.error('getMyMatch failed', err);
-        this.notificationService.alertGetMyMatchError();
-        return of(this.getEmptyMatch());
-      }),
-      finalize(() => {
-        this.isLoading = false;
-      })
-    );
+  getMyMatch(): Match | null {
+    const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? null;
+    let myMatch: Match | null = null;
+    if (accountId) {
+      this.accountService.getAccount(accountId)
+        .subscribe(account => {
+          if (account) {
+            if (account.myMatch?.id) {
+              this.getMatch(account.myMatch?.id)
+                .subscribe(match => {
+                  myMatch = match;
+                });
+            }
+          }
+        });
+    }
+    return myMatch;
   }
   private getEmptyMatch(): Match {
     return  {
@@ -125,5 +126,28 @@ export class MatchService {
       comments: 'No Match',
       participants: []
     }
+  }
+  getMatch(id: string) {
+    this.isLoading = true;
+    this.loadingDialogService.showLoadingDialog();
+    return this.apiService.getMatch(id).pipe(
+      map((match) => {
+        if (match) {
+          return match;
+        } else {
+          this.notificationService.alertGetMatchError();
+          return this.getEmptyMatch();
+        }
+      }),
+      catchError(err => {
+        console.error('getMatch failed', err);
+        this.notificationService.alertGetMatchError();
+        return of(this.getEmptyMatch());
+      }),
+      finalize(() => {
+        this.isLoading = false;
+        this.loadingDialogService.closeLoadingDialog();
+      })
+    );
   }
 }
