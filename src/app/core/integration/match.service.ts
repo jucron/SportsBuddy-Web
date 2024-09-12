@@ -97,23 +97,12 @@ export class MatchService {
         }
       });
   }
-  getMyMatch(): Match | null {
-    const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? null;
-    let myMatch: Match | null = null;
-    if (accountId) {
-      this.accountService.getAccount(accountId)
-        .subscribe(account => {
-          if (account) {
-            if (account.myMatch?.id) {
-              this.getMatch(account.myMatch?.id)
-                .subscribe(match => {
-                  myMatch = match;
-                });
-            }
-          }
-        });
+  getMyMatch(): Observable<Match> {
+    const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    if (myMatchId) {
+      return this.getMatch(myMatchId);
     }
-    return myMatch;
+    return of(this.getEmptyMatch());
   }
   private getEmptyMatch(): Match {
     return  {
