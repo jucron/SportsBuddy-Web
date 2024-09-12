@@ -168,7 +168,7 @@ export class ApiService {
         catchError(this.handleError<null>(endpoint))
       );
   }
-  submitCreateMatch(match: Match): Observable<boolean | null> {
+  submitCreateMatch(match: Match): Observable<string | null> {
     const accountId = localStorage.getItem(STORAGE_KEYS.MAIN_ID) ?? 'accountId_not_found_in_storage';
     const endpoint = 'create-match';
     console.log(endpoint + ' triggered from ApiService');
@@ -184,7 +184,10 @@ export class ApiService {
           if (response.status === 200) {
             console.log('submitCreateMatch 200 Ok');
             this.authService.storeToken(response.headers);
-            return true;
+            if (response.body) {
+              return response.body.message;
+            }
+            return null;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),

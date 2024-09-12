@@ -13,7 +13,6 @@ import {FactoryService} from "../factory/factory.service";
 import {UserNotification} from "../model/userNotification";
 import {CreateMatchRequest} from "../model/requests/createMatchRequest";
 import {v4 as uuidv4} from 'uuid';
-import {STORAGE_KEYS} from "../keys/storage-keys";
 import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {GenericResponse} from "../model/responses/genericResponse";
 import {LoginRequest} from "../model/requests/loginRequest";
@@ -166,12 +165,15 @@ export class MockResponseService implements OnInit{
   }
   getLoginMockResponse(loginRequest: LoginRequest): LoginResponse {
     let mockResponse: LoginResponse = {
-      id: '',
+      userId: '',
+      myMatchId: null,
       message: 'login-failed'
     };
-    let id = this.validateLoginAndReturnId(loginRequest.credentials!.username, loginRequest.credentials!.password);
-    if (id) {
-      mockResponse.id = id;
+    let userId = this.validateLoginAndReturnId(loginRequest.credentials!.username, loginRequest.credentials!.password);
+    if (userId) {
+      let myMatch = this.matches.find(match => match.owner?.username === loginRequest.credentials!.username);
+      mockResponse.userId = userId;
+      mockResponse.myMatchId = myMatch?.id ?? null;
       mockResponse.message = 'login-success';
     }
     return mockResponse;
@@ -207,11 +209,9 @@ export class MockResponseService implements OnInit{
   }
   getMockMatchesResponse(): MatchResponse {
     //backend note: the username will be taken from the JWT token
-    const hasMatch = this.matches.some(match => match.owner?.username == localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME));
     return {
       message: 'getMatch-success',
       matches: this.matches,
-      hasMatch: hasMatch
     };
   }
   getAccountMockResponse(accountId: string): AccountResponse {
@@ -343,7 +343,7 @@ export class MockResponseService implements OnInit{
   }
   mockCreateMatchResponse(request: CreateMatchRequest) {
     let response: GenericResponse = {
-      message: 'not found'
+      message: 'create match failed'
     }
     let account = this.accounts.find(account => account.id === request.userId);
     if (!account) {
@@ -359,7 +359,7 @@ export class MockResponseService implements OnInit{
     //save mockUp data
     this.saveData();
     //return ok response
-    response.message = 'match-created';
+    response.message = newMatch.id;
     return response;
   }
   getMockMatchResponse(matchId: string) {

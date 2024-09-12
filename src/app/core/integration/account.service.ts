@@ -31,7 +31,10 @@ export class AccountService {
         next: response => {
           if (response) {
             localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
-            localStorage.setItem(STORAGE_KEYS.MAIN_ID, response.id);
+            localStorage.setItem(STORAGE_KEYS.MAIN_ID, response.userId);
+            if (response.myMatchId) {
+              localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response.myMatchId);
+            }
             this.notificationService.alertLoginSuccess();
             this.routingService.redirectTo('home', false);
           } else {

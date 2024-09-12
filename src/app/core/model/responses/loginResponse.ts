@@ -1,4 +1,5 @@
 export interface LoginResponse {
-  id: string;
+  userId: string;
+  myMatchId: string | null;
   message: string;
 }

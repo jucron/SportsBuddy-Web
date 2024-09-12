@@ -95,7 +95,7 @@ export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => 
     });
   } else if (req.url.endsWith('/create-match')) {
     let responseBody: GenericResponse = mockService.mockCreateMatchResponse(req.body as CreateMatchRequest)
-    const success = responseBody.message === 'match-created';
+    const success = responseBody.message !== 'create match failed';
     mockResponse = new HttpResponse({
       headers: new HttpHeaders({'Authorization': validToken}),
       status: (success) ? 200: 404, //OK or Not found

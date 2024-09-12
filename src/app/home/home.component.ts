@@ -22,6 +22,7 @@ import {Account} from "../core/model/account";
 import {DialogService} from "../core/dialog/dialog.service";
 import {DateUtils} from "../core/utils/dateUtils";
 import {NotificationService} from "../core/integration/notification.service";
+import {STORAGE_KEYS} from "../core/keys/storage-keys";
 
 @Component({
   selector: 'app-home',
@@ -48,7 +49,6 @@ import {NotificationService} from "../core/integration/notification.service";
 export class HomeComponent implements OnInit {
   isLoadingTable = false;
   matchesTable: Match[] = [];
-  hasMatch = false;
   displayedColumns: string[] = ['name', 'date', 'time', 'location','comments','sport','owner','participants'];
   protected readonly DateUtils = DateUtils;
 
@@ -63,7 +63,8 @@ export class HomeComponent implements OnInit {
     this.notificationService.loadUserNotifications();
   }
   routeToCreateMatchOrMatchRoom() {
-    const direction = this.hasMatch ? 'match-room/owner' : 'match';
+    let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    const direction = myMatchId ? 'match-room/owner' : 'match';
     this.routingService.redirectTo(direction, false);
   }
   updateMatchTable() {
@@ -72,7 +73,6 @@ export class HomeComponent implements OnInit {
       .subscribe({
     next: matchResponse => {
       this.matchesTable = matchResponse.matches;
-      this.hasMatch = matchResponse.hasMatch;
     },
       error: error => {
       console.error('error in updating updateMatchTable'+error)
@@ -109,7 +109,8 @@ export class HomeComponent implements OnInit {
   }
 
   getMyMatchLabel() {
-    if (this.hasMatch) {
+    let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    if (myMatchId) {
       return "Go to my Match-Room";
     }
     return "Create a new Match";

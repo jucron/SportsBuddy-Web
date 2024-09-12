@@ -48,7 +48,6 @@ export class MatchService {
     return {
       message: 'getMatches-failed',
       matches: [],
-      hasMatch: false
     };
   }
   matchRequest(matchRequest: MatchRequest) {
@@ -81,6 +80,7 @@ export class MatchService {
       .subscribe({
         next: (response) => {
           if (response) {
+            localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response);
             this.notificationService.alertMatchRequestSuccess();
             this.routingService.redirectTo('home', false);
           } else {
