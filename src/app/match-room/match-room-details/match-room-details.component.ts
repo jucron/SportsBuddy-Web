@@ -57,6 +57,7 @@ export class MatchRoomDetailsComponent implements OnInit{
     this.matchForm = this.factoryService.getFormFactory().createMatchForm()
   }
   ngOnInit(): void {
+    //If matchId is not null, get the match from the server
     if (this.matchId) {
       this.matchService.getMatch(this.matchId)
         .subscribe(match => {
@@ -80,9 +81,6 @@ export class MatchRoomDetailsComponent implements OnInit{
             sport: this.match.sport
           });
     }
-  }
-  routeBackToHome() {
-    this.routeService.redirectTo('home', false);
   }
 
   showAccountDialog(accountId: string) {

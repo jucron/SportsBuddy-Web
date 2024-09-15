@@ -1,10 +1,19 @@
-<h2>Match Room</h2>
-@if (isCurrentUserOwner()) {
-    <app-match-room-details [currentState]="currentState" [matchId]="getMatchIdByRoute()"></app-match-room-details>
-} @else {
-    <app-match-read-only [matchId]="getMatchIdByRoute()"></app-match-read-only>
-}
+<h1 fxLayoutAlign="center center">Match Room</h1>
+<div fxLayout="row" fxLayoutAlign="space-around start">
+  <div fxFlex="45" fxLayout="column" fxLayoutAlign="center center">
+    @if (isCurrentUserOwner()) {
+      <app-match-room-details [currentState]="currentState" [matchId]="getMatchIdByRoute()"></app-match-room-details>
+    } @else {
+      <app-match-read-only [matchId]="getMatchIdByRoute()"></app-match-read-only>
+    }
+  </div>
+
+  <div fxFlex="45" fxLayout="row" fxLayoutAlign="center center">
+    <app-match-room-chat></app-match-room-chat>
+  </div>
+</div>
+
 <p></p>
-<div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
+<div class="buttons" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20px">
   <button mat-button type="reset" (click)="routeBackToHome()">Go back</button>
 </div>

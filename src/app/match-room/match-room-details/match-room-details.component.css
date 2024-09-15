@@ -3,6 +3,10 @@
 }
 .card {
   width: 400px;
+
+}
+.mat-toolbar {
+  background-color: #f1eabf;
 }
 .content {
   display: flex;

@@ -1,0 +1,13 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  width: 400px;
+}
+.mat-toolbar {
+  margin-top: 20px;
+  background-color: #89bed7;
+}

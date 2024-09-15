@@ -19,6 +19,7 @@ import {MatchRoomDetailsComponent} from "./match-room-details/match-room-details
 import {MatchDialogComponent} from "../core/dialog/match-dialog/match-dialog.component";
 import {MatchReadOnlyComponent} from "../match/match-read-only/match-read-only.component";
 import {STORAGE_KEYS} from "../core/keys/storage-keys";
+import {MatchRoomChatComponent} from "./match-room-chat/match-room-chat.component";
 
 @Component({
   selector: 'app-chat-room',
@@ -45,7 +46,8 @@ import {STORAGE_KEYS} from "../core/keys/storage-keys";
     ReactiveFormsModule,
     MatchRoomDetailsComponent,
     MatchDialogComponent,
-    MatchReadOnlyComponent
+    MatchReadOnlyComponent,
+    MatchRoomChatComponent
   ],
   templateUrl: './match-room.component.html',
   styleUrl: './match-room.component.css'
