@@ -1,0 +1,17 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /*min-height: 200px;*/
+  padding: 20px;
+  max-width: 400px;
+}
+.participant{
+  cursor: pointer;
+}
+.participant:hover{
+  font-weight: bold;
+  background-color: #f1eabf;
+}

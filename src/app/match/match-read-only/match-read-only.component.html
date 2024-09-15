@@ -1,0 +1,28 @@
+<div class="content">
+  <h1>{{getSportIcon()}}  <b>{{match.name}}</b></h1>
+
+  <h3><b>When: </b>
+    <i>{{DateUtils.getDateLabel(match.date)}}</i>
+    <i>, at {{DateUtils.getTimeLabel(match.date)}}</i>
+  </h3>
+  <h3><b>Sport being played: </b><i>{{match.sport}}</i></h3>
+
+  <h3><b>Where: </b><i>{{match.location}}</i> </h3>
+
+  <h3><b>Remarks: </b><i>{{match.comments}}</i></h3>
+
+  <h3><b>Owner of this match: </b>
+    <div class="participant" (click)="showAccountDialog(match.owner!.id)">
+      <a><i>{{match.owner!.name}}</i></a>
+    </div>
+  </h3>
+
+  <h3><b>Who's participating: </b>
+    <div *ngFor="let participant of getParticipants()">
+      <div class="participant" (click)="showAccountDialog(participant.id)">
+        <a>{{participant.name}}</a>
+      </div>
+    </div>
+  </h3>
+
+</div>
