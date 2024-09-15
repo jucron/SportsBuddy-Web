@@ -15,31 +15,8 @@
 
 
 <mat-card class="content">
-  <h1>{{getSportIcon()}}  <b>{{match().name}}</b></h1>
 
-  <h3><b>When: </b>
-    <i>{{DateUtils.getDateLabel(match().date)}}</i>
-    <i>, at {{DateUtils.getTimeLabel(match().date)}}</i>
-  </h3>
-  <h3><b>Sport being played: </b><i>{{match().sport}}</i></h3>
-
-  <h3><b>Where: </b><i>{{match().location}}</i> </h3>
-
-  <h3><b>Remarks: </b><i>{{match().comments}}</i></h3>
-
-  <h3><b>Owner of this match: </b>
-    <div class="participant">
-      <a (click)="showAccountDialog(match().owner!.id)"><i>{{match().owner!.name}}</i></a>
-    </div>
-  </h3>
-
-  <h3><b>Who's participating: </b>
-    <div *ngFor="let participant of getParticipants()">
-      <div class="participant">
-        <a (click)="showAccountDialog(participant.id)" >{{participant.name}}</a>
-      </div>
-    </div>
-  </h3>
+  <app-match-read-only [match]="match()" [dialogRef]="dialogRef"></app-match-read-only>
 
   <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
     <button (click)="changeFiller()" mat-raised-button color="primary" type="submit" [disabled]="isButtonAskToParticipateDisabled()">Ask to participate</button>

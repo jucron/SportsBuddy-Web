@@ -1,6 +1,6 @@
 import {AbstractControl, FormBuilder, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {AccountFormFactory, AccountFormFactoryCreate, AccountFormFactoryUpdate} from "./AccountFormFactory";
-import {AccountState} from "../model/accountState";
+import {PageState} from "../model/pageState";
 import {DateUtils} from "../utils/dateUtils";
 
 export class FormFactory {
@@ -13,7 +13,7 @@ export class FormFactory {
       password: ['', this.requiredValidation]
     });
   }
-  createAccountForm(state: AccountState){
+  createAccountForm(state: PageState){
     let accountForm: AccountFormFactory = state.isCreateState() ? new AccountFormFactoryCreate(this.fb):new AccountFormFactoryUpdate(this.fb);
     return accountForm.createAccountForm();
   }

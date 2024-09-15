@@ -7,7 +7,6 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {Match} from "../../model/match";
 import {MatCard, MatCardContent} from "@angular/material/card";
 import {DateUtils} from "../../utils/dateUtils";
-import {Sports} from "../../model/sports";
 import {STORAGE_KEYS} from "../../keys/storage-keys";
 import {FormErrorComponent} from "../../helper-components/form-error/form-error.component";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
@@ -17,8 +16,7 @@ import {FactoryService} from "../../factory/factory.service";
 import {NgForOf, NgIf} from "@angular/common";
 import {MatchService} from "../../integration/match.service";
 import {MatchRequest} from "../../model/requests/matchRequest";
-import {DialogService} from "../dialog.service";
-import {AccountService} from "../../integration/account.service";
+import {MatchReadOnlyComponent} from "../../../match/match-read-only/match-read-only.component";
 
 interface MatchDialogData {
   match: Match
@@ -40,11 +38,13 @@ interface MatchDialogData {
     ReactiveFormsModule,
     NgIf,
     MatCardContent,
-    NgForOf
+    NgForOf,
+    MatchReadOnlyComponent
   ],
   templateUrl: './match-dialog.component.html',
   styleUrl: './match-dialog.component.css'
 })
+
 export class MatchDialogComponent {
   readonly dialogRef = inject(MatDialogRef<MatchDialogComponent>);
   readonly data = inject<MatchDialogData>(MAT_DIALOG_DATA);
@@ -56,8 +56,6 @@ export class MatchDialogComponent {
 
   constructor(private factoryService: FactoryService,
               private matchService: MatchService,
-              private dialogService: DialogService,
-              private accountService: AccountService
   ) {
     this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
   }
@@ -78,28 +76,6 @@ export class MatchDialogComponent {
   isUserParticipating(): boolean {
     return this.match().participants.some(participant =>
       participant.username === this.loggedUsername);
-  }
-  getParticipants() {
-    return this.match().participants.map(participant => ({
-      name: participant.name,
-      id: participant.id
-    }));
-  }
-  getSportIcon() {
-    switch (this.match().sport) {
-      case Sports.soccer:
-        return '⚽';
-      case Sports.basketball:
-        return '🏀';
-      case Sports.volleyball:
-        return '🏐';
-      case Sports.baseball:
-        return '⚾';
-      case Sports.tennis:
-        return '🎾';
-      default:
-        return '🏓';
-    }
   }
   getMatchRequestDate() {
     let date = this.match().matchRequests.find(request => {
@@ -124,11 +100,5 @@ export class MatchDialogComponent {
     }
     this.onCloseClick();
   }
-  showAccountDialog(accountId: string) {
-    this.onCloseClick();
-    const account = this.accountService.getAccount(accountId)
-      .subscribe(account => {
-        this.dialogService.showAccountDialog(account!);
-      });
-  }
+
 }

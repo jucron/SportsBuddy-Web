@@ -14,7 +14,7 @@ import {Account} from "../core/model/account";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {Sports} from "../core/model/sports";
 import {KeyValuePipe, NgForOf} from "@angular/common";
-import {AccountState, CreateState, ReadOnlyState, UpdateState} from "../core/model/accountState";
+import {CreateState, PageState, ReadOnlyState, UpdateState} from "../core/model/pageState";
 import {FactoryService} from "../core/factory/factory.service";
 import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
 import {ActivatedRoute} from "@angular/router";
@@ -44,7 +44,7 @@ export class AccountComponent implements OnInit {
   accountForm!: FormGroup;
   sports = Sports;
   sportsSelected: Sports[];
-  protected currentState: AccountState;
+  protected currentState: PageState;
 
 
   constructor(
@@ -55,11 +55,11 @@ export class AccountComponent implements OnInit {
   ) {
     this.sportsSelected = [];
     this.currentState = new ReadOnlyState();
+    this.accountForm = this.factoryService.getFormFactory().createAccountForm(this.currentState);
   }
 
   ngOnInit(): void {
     this.setCurrentStateBasedOnRouteData();
-    this.accountForm = this.factoryService.getFormFactory().createAccountForm(this.currentState);
     this.loadAccountData();
   }
   onSubmit() {
@@ -73,11 +73,9 @@ export class AccountComponent implements OnInit {
         //todo
         // this.loginService.updateAccount(account);
       }
-
       this.clickReturnButton();
     }
   }
-
   clickReturnButton() {
     if (this.currentState.isCreateState()) {
       this.routingService.redirectTo('', false);
@@ -85,7 +83,6 @@ export class AccountComponent implements OnInit {
       this.routingService.redirectTo('home', false);
     }
   }
-
   isSportSelected(sport: Sports): boolean {
     return this.sportsSelected.includes(sport);
   }
@@ -97,7 +94,6 @@ export class AccountComponent implements OnInit {
       this.sportsSelected.push(sport); // Add the sport if it's not selected
     }
   }
-
   private setCurrentStateBasedOnRouteData(){
     this.activatedRoute.data
       .subscribe(data => {
@@ -114,10 +110,8 @@ export class AccountComponent implements OnInit {
         }
       });
   }
-
   private loadAccountData() {
     const accountId = this.activatedRoute.snapshot.paramMap.get('id');
-    console.log('loadAccountData triggered with id: '+accountId);
     if (accountId != null) {
       this.loginService.getAccount(accountId)
         .subscribe({
@@ -143,11 +137,9 @@ export class AccountComponent implements OnInit {
       console.error('Error loading account - account not found with current Id');
     }
   }
-
   getSubmitButtonLabel(): string {
     return this.currentState.isCreateState() ? 'Create' : 'Update';
   }
-
   getReturnButtonLabel(): string {
     return this.currentState.isReadOnlyState() ? 'Go back' : 'Cancel';
   }

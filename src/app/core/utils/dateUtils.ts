@@ -8,6 +8,9 @@ export class DateUtils {
     }
     return null;
   }
+  static getTimeFromDate(date: Date){
+    return date.toTimeString().slice(0, 5);
+  }
   static getDateLabel(date: Date){
     return date.toLocaleDateString('en-US', {
       year: 'numeric',

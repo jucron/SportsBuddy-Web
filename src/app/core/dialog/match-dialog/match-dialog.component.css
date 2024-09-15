@@ -22,10 +22,3 @@
   padding-top: 20px;
   background-color: #f1eabf;
 }
-.participant{
-  cursor: pointer;
-}
-.participant:hover{
-  font-weight: bold;
-  background-color: #f1eabf;
-}

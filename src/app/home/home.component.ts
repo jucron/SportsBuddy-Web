@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit {
   }
   routeToCreateMatchOrMatchRoom() {
     let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
-    const direction = myMatchId ? 'match-room/owner' : 'match';
+    const direction = myMatchId ? `match-room/${myMatchId}/owner` : 'match';
     this.routingService.redirectTo(direction, false);
   }
   updateMatchTable() {

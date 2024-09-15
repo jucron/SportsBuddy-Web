@@ -8,7 +8,6 @@ import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
 import {STORAGE_KEYS} from "../keys/storage-keys";
-import {AccountService} from "./account.service";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +20,6 @@ export class MatchService {
     private routingService: RoutingService,
     private notificationService: AlertService,
     private loadingDialogService: DialogService,
-    private accountService: AccountService
   ) {
   }
   getMatches(): Observable<MatchResponse> {
@@ -96,13 +94,6 @@ export class MatchService {
           this.loadingDialogService.closeLoadingDialog();
         }
       });
-  }
-  getMyMatch(): Observable<Match> {
-    const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
-    if (myMatchId) {
-      return this.getMatch(myMatchId);
-    }
-    return of(this.getEmptyMatch());
   }
   private getEmptyMatch(): Match {
     return  {
