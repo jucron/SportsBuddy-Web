@@ -104,7 +104,8 @@ export class MatchService {
       matchRequests: [],
       sport: 'No Match',
       comments: 'No Match',
-      participants: []
+      participants: [],
+      chatData: null
     }
   }
   getMatch(id: string) {

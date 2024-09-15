@@ -45,7 +45,8 @@ export class MockResponseService implements OnInit{
         sport: Sports.basketball,
         owner: this.accounts[1],
         participants: [this.accounts[2], this.accounts[4]],
-        matchRequests: []
+        matchRequests: [],
+        chatData: null
       },
       {
         id: '2',
@@ -56,7 +57,8 @@ export class MockResponseService implements OnInit{
         sport: Sports.soccer,
         owner: this.accounts[2],
         participants: [this.accounts[4], this.accounts[5]],
-        matchRequests: []
+        matchRequests: [],
+        chatData: null
       },
       {
         id: '3',
@@ -67,7 +69,8 @@ export class MockResponseService implements OnInit{
         sport: Sports.tennis,
         owner: this.accounts[3],
         participants: [this.accounts[5], this.accounts[6], this.accounts[3]],
-        matchRequests: []
+        matchRequests: [],
+        chatData: null
       },
       {
         id: '4',
@@ -78,7 +81,8 @@ export class MockResponseService implements OnInit{
         sport: Sports.volleyball,
         owner: this.accounts[5],
         participants: [this.accounts[1], this.accounts[2], this.accounts[4]],
-        matchRequests: []
+        matchRequests: [],
+        chatData: null
       }
     ];
   }

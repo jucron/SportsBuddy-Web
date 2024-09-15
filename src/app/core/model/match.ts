@@ -1,5 +1,6 @@
 import {Account} from "./account";
 import {MatchRequest} from "./requests/matchRequest";
+import {ChatData} from "./chatData";
 
 export interface Match {
   id: string
@@ -11,4 +12,5 @@ export interface Match {
   participants: Account[]
   owner?: Account | null
   matchRequests: MatchRequest[]
+  chatData: ChatData | null
 }
