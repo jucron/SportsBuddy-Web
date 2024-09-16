@@ -1,31 +1,26 @@
 <div fxLayout="row" fxLayoutAlign="center center" fxFill>
   <div class="card">
     <mat-card>
-<!--      todo: work with the States-->
-
-      <mat-toolbar> Create a new account  </mat-toolbar>
+      <mat-toolbar> {{ getTitleLayout() }}  </mat-toolbar>
       <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
-
-        @if (currentState.isCreateState()){
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Username</mat-label>
-            <input matInput formControlName="username" required>
-            <app-form-error [control]="accountForm.get('username')"></app-form-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" required>
-            <app-form-error [control]="accountForm.get('password')"></app-form-error>
-          </mat-form-field>
-        }
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" required>
+          <app-form-error [control]="accountForm.get('username')"></app-form-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" required>
+          <app-form-error [control]="accountForm.get('password')"></app-form-error>
+        </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Name</mat-label>
-          <input matInput formControlName="name" required [disabled]="currentState.isReadOnlyState()">
+          <input matInput formControlName="name" required>
           <app-form-error [control]="accountForm.get('name')"></app-form-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" required [disabled]="currentState.isReadOnlyState()">
+          <input matInput formControlName="email" required>
           <app-form-error [control]="accountForm.get('email')"></app-form-error>
         </mat-form-field>
 
@@ -40,11 +35,9 @@
         </div>
 
         <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
-          @if (! currentState.isReadOnlyState()) {
           <div matTooltip='fields not valid' [matTooltipDisabled]="accountForm.valid">
-            <button mat-raised-button color="primary" type="submit" [disabled]="accountForm.invalid">{{getSubmitButtonLabel()}}</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitButtonDisabled()">{{getSubmitButtonLabel()}}</button>
           </div>
-          }
           <button mat-button type="reset" (click)="clickReturnButton()">{{getReturnButtonLabel()}}</button>
         </div>
       </form>

@@ -11,13 +11,13 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {NgForOf} from "@angular/common";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {PageState} from "../../core/model/pageState";
-import {RoutingService} from "../../core/routing/routing.service";
 import {FactoryService} from "../../core/factory/factory.service";
 import {MatchService} from "../../core/integration/match.service";
 import {AccountService} from "../../core/integration/account.service";
 import {DialogService} from "../../core/dialog/dialog.service";
 import {DateUtils} from "../../core/utils/dateUtils";
 import {Match} from "../../core/model/match";
+import {ChangeHelper} from "../../core/audit/changeHelper";
 
 @Component({
   selector: 'app-match-room-details',
@@ -47,9 +47,9 @@ export class MatchRoomDetailsComponent implements OnInit{
   @Input() currentState!: PageState;
   match: Match | null = null;
   matchForm: FormGroup;
+  changeHelper!: ChangeHelper;
 
-  constructor(private routeService: RoutingService,
-              private accountService: AccountService,
+  constructor(private accountService: AccountService,
               private dialogService: DialogService,
               private matchService: MatchService,
               private factoryService: FactoryService,
@@ -80,6 +80,7 @@ export class MatchRoomDetailsComponent implements OnInit{
             comments: this.match.comments,
             sport: this.match.sport
           });
+      this.changeHelper = new ChangeHelper([this.matchForm.value])
     }
   }
 
@@ -91,6 +92,6 @@ export class MatchRoomDetailsComponent implements OnInit{
   }
 
   isUpdateDisabled() {
-    return this.matchForm.invalid && this.matchForm.pristine;
+    return this.matchForm.invalid || !this.changeHelper.hasAnyChange([this.matchForm.value]);
   }
 }

@@ -34,6 +34,8 @@ export class AccountFormFactoryUpdate extends AccountFormFactory{
   }
   createAccountForm() {
     return this.fb.group({
+      username: [{ value: '', disabled: true }, this.requiredValidation],
+      password: [{ value: '', disabled: true }, this.passwordValidation],
       name: ['', this.requiredValidation],
       email: ['', this.emailValidation]
     });

@@ -18,6 +18,7 @@ import {CreateState, PageState, ReadOnlyState, UpdateState} from "../core/model/
 import {FactoryService} from "../core/factory/factory.service";
 import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
 import {ActivatedRoute} from "@angular/router";
+import {ChangeHelper} from "../core/audit/changeHelper";
 
 @Component({
   selector: 'app-account',
@@ -45,7 +46,7 @@ export class AccountComponent implements OnInit {
   sports = Sports;
   sportsSelected: Sports[];
   protected currentState: PageState;
-
+  changeHelper!: ChangeHelper;
 
   constructor(
     private factoryService: FactoryService,
@@ -55,12 +56,13 @@ export class AccountComponent implements OnInit {
   ) {
     this.sportsSelected = [];
     this.currentState = new ReadOnlyState();
-    this.accountForm = this.factoryService.getFormFactory().createAccountForm(this.currentState);
   }
-
   ngOnInit(): void {
     this.setCurrentStateBasedOnRouteData();
-    this.loadAccountData();
+    this.accountForm = this.factoryService.getFormFactory().createAccountForm(this.currentState);
+    if (!this.currentState.isCreateState()) {
+      this.loadAccountData();
+    }
   }
   onSubmit() {
     if (this.accountForm && this.accountForm.valid) {
@@ -127,6 +129,7 @@ export class AccountComponent implements OnInit {
                 }
               );
               this.sportsSelected = account.favouriteSports;
+              this.changeHelper = new ChangeHelper([this.accountForm.value,this.sportsSelected])
             }
           },
           error: (err) => {
@@ -142,5 +145,14 @@ export class AccountComponent implements OnInit {
   }
   getReturnButtonLabel(): string {
     return this.currentState.isReadOnlyState() ? 'Go back' : 'Cancel';
+  }
+  getTitleLayout() {
+    return (this.currentState.isCreateState() ? "Create a new account" : "Update your account");
+  }
+  isSubmitButtonDisabled() {
+    if (this.currentState.isUpdateState()) {
+      return this.accountForm.invalid || !this.changeHelper.hasAnyChange([this.accountForm.value,this.sportsSelected]);
+    }
+    return this.accountForm.invalid;
   }
 }

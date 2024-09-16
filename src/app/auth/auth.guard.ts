@@ -7,7 +7,8 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AccountService);
   const routerService = inject(RoutingService);
   const isAuthenticated = authService.isAuthenticated();
-  if (route.url.toString() === 'login') {
+  const currentRoute = route.url.toString();
+  if (currentRoute === 'login' || currentRoute === 'account,create') {
     if (isAuthenticated) {
       console.log('authGuard: user is authenticated, redirecting to home');
       routerService.redirectTo('home', false);
