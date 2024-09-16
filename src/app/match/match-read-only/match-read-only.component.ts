@@ -7,12 +7,14 @@ import {DialogService} from "../../core/dialog/dialog.service";
 import {AccountService} from "../../core/integration/account.service";
 import {NgForOf} from "@angular/common";
 import {MatchService} from "../../core/integration/match.service";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-match-read-only',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
+    MatProgressSpinner
   ],
   templateUrl: './match-read-only.component.html',
   styleUrl: './match-read-only.component.css'
@@ -21,6 +23,7 @@ export class MatchReadOnlyComponent implements OnInit{
   @Input() match!: Match;
   @Input() matchId: string | null = null;
   @Input() dialogRef: MatDialogRef<any> | null = null;
+  isMatchLoading = true;
 
   protected readonly DateUtils = DateUtils;
 
@@ -32,7 +35,12 @@ export class MatchReadOnlyComponent implements OnInit{
   ngOnInit(): void {
     if (this.matchId) {
       this.matchService.getMatch(this.matchId)
-        .subscribe(match => {this.match = match!});
+        .subscribe(match => {
+          this.match = match!;
+          this.isMatchLoading = false;
+        });
+    } else {
+      this.isMatchLoading = false;
     }
   }
   getParticipants() {

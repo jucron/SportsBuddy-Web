@@ -1,4 +1,7 @@
 <div class="content">
+  @if (isMatchLoading) {
+    <h2>Loading match details...</h2>
+  } @else {
   <h1>{{getSportIcon()}}  <b>{{match.name}}</b></h1>
 
   <h3><b>When: </b>
@@ -24,5 +27,5 @@
       </div>
     </div>
   </h3>
-
+  }
 </div>
