@@ -4,12 +4,14 @@
     <h4>⚠️ You requested to participate in {{getMatchRequestDate()}}</h4>
   </div>
 } @else if (isUserParticipating()) {
-  <div class="topNote">
+  <div class="topNote" fxLayout="column" fxLayoutAlign="center center">
     <h4>You are participating in this match! 😎👌🔥</h4>
+  <button fxFill mat-button type="button" (click)="goToMatchRoom()">Go to Match-Room</button>
   </div>
 } @else if (isUserOwner()) {
-  <div class="topNoteOwner">
+  <div class="topNote" fxLayout="column" fxLayoutAlign="center center">
     <h4>You are the Owner of this Match! 🤩 </h4>
+    <button fxFill mat-button type="button" (click)="goToMyMatchRoom()">Go to My Match-Room</button>
   </div>
 }
 

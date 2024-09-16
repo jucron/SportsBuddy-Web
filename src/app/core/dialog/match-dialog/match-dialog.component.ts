@@ -17,6 +17,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {MatchService} from "../../integration/match.service";
 import {MatchRequest} from "../../model/requests/matchRequest";
 import {MatchReadOnlyComponent} from "../../../match/match-read-only/match-read-only.component";
+import {RoutingService} from "../../routing/routing.service";
 
 interface MatchDialogData {
   match: Match
@@ -56,6 +57,7 @@ export class MatchDialogComponent {
 
   constructor(private factoryService: FactoryService,
               private matchService: MatchService,
+              private routeService: RoutingService
   ) {
     this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
   }
@@ -95,10 +97,18 @@ export class MatchDialogComponent {
       matchRequest.usernameRequested = this.loggedUsername ?? 'not-found';
       matchRequest.date = new Date();
       matchRequest.usernameOwner = this.match().owner!.username;
-      console.log('matchRequest: '+JSON.stringify(matchRequest))
       this.matchService.matchRequest(matchRequest);
     }
     this.onCloseClick();
   }
 
+  goToMatchRoom() {
+    this.onCloseClick();
+    this.routeService.redirectTo('match-room/'+this.match().id+'/participant', false);
+  }
+
+  goToMyMatchRoom() {
+    this.onCloseClick();
+    this.routeService.redirectTo('match-room/'+this.match().id+'/owner', false);
+  }
 }
