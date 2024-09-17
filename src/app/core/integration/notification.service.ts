@@ -2,7 +2,8 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, catchError, finalize, map, Observable, of} from "rxjs";
 import {ApiService} from "./api.service";
 import {AlertService} from "../alert/alert.service";
-import {UserNotification} from "../model/userNotification";
+import {NotificationStatus, UserNotification} from "../model/userNotification";
+import {RoutingService} from "../routing/routing.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class NotificationService {
 
 
   constructor(private apiService: ApiService,
-              private alertService: AlertService) { }
+              private alertService: AlertService,
+              private routingService: RoutingService) { }
 
   loadUserNotifications() {
     this.isLoading = true;
@@ -56,5 +58,26 @@ export class NotificationService {
           this.isLoading = false;
         }
       });
+  }
+  readNotifications() {
+    let userNotifications = this.userNotificationsSubject.getValue();
+    const hasUnreadNotifications = userNotifications.some(notification => notification.status === NotificationStatus.UNREAD);
+    //
+    if (hasUnreadNotifications) {
+      userNotifications.forEach(notification => {
+        notification.status = NotificationStatus.READ;
+      })
+      this.updateUserNotifications(userNotifications);
+    }
+  }
+  actOnNotification(notification: UserNotification) {
+    let userNotifications = this.userNotificationsSubject.getValue();
+    notification.status = NotificationStatus.ACTIONED;
+    let userNotification = userNotifications.find(not => not.id === notification.id);
+    if (userNotification) {
+      userNotification.status = NotificationStatus.ACTIONED;
+    }
+    this.updateUserNotifications(userNotifications);
+    this.routingService.redirectTo(notification.link,false);
   }
 }

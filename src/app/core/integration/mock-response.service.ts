@@ -259,7 +259,7 @@ export class MockResponseService implements OnInit{
     let notifications = this.accounts.find(account => {
       return account.username === matchRequest.usernameOwner;
     })?.notifications;
-    notifications?.push(this.factoryService.getNotificationFactory().createMatchRequestNotification());
+    notifications?.push(this.factoryService.getNotificationFactory().createMatchRequestNotification(matchOfOwner!.id));
     //save mockUp data
     this.saveData();
     //response with 200 status
@@ -269,7 +269,6 @@ export class MockResponseService implements OnInit{
     return response;
   }
   getMockUserNotificationsResponse(userId: string) {
-    console.log('getMockUserNotificationsResponse triggered with id '+userId)
     //create response
     let notificationsResponse: NotificationsResponse = {
       message: 'notifications-not-found',

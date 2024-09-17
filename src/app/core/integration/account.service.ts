@@ -108,4 +108,12 @@ export class AccountService {
   isAuthenticated() {
     return localStorage.getItem(STORAGE_KEYS.TOKEN) !== null;
   }
+
+  getLoggedUsername() {
+    return localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME)
+  }
+
+  getLoggedAccountId() {
+    return localStorage.getItem(STORAGE_KEYS.MAIN_ID)
+  }
 }
