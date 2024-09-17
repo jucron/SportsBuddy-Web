@@ -19,6 +19,7 @@ import {FactoryService} from "../core/factory/factory.service";
 import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
 import {ActivatedRoute} from "@angular/router";
 import {ChangeHelper} from "../core/audit/changeHelper";
+import {DialogService} from "../core/dialog/dialog.service";
 
 @Component({
   selector: 'app-account',
@@ -52,7 +53,8 @@ export class AccountComponent implements OnInit {
     private factoryService: FactoryService,
     private loginService: AccountService,
     private routingService: RoutingService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private dialogService: DialogService
   ) {
     this.sportsSelected = [];
     this.currentState = new ReadOnlyState();
@@ -70,12 +72,23 @@ export class AccountComponent implements OnInit {
       account.favouriteSports = this.sportsSelected;
 
       if (this.currentState.isCreateState()) {
-        this.loginService.createAccount(account);
-      } else{
-        //todo
-        // this.loginService.updateAccount(account);
+        this.dialogService.confirmActionByDialog('create this new account')
+          .subscribe((result: boolean) => {
+            if (result) {
+              this.loginService.createAccount(account);
+              this.clickReturnButton();
+            }
+          });
+      } else {
+        this.dialogService.confirmActionByDialog('update this existing account')
+          .subscribe((result: boolean) => {
+            if (result) {
+              //todo
+              // this.loginService.updateAccount(account);
+              this.clickReturnButton();
+            }
+          });
       }
-      this.clickReturnButton();
     }
   }
   clickReturnButton() {

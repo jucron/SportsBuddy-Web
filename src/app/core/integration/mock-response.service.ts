@@ -24,7 +24,6 @@ import {CreateAccountRequest} from "../model/requests/createAccountRequest";
 export class MockResponseService implements OnInit{
   accounts: Account[] = [];
   matches: Match[] = [];
-  accountMockId = 1;
   accountKeys = 'account-keys';
   matchesKeys = 'matches-keys';
 
@@ -37,7 +36,7 @@ export class MockResponseService implements OnInit{
   private bootstrapMockMatches(): Match[] {
     return [
       {
-        id: '1',
+        id: uuidv4(),
         name: '3 on 3',
         date: this.getRandomDate(),
         location: 'Plaza sports center',
@@ -49,7 +48,7 @@ export class MockResponseService implements OnInit{
         chatData: null
       },
       {
-        id: '2',
+        id: uuidv4(),
         name: 'Soccer relax',
         date: this.getRandomDate(),
         location: 'Main field',
@@ -61,7 +60,7 @@ export class MockResponseService implements OnInit{
         chatData: null
       },
       {
-        id: '3',
+        id: uuidv4(),
         name: 'Tennis with friends',
         date: this.getRandomDate(),
         location: 'Tennis club',
@@ -73,7 +72,7 @@ export class MockResponseService implements OnInit{
         chatData: null
       },
       {
-        id: '4',
+        id: uuidv4(),
         name: 'Beach Volleyball!',
         date: this.getRandomDate(),
         location: 'Long beach',
@@ -89,7 +88,7 @@ export class MockResponseService implements OnInit{
   private bootstrapMockAccounts(): Account[] {
     return [
       {
-        id: '1',
+        id: uuidv4(),
         username: 'admin',
         password: 'admin',
         name: 'admin',
@@ -100,7 +99,7 @@ export class MockResponseService implements OnInit{
         participatingMatches: []
       },
       {
-        id: '2',
+        id: uuidv4(),
         username: 'john',
         password: '123',
         name: 'John Masters',
@@ -111,7 +110,7 @@ export class MockResponseService implements OnInit{
         participatingMatches: []
       },
       {
-        id: '3',
+        id: uuidv4(),
         username: 'larissa',
         password: '123',
         name: 'Larissa Lurdes',
@@ -122,7 +121,7 @@ export class MockResponseService implements OnInit{
         participatingMatches: []
       },
       {
-        id: '4',
+        id: uuidv4(),
         username: 'larissa',
         password: '123',
         name: 'Larissa Lurdes',
@@ -133,7 +132,7 @@ export class MockResponseService implements OnInit{
         participatingMatches: []
       },
       {
-        id: '5',
+        id: uuidv4(),
         username: 'rebecca',
         password: '123',
         name: 'Rebecca Lunes',
@@ -144,7 +143,7 @@ export class MockResponseService implements OnInit{
         participatingMatches: []
       },
       {
-        id: '6',
+        id: uuidv4(),
         username: 'bruna',
         password: '123',
         name: 'Bruna Mello',
@@ -155,7 +154,7 @@ export class MockResponseService implements OnInit{
         participatingMatches: []
       },
       {
-        id: '7',
+        id: uuidv4(),
         username: 'larry',
         password: '123',
         name: 'Larry London',
@@ -197,14 +196,17 @@ export class MockResponseService implements OnInit{
   }
   getCreateAccountMockResponse(createAccountRequest: CreateAccountRequest): GenericResponse {
     //check if username is taken
-    let usernameTaken = this.accounts.some(account => createAccountRequest.account!.username === account.username);
+    let usernameTaken = this.accounts.some(account => createAccountRequest.account.username === account.username);
     if (usernameTaken) {
       return {message: 'username-taken'};
     }
     //if username available, create new account
-    this.accountMockId++;
-    createAccountRequest.account!.id = (this.accountMockId).toString();
-    this.accounts.push(createAccountRequest.account!);
+    let newAccount = createAccountRequest.account;
+    newAccount.id = uuidv4();
+    newAccount.notifications = [];
+    newAccount.myMatch = null;
+    newAccount.participatingMatches = [];
+    this.accounts.push(createAccountRequest.account);
     //save mockUp data
     this.saveData();
     //response

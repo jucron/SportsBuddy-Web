@@ -8,6 +8,7 @@ import {Account} from "../model/account";
 import {catchError, finalize, map, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class AccountService {
     private apiService: ApiService,
     private routingService: RoutingService,
     private notificationService: AlertService,
-    private loadingDialogService: DialogService
+    private loadingDialogService: DialogService,
+    private authService: AuthService
   ) {}
 
   executeLogin(credentials: Credentials) {
@@ -52,7 +54,8 @@ export class AccountService {
       });
   }
   executeLogout() {
-    localStorage.clear();
+    this.authService.disconnect();
+
     //todo: call logout to backend
     this.routingService.redirectTo('', false);
   }
@@ -103,6 +106,6 @@ export class AccountService {
     );
   }
   isAuthenticated() {
-    return localStorage.getItem(STORAGE_KEYS.TOKEN) != null;
+    return localStorage.getItem(STORAGE_KEYS.TOKEN) !== null;
   }
 }

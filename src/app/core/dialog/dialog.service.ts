@@ -5,6 +5,8 @@ import {MatchDialogComponent} from "./match-dialog/match-dialog.component";
 import {Match} from "../model/match";
 import {Account} from "../model/account";
 import {AccountDialogComponent} from "./account-dialog/account-dialog.component";
+import {ConfirmActionDialogComponent} from "./confirm-action-dialog/confirm-action-dialog.component";
+import {map, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -35,5 +37,18 @@ export class DialogService {
       data: {account: account},
       panelClass: 'account-dialog-container'
     });
+  }
+  confirmActionByDialog(action: String): Observable<boolean> {
+    let dialogRef = this.dialog.open(ConfirmActionDialogComponent, {
+      data: {action: action},
+      panelClass: 'confirm-action-dialog-container'
+    });
+    return dialogRef.afterClosed()
+      .pipe(
+        map(result => {
+          console.log('User decision: ', result);
+          return result;
+        })
+      );
   }
 }

@@ -18,6 +18,7 @@ import {MatchService} from "../../integration/match.service";
 import {MatchRequest} from "../../model/requests/matchRequest";
 import {MatchReadOnlyComponent} from "../../../match/match-read-only/match-read-only.component";
 import {RoutingService} from "../../routing/routing.service";
+import {DialogService} from "../dialog.service";
 
 interface MatchDialogData {
   match: Match
@@ -57,7 +58,8 @@ export class MatchDialogComponent {
 
   constructor(private factoryService: FactoryService,
               private matchService: MatchService,
-              private routeService: RoutingService
+              private routeService: RoutingService,
+              private dialogService: DialogService
   ) {
     this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
   }
@@ -97,9 +99,15 @@ export class MatchDialogComponent {
       matchRequest.usernameRequested = this.loggedUsername ?? 'not-found';
       matchRequest.date = new Date();
       matchRequest.usernameOwner = this.match().owner!.username;
-      this.matchService.matchRequest(matchRequest);
+
+      this.dialogService.confirmActionByDialog('ask to participate in this match')
+        .subscribe((result: boolean) => {
+          if (result) {
+            this.matchService.matchRequest(matchRequest);
+            this.onCloseClick();
+          }
+        });
     }
-    this.onCloseClick();
   }
 
   goToMatchRoom() {

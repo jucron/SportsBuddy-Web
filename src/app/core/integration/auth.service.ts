@@ -10,7 +10,7 @@ export class AuthService {
 
   constructor() { }
 
-  storeToken(headers: HttpHeaders) {
+  storeToken(headers: HttpHeaders): boolean {
     let newToken = headers.get('Authorization');
     if (newToken && newToken.startsWith('Bearer ')) {
       newToken = newToken.slice(7); // Remove "Bearer " (7 characters)
@@ -18,8 +18,10 @@ export class AuthService {
         //if it is a new refreshed token from auth backend, store it in localStorage and update the currentToken
         this.currentToken = newToken;
         localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
+        return true;
       }
     }
+    return false;
   }
   getToken(): string | null {
     if (this.currentToken) {
@@ -27,11 +29,7 @@ export class AuthService {
     }
     return localStorage.getItem(STORAGE_KEYS.TOKEN);
   }
-  removeToken(): void {
-    this.currentToken = null;
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
-  }
-  isAuthenticated(): boolean {
+  isConnected(): boolean {
     return this.getToken() !== null;
   }
 
@@ -42,5 +40,10 @@ export class AuthService {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
     return headers;
+  }
+
+  disconnect() {
+    this.currentToken = null;
+    localStorage.clear();
   }
 }

@@ -23,6 +23,7 @@ import {FactoryService} from "../core/factory/factory.service";
 import {Match} from "../core/model/match";
 import {DateUtils} from "../core/utils/dateUtils";
 import {MatchService} from "../core/integration/match.service";
+import {DialogService} from "../core/dialog/dialog.service";
 
 @Component({
   selector: 'app-match',
@@ -62,7 +63,8 @@ export class MatchComponent {
   constructor(
     private factoryService: FactoryService,
     private routingService: RoutingService,
-    private matchService: MatchService
+    private matchService: MatchService,
+    private dialogService: DialogService
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
@@ -73,7 +75,12 @@ export class MatchComponent {
       const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
       let match: Match = this.matchForm.value;
       match.date = combinedDateTime ?? match.date;
-      this.matchService.createMatch(match);
+      this.dialogService.confirmActionByDialog('create this match')
+        .subscribe((result: boolean) => {
+          if (result) {
+            this.matchService.createMatch(match);
+          }
+        });
     }
   }
 
