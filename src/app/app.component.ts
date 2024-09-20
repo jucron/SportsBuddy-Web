@@ -70,4 +70,8 @@ export class AppComponent implements OnInit {
   readNotifications() {
     this.notificationService.readNotifications();
   }
+
+  routeToHome() {
+    this.routingService.redirectTo('home',false);
+  }
 }

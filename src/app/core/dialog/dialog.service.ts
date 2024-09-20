@@ -7,6 +7,8 @@ import {Account} from "../model/account";
 import {AccountDialogComponent} from "./account-dialog/account-dialog.component";
 import {ConfirmActionDialogComponent} from "./confirm-action-dialog/confirm-action-dialog.component";
 import {map, Observable} from "rxjs";
+import {MatchRequest} from "../model/requests/matchRequest";
+import {MatchRequestDialogComponent} from "./match-request-dialog/match-request-dialog.component";
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +52,12 @@ export class DialogService {
           return result;
         })
       );
+  }
+
+  showMatchRequestsDialog(matchRequests: MatchRequest[]) {
+    this.dialog.open(MatchRequestDialogComponent, {
+      data: {matchRequests: matchRequests},
+      panelClass: 'match-request-dialog-container'
+    });
   }
 }

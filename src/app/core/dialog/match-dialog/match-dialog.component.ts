@@ -51,7 +51,7 @@ export class MatchDialogComponent {
   readonly dialogRef = inject(MatDialogRef<MatchDialogComponent>);
   readonly data = inject<MatchDialogData>(MAT_DIALOG_DATA);
   readonly match = model(this.data.match);
-  loggedUsername =  localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME);
+  loggedUserId =  localStorage.getItem(STORAGE_KEYS.MAIN_ID);
   showFiller = false;
   matchRequestForm: FormGroup;
   protected readonly DateUtils = DateUtils;
@@ -72,18 +72,18 @@ export class MatchDialogComponent {
   }
   isUserRequesting(): boolean {
     return this.match().matchRequests.some(request =>
-      request.usernameRequested === this.loggedUsername);
+      request.userIdRequested === this.loggedUserId);
   }
   isUserOwner(){
-    return this.match().owner!.username === this.loggedUsername;
+    return this.match().owner!.id === this.loggedUserId;
   }
   isUserParticipating(): boolean {
     return this.match().participants.some(participant =>
-      participant.username === this.loggedUsername);
+      participant.id === this.loggedUserId);
   }
   getMatchRequestDate() {
     let date = this.match().matchRequests.find(request => {
-      return request.usernameRequested === this.loggedUsername
+      return request.userIdRequested === this.loggedUserId
     })?.date;
     if (date) {
       return DateUtils.getDateLabel(date)+', '+DateUtils.getTimeLabel(date);
@@ -96,9 +96,10 @@ export class MatchDialogComponent {
   onSubmit() {
     if (this.matchRequestForm.valid) {
       let matchRequest: MatchRequest = this.matchRequestForm.value;
-      matchRequest.usernameRequested = this.loggedUsername ?? 'not-found';
+      matchRequest.userIdRequested = this.loggedUserId ?? 'not-found';
+      matchRequest.userNameRequested = 'to be filled';
       matchRequest.date = new Date();
-      matchRequest.usernameOwner = this.match().owner!.username;
+      matchRequest.userIdOwner = this.match().owner!.id;
 
       this.dialogService.confirmActionByDialog('ask to participate in this match')
         .subscribe((result: boolean) => {

@@ -1,7 +1,7 @@
 @if (isLogged()) {
   <mat-drawer-container class="app-container" autosize>
 
-<!--    content inside mat drawer-->
+    <!--    content inside mat drawer-->
     <mat-drawer #drawer class="app-sidenav" mode="side">
       <p>Logged in as {{getCurrentUsername()}}</p>
       @if (showFiller) {
@@ -9,12 +9,22 @@
         <button mat-button (click)="logout()">Yes</button>
         <button mat-button (click)="drawer.toggle(); changeFiller()">No</button>
       } @else {
-        <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">
-          <mat-icon aria-hidden="false" aria-label="update-icon" fontIcon="update"></mat-icon>
-          Update My Account</button>
-        <p>Create a new Match</p>
-        <p>My Matches</p>
-        <p>My chats</p>
+        <div fxLayout="column" fxLayoutAlign="start start">
+          <button mat-button (click)="drawer.toggle(); routeToHome()">
+            <mat-icon aria-hidden="false" aria-label="home-icon" fontIcon="home"></mat-icon>
+            Home
+          </button>
+          <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">
+            <mat-icon aria-hidden="false" aria-label="update-icon" fontIcon="update"></mat-icon>
+            Update My Account
+          </button>
+          <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">
+            <mat-icon aria-hidden="false" aria-label="sports_basketball-icon" fontIcon="sports_basketball"></mat-icon>
+            My Match
+          </button>
+          <p>Delete my account (todo)</p>
+          <p>Give feedback (todo)</p>
+        </div>
 
         <button (click)="changeFiller()" mat-raised-button>
           <mat-icon aria-hidden="false" aria-label="logout-icon" fontIcon="logout"></mat-icon>
@@ -22,7 +32,7 @@
         </button>
       }
     </mat-drawer>
-<!--    content in the top-left corner-->
+    <!--    content in the top-left corner-->
     <div class="app-sidenav-content">
       <div fxLayout="column" fxFlexFill>
         <div fxLayout="row" fxLayoutAlign="start start">
@@ -30,20 +40,20 @@
             <mat-icon aria-hidden="false" aria-label="menu-icon" fontIcon="menu"></mat-icon>
             Menu
           </button>
-            <button mat-button [matMenuTriggerFor]="notifications" (click)="readNotifications()">
-              @if (notificationHelper.hasUserUnreadNotifications(userNotifications)){
+          <button mat-button [matMenuTriggerFor]="notifications" (click)="readNotifications()">
+            @if (notificationHelper.hasUserUnreadNotifications(userNotifications)){
               <mat-icon [matBadge]="notificationHelper.getUserUnreadNotificationsSize(userNotifications).toString()" matBadgeColor="warn" matBadgeSize="small" aria-hidden="false" aria-label="notifications" fontIcon="notifications"></mat-icon>
-              } @else {
-                <mat-icon matBadge="0" matBadgeSize="small" aria-hidden="false" aria-label="notifications" fontIcon="notifications"></mat-icon>
-              }
-                </button>
-            <mat-menu #notifications="matMenu">
-              @for (notification of userNotifications; track notification.message) {
-                <button mat-menu-item class="notification-item" [disabled]="notificationHelper.isNotificationInactive(notification)" (click)="actOnNotification(notification)">{{notificationHelper.getNotificationLabel(notification)}}  </button>
-              } @empty {
-                <li mat-menu-item>There are no notifications.</li>
-              }
-            </mat-menu>
+            } @else {
+              <mat-icon matBadge="0" matBadgeSize="small" aria-hidden="false" aria-label="notifications" fontIcon="notifications"></mat-icon>
+            }
+          </button>
+          <mat-menu #notifications="matMenu">
+            @for (notification of userNotifications; track notification.message) {
+              <button mat-menu-item class="notification-item" [disabled]="notificationHelper.isNotificationInactive(notification)" (click)="actOnNotification(notification)">{{notificationHelper.getNotificationLabel(notification)}}  </button>
+            } @empty {
+              <li mat-menu-item>There are no notifications.</li>
+            }
+          </mat-menu>
         </div>
 
         <!-- Content centered-->

@@ -1,6 +1,7 @@
 export interface MatchRequest {
   date: Date
-  usernameRequested: string
-  usernameOwner: string
+  userIdRequested: string
+  userIdOwner: string
+  userNameRequested: string
   comment: string
 }

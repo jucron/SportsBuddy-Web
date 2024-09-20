@@ -1,0 +1,42 @@
+<div class="content">
+  <h3> Someone wants to be in your Match! </h3>
+  <h3>
+    <div fxLayout="row" fxLayoutAlign="space-around center" fxFill>
+      <mat-accordion class="table">
+        <div *ngFor="let matchRequest of matchRequests()">
+          <mat-expansion-panel hideToggle="">
+            <mat-expansion-panel-header>
+              <mat-panel-title fxLayoutAlign="center center">
+                {{matchRequest.userNameRequested}}
+              </mat-panel-title>
+              <mat-panel-description fxLayoutAlign="center center">
+                {{matchRequest.comment}}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div fxFlex="row" fxLayout="center center" fxLayoutGap="15px">
+              <div class="participant" fxLayoutAlign="center center">
+                <a (click)="showAccountDialog(matchRequest.userIdRequested)">
+                  <mat-icon aria-hidden="false" aria-label="person icon" fontIcon="person"></mat-icon>
+                </a>
+              </div>
+            <button mat-raised-button color="primary" type="submit">Accept</button>
+            <button mat-button color="secondary" type="submit">Refuse</button>
+            </div>
+          </mat-expansion-panel>
+
+          <!--        <div class="participant" (click)="showAccountDialog(matchRequest.userIdRequested)">-->
+          <!--          <a>{{matchRequest.userNameRequested}}</a> &#45;&#45;&ndash;&gt;-->
+          <!--        </div>-->
+        </div>
+
+
+      </mat-accordion>
+    </div>
+
+    <button mat-button color="secondary" type="reset" (click)="onCloseClick()">Decide later</button>
+
+  </h3>
+</div>
+
+
+

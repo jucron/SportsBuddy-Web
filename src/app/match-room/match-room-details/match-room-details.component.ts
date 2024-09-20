@@ -63,6 +63,7 @@ export class MatchRoomDetailsComponent implements OnInit{
         .subscribe(match => {
           this.match = match!
           this.setMatchFormValues();
+          this.showMatchRequests();
         });
     }
   }
@@ -93,5 +94,15 @@ export class MatchRoomDetailsComponent implements OnInit{
 
   isUpdateDisabled() {
     return this.matchForm.invalid || !this.changeHelper.hasAnyChange([this.matchForm.value]);
+  }
+
+  hasAnyMatchRequest() {
+    return this.match!.matchRequests.length > 0;
+  }
+
+  private showMatchRequests() {
+    if (this.hasAnyMatchRequest()) {
+      this.dialogService.showMatchRequestsDialog(this.match!.matchRequests);
+    }
   }
 }

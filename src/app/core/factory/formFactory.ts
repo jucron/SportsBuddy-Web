@@ -29,7 +29,7 @@ export class FormFactory {
   }
   createMatchRequestForm(){
     return this.fb.group({
-      comments: ['', this.requiredValidation],
+      comment: ['', this.requiredValidation],
     });
   }
   private dateAtLeastTomorrowValidator(): ValidatorFn {

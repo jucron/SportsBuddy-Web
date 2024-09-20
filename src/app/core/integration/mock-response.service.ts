@@ -85,6 +85,24 @@ export class MockResponseService implements OnInit{
       }
     ];
   }
+  generateMockMatchRequests() {
+    let matchRequest: MatchRequest = {
+      userIdRequested: this.accounts[3].id,
+      userNameRequested: this.accounts[3].name,
+      date: new Date(),
+      userIdOwner: this.accounts[1].id,
+      comment: 'I want to play too!'
+    };
+    this.mockMatchRequestResponse(matchRequest);
+    matchRequest = {
+      userIdRequested: this.accounts[5].id,
+      userNameRequested: this.accounts[5].name,
+      date: new Date(),
+      userIdOwner: this.accounts[1].id,
+      comment: 'Let\'s do this!'
+    };
+    this.mockMatchRequestResponse(matchRequest);
+  }
   private bootstrapMockAccounts(): Account[] {
     return [
       {
@@ -122,11 +140,11 @@ export class MockResponseService implements OnInit{
       },
       {
         id: uuidv4(),
-        username: 'larissa',
+        username: 'frank',
         password: '123',
-        name: 'Larissa Lurdes',
-        email: 'larissa@email.com',
-        favouriteSports: [Sports.tennis, Sports.volleyball],
+        name: 'Frank Furt',
+        email: 'frankie@email.com',
+        favouriteSports: [Sports.tableTennis, Sports.soccer],
         notifications: [],
         myMatch: null,
         participatingMatches: []
@@ -252,12 +270,17 @@ export class MockResponseService implements OnInit{
   mockMatchRequestResponse(matchRequest: MatchRequest) {
     //Updating match with new matchRequest
     let matchOfOwner = this.matches.find(match => {
-      return match.owner?.username === matchRequest.usernameOwner;
+      return match.owner?.id === matchRequest.userIdOwner;
     });
-    matchOfOwner?.matchRequests.push(matchRequest);
+    //Filling the userNameRequested
+    matchRequest.userNameRequested = this.accounts.find(account => {
+      return account.id === matchRequest.userIdRequested;
+    })?.name ?? 'not-found';
+    //Adding new matchRequest to match
+    matchOfOwner!.matchRequests.push(matchRequest);
     //Creating new notification for Owner
     let notifications = this.accounts.find(account => {
-      return account.username === matchRequest.usernameOwner;
+      return account.id === matchRequest.userIdOwner;
     })?.notifications;
     notifications?.push(this.factoryService.getNotificationFactory().createMatchRequestNotification(matchOfOwner!.id));
     //save mockUp data
@@ -308,6 +331,7 @@ export class MockResponseService implements OnInit{
     const storedMatches = sessionStorage.getItem(this.matchesKeys);
 
     if (storedAccounts) {
+      console.log('data found in Session, loading data');
       this.accounts = JSON.parse(storedAccounts);
       this.accounts.forEach(account => {
         // Convert the date strings in notifications back to Date objects
@@ -317,6 +341,7 @@ export class MockResponseService implements OnInit{
         });
       });
     } else {
+      console.log('no data in Session found, creating mock data');
       this.accounts = this.bootstrapMockAccounts();
       dataCreated = true;
     }
@@ -335,6 +360,7 @@ export class MockResponseService implements OnInit{
       });
     } else {
       this.matches = this.bootstrapMockMatches();
+      this.generateMockMatchRequests();
       dataCreated = true;
     }
     if (dataCreated) {
@@ -381,6 +407,5 @@ export class MockResponseService implements OnInit{
     //in case resource not found
     return response;
   }
-
 }
 
