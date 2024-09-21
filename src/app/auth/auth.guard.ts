@@ -21,6 +21,14 @@ export const authGuard: CanActivateFn = (route, state) => {
     routerService.redirectTo('login', false);
     return false;
 
+  } else if (currentRoute === '/match') {
+    const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    if (myMatchId) {
+      console.log('authGuard: user have a Match already, redirecting to match-room');
+      routerService.redirectTo(`/match-room/${myMatchId}/owner`, false);
+    }
+    return false;
+
   } else if (id && currentRoute === `/match-room/${id}/owner`) {
     const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
     if (myMatchId) {

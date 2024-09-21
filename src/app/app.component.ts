@@ -13,7 +13,8 @@ import {UserNotification} from "./core/model/userNotification";
 import {NotificationService} from "./core/integration/notification.service";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NotificationHelper} from "./core/helper-components/notificationHelper";
-import {AuthService} from "./core/integration/auth.service";
+import {AuthService} from "./auth/auth.service";
+import {MatchService} from "./core/integration/match.service";
 
 @Component({
   selector: 'app-root',
@@ -32,7 +33,9 @@ export class AppComponent implements OnInit {
   constructor(private accountService: AccountService,
               private routingService: RoutingService,
               private notificationService: NotificationService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private matchService: MatchService
+  ) {
     this.notificationService.userNotifications$.subscribe(notifications => {
       this.userNotifications = notifications;
     });
@@ -73,5 +76,12 @@ export class AppComponent implements OnInit {
 
   routeToHome() {
     this.routingService.redirectTo('home',false);
+  }
+
+  routeToMatch() {
+    this.routingService.redirectTo('match',false);
+  }
+  getMyMatchLabel() {
+    return this.matchService.getMyMatchLabel();
   }
 }

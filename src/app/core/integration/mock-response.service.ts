@@ -26,6 +26,7 @@ export class MockResponseService implements OnInit{
   matches: Match[] = [];
   accountKeys = 'account-keys';
   matchesKeys = 'matches-keys';
+  JWTKeys = 'jwt-keys'
 
   constructor(private factoryService: FactoryService) {
     this.loadData();
@@ -406,6 +407,20 @@ export class MockResponseService implements OnInit{
     }
     //in case resource not found
     return response;
+  }
+
+  getCurrentMockJWT() {
+    const storedJWT = sessionStorage.getItem(this.JWTKeys);
+    if (storedJWT) {
+      return storedJWT;
+    }
+    const newJWT = this.generateNewJWT();
+    sessionStorage.setItem(this.JWTKeys, newJWT);
+    return newJWT;
+  }
+
+  private generateNewJWT() {
+    return 'Bearer ' + uuidv4();
   }
 }
 

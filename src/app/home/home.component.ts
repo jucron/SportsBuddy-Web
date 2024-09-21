@@ -109,10 +109,6 @@ export class HomeComponent implements OnInit {
   }
 
   getMyMatchLabel() {
-    let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
-    if (myMatchId) {
-      return "Go to my Match-Room";
-    }
-    return "Create a new Match";
+    return this.matchService.getMyMatchLabel();
   }
 }

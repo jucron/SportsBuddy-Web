@@ -131,4 +131,12 @@ export class MatchService {
       })
     );
   }
+
+  getMyMatchLabel() {
+    let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    if (myMatchId) {
+      return "Go to my Match-Room";
+    }
+    return "Create a new Match";
+  }
 }

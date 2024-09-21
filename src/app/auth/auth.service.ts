@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {STORAGE_KEYS} from "../keys/storage-keys";
+import {STORAGE_KEYS} from "../core/keys/storage-keys";
 import {HttpHeaders} from "@angular/common/http";
 
 @Injectable({

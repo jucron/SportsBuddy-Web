@@ -17,7 +17,7 @@ import {Match} from "../model/match";
 import {CreateMatchRequest} from "../model/requests/createMatchRequest";
 import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {GenericResponse} from "../model/responses/genericResponse";
-import {AuthService} from "./auth.service";
+import {AuthService} from "../../auth/auth.service";
 import {LoginRequest} from "../model/requests/loginRequest";
 import {CreateAccountRequest} from "../model/requests/createAccountRequest";
 

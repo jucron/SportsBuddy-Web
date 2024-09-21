@@ -8,7 +8,7 @@ import {Account} from "../model/account";
 import {catchError, finalize, map, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
-import {AuthService} from "./auth.service";
+import {AuthService} from "../../auth/auth.service";
 
 @Injectable({
   providedIn: 'root'

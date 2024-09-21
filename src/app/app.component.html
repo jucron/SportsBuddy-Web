@@ -18,12 +18,18 @@
             <mat-icon aria-hidden="false" aria-label="update-icon" fontIcon="update"></mat-icon>
             Update My Account
           </button>
-          <button mat-button (click)="drawer.toggle(); routeToUpdateMyAccount()">
+          <button mat-button (click)="drawer.toggle(); routeToMatch()">
             <mat-icon aria-hidden="false" aria-label="sports_basketball-icon" fontIcon="sports_basketball"></mat-icon>
-            My Match
+            {{getMyMatchLabel()}}
           </button>
-          <p>Delete my account (todo)</p>
-          <p>Give feedback (todo)</p>
+          <button mat-button (click)="drawer.toggle()">
+            <mat-icon aria-hidden="false" aria-label="delete-icon" fontIcon="delete"></mat-icon>
+            Delete My Account (todo)
+          </button>
+          <button mat-button (click)="drawer.toggle()">
+            <mat-icon aria-hidden="false" aria-label="info-icon" fontIcon="info"></mat-icon>
+            About this website (todo)
+          </button>
         </div>
 
         <button (click)="changeFiller()" mat-raised-button>

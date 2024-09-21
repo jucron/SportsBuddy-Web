@@ -19,7 +19,7 @@ import {CreateAccountRequest} from "../model/requests/createAccountRequest";
 export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   const mockService = inject(MockResponseService);
   let mockResponse: HttpResponse<any> | null = null;
-  const validToken = 'Bearer mock-valid-token';
+  const validToken = mockService.getCurrentMockJWT();
   let isValidTokenFromRequest = false;
   let isEndpointSecured = true; //by default, all endpoints are secured
 
