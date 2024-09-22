@@ -68,7 +68,7 @@ export class MockResponseService implements OnInit{
         comments: 'Everyone is welcome!',
         sport: Sports.tennis,
         owner: this.accounts[3],
-        participants: [this.accounts[5], this.accounts[6], this.accounts[3]],
+        participants: [this.accounts[5], this.accounts[6]],
         matchRequests: [],
         chatData: null
       },

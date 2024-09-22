@@ -21,13 +21,13 @@ export class AccountService {
     private apiService: ApiService,
     private routingService: RoutingService,
     private notificationService: AlertService,
-    private loadingDialogService: DialogService,
+    private dialogService: DialogService,
     private authService: AuthService
   ) {}
 
   executeLogin(credentials: Credentials) {
     this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
+    this.dialogService.showLoadingDialog();
     this.apiService.executeLogin(credentials)
       .subscribe({
         next: response => {
@@ -49,7 +49,7 @@ export class AccountService {
         },
         complete: () => {
           this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
+          this.dialogService.closeLoadingDialog();
         }
       });
   }
@@ -61,7 +61,7 @@ export class AccountService {
   }
   createAccount(account: Account) {
     this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
+    this.dialogService.showLoadingDialog();
     this.apiService.createAccount(account)
       .subscribe({
         next: response => {
@@ -78,13 +78,13 @@ export class AccountService {
         },
         complete: () => {
           this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
+          this.dialogService.closeLoadingDialog();
         }
       });
   }
-  getAccount(accountId: string) {
+  getAccount(accountId: string, withLoadingDialog: boolean = true) {
     this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
+    if (withLoadingDialog) {this.dialogService.showLoadingDialog();}
     return this.apiService.getAccount(accountId).pipe(
       map(account => {
         if (account) {
@@ -101,18 +101,16 @@ export class AccountService {
       }),
       finalize(() => {
         this.isLoading = false;
-        this.loadingDialogService.closeLoadingDialog();
+        this.dialogService.closeLoadingDialog();
       })
     );
   }
   isAuthenticated() {
     return localStorage.getItem(STORAGE_KEYS.TOKEN) !== null;
   }
-
   getLoggedUsername() {
     return localStorage.getItem(STORAGE_KEYS.MAIN_USERNAME)
   }
-
   getLoggedAccountId() {
     return localStorage.getItem(STORAGE_KEYS.MAIN_ID)
   }
