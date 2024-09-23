@@ -48,6 +48,7 @@ export class AccountComponent implements OnInit {
   sportsSelected: Sports[];
   protected currentState: PageState;
   changeHelper!: ChangeHelper;
+  private currentAccountId: string | null = null;
 
   constructor(
     private factoryService: FactoryService,
@@ -70,6 +71,7 @@ export class AccountComponent implements OnInit {
     if (this.accountForm && this.accountForm.valid) {
       let account: Account = this.accountForm.value;
       account.favouriteSports = this.sportsSelected;
+      account.id = this.currentAccountId ?? 'id-not-found';
 
       if (this.currentState.isCreateState()) {
         this.dialogService.confirmActionByDialog('create this new account')
@@ -79,12 +81,11 @@ export class AccountComponent implements OnInit {
               this.clickReturnButton();
             }
           });
-      } else {
+      } else if(this.currentState.isUpdateState()) {
         this.dialogService.confirmActionByDialog('update this existing account')
           .subscribe((result: boolean) => {
             if (result) {
-              //todo
-              // this.loginService.updateAccount(account);
+              this.loginService.updateAccount(account);
               this.clickReturnButton();
             }
           });
@@ -141,6 +142,7 @@ export class AccountComponent implements OnInit {
                   favouriteSports:account?.favouriteSports
                 }
               );
+              this.currentAccountId = account.id;
               this.sportsSelected = account.favouriteSports;
               this.changeHelper = new ChangeHelper([this.accountForm.value,this.sportsSelected])
             }

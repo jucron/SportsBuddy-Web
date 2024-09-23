@@ -95,4 +95,20 @@ export class AlertService {
       panelClass: ['fail-snackbar']
     });
   }
+
+  alertUpdateAccountFailed() {
+    const message = 'Some error was found while updating your Account, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.alertTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
+
+  alertUpdateAccountSuccess() {
+    const message = 'Your account was update successfully! 🚀';
+    this._snackBar.open(message, 'Nice one!',{
+      duration: this.alertTimeMls,
+      panelClass: ['success-snackbar']
+    });
+  }
 }

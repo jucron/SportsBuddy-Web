@@ -14,7 +14,7 @@ import {NotificationsResponse} from "../model/responses/notificationsResponse";
 import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {UrlHelper} from "../helper-components/urlHelper";
 import {LoginRequest} from "../model/requests/loginRequest";
-import {CreateAccountRequest} from "../model/requests/createAccountRequest";
+import {accountRequest} from "../model/requests/accountRequest";
 
 export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   const mockService = inject(MockResponseService);
@@ -46,11 +46,19 @@ export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => 
     });
   } else if (req.url.endsWith('/create-account')) {
     isEndpointSecured = false; //create-account is not secured
-    let responseBody: GenericResponse = mockService.getCreateAccountMockResponse(req.body as CreateAccountRequest);
+    let responseBody: GenericResponse = mockService.getCreateAccountMockResponse(req.body as accountRequest);
     const success = responseBody.message !== 'username-taken';
     mockResponse = new HttpResponse({
       headers: new HttpHeaders({'Authorization': validToken}),
       status: (success) ? 201: 409, //Created or Conflict
+      body: responseBody as GenericResponse
+    });
+  } else if (req.url.endsWith('/update-account')) {
+    let responseBody: GenericResponse = mockService.getUpdateAccountMockResponse(req.body as accountRequest);
+    const success = responseBody.message === 'account-updated';
+    mockResponse = new HttpResponse({
+      headers: new HttpHeaders({'Authorization': validToken}),
+      status: (success) ? 200 : 404, //OK or Not found
       body: responseBody as GenericResponse
     });
   } else if (req.url.endsWith('/get-matches')) {

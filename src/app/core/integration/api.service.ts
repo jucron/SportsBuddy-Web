@@ -19,7 +19,7 @@ import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {GenericResponse} from "../model/responses/genericResponse";
 import {AuthService} from "../../auth/auth.service";
 import {LoginRequest} from "../model/requests/loginRequest";
-import {CreateAccountRequest} from "../model/requests/createAccountRequest";
+import {accountRequest} from "../model/requests/accountRequest";
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +53,7 @@ export class ApiService {
       );
   }
   createAccount(account: Account):  Observable<boolean | null> {
-    let createAccountRequest: CreateAccountRequest = {account: account};
+    let createAccountRequest: accountRequest = {account: account};
     const endpoint = 'create-account';
     console.log(endpoint + ' triggered from ApiService')
     let headers = this.authService.getHeaderWithToken();
@@ -225,6 +225,26 @@ export class ApiService {
     }
     console.log(message);
     return null;
+  }
+
+  updateAccount(account: Account) {
+    let accountRequest: accountRequest = {account: account};
+    const endpoint = 'update-account';
+    console.log(endpoint + ' triggered from ApiService')
+    let headers = this.authService.getHeaderWithToken();
+    return this.http.patch<GenericResponse>(`${environment.baseUrl}${endpoint}`,
+      accountRequest, {headers, observe: 'response' })
+      .pipe(
+        map(response => {
+          if (response.status === 200) {
+            console.log('Account 200 updated');
+            this.authService.storeToken(response.headers);
+            return true;
+          }
+          return this.handleUnexpectedResponse(response, endpoint);
+        }),
+        catchError(this.handleError<null>(endpoint))
+      );
   }
 }
 

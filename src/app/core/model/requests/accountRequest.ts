@@ -1,5 +1,5 @@
 import {Account} from "../account";
 
-export interface CreateAccountRequest {
+export interface accountRequest {
   account: Account;
 }

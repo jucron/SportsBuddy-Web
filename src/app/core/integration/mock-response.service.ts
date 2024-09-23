@@ -16,7 +16,7 @@ import {v4 as uuidv4} from 'uuid';
 import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {GenericResponse} from "../model/responses/genericResponse";
 import {LoginRequest} from "../model/requests/loginRequest";
-import {CreateAccountRequest} from "../model/requests/createAccountRequest";
+import {accountRequest} from "../model/requests/accountRequest";
 
 @Injectable({
   providedIn: 'root'
@@ -213,7 +213,7 @@ export class MockResponseService implements OnInit{
     }
     return null; // Username not found
   }
-  getCreateAccountMockResponse(createAccountRequest: CreateAccountRequest): GenericResponse {
+  getCreateAccountMockResponse(createAccountRequest: accountRequest): GenericResponse {
     //check if username is taken
     let usernameTaken = this.accounts.some(account => createAccountRequest.account.username === account.username);
     if (usernameTaken) {
@@ -421,6 +421,24 @@ export class MockResponseService implements OnInit{
 
   private generateNewJWT() {
     return 'Bearer ' + uuidv4();
+  }
+
+  getUpdateAccountMockResponse(accountRequest: accountRequest) {
+    //check if username is taken
+    let existingMatch = this.accounts.find(account => accountRequest.account.id === account.id);
+    if (!existingMatch) {
+      return {message: 'match-not-found'};
+    }
+    //path updated data to existing match
+    existingMatch.name = accountRequest.account.name;
+    existingMatch.email = accountRequest.account.email;
+    existingMatch.favouriteSports = accountRequest.account.favouriteSports;
+    //save mockUp data
+    this.saveData();
+    //response
+    return {
+      message: 'account-updated'
+    };
   }
 }
 

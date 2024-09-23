@@ -114,4 +114,28 @@ export class AccountService {
   getLoggedAccountId() {
     return localStorage.getItem(STORAGE_KEYS.MAIN_ID)
   }
+
+  updateAccount(account: Account) {
+    this.isLoading = true;
+    this.dialogService.showLoadingDialog();
+    this.apiService.updateAccount(account)
+      .subscribe({
+        next: response => {
+          if (response) {
+            this.notificationService.alertUpdateAccountSuccess();
+            this.routingService.redirectTo('', false);
+          } else {
+            this.notificationService.alertUpdateAccountFailed();
+          }
+        },
+        error: err => {
+          console.error('accountService.createAccount() failed', err);
+          this.notificationService.alertUpdateAccountFailed();
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.dialogService.closeLoadingDialog();
+        }
+      });
+  }
 }
