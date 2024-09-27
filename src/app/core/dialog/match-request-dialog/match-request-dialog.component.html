@@ -19,8 +19,8 @@
                   <mat-icon aria-hidden="false" aria-label="person icon" fontIcon="person"></mat-icon>
                 </a>
               </div>
-            <button mat-raised-button color="primary" type="submit">Accept</button>
-            <button mat-button color="secondary" type="submit">Refuse</button>
+            <button mat-raised-button color="primary" type="submit" (click)="matchRequestDecision(matchRequest, true)">Accept</button>
+            <button mat-button color="secondary" type="submit" (click)="matchRequestDecision(matchRequest, false)">Refuse</button>
             </div>
           </mat-expansion-panel>
 

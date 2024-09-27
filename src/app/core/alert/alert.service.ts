@@ -111,4 +111,28 @@ export class AlertService {
       panelClass: ['success-snackbar']
     });
   }
+
+  alertCreateMatchSuccess() {
+    const message = 'Your match was created successfully! 🚀';
+    this._snackBar.open(message, 'Yaaaaaay!',{
+      duration: this.alertTimeMls,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  alertMatchRequestDecisionSuccess() {
+    const message = 'Your match request decision was sent!! 🚀';
+    this._snackBar.open(message, 'Good to hear!',{
+      duration: this.alertTimeMls,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  alertMatchRequestDecisionFailed() {
+    const message = 'Some error was found while sending the match request decision, please try again later';
+    this._snackBar.open(message, 'Dang!',{
+      duration: this.alertTimeMls,
+      panelClass: ['fail-snackbar']
+    });
+  }
 }

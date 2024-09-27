@@ -20,6 +20,7 @@ import {GenericResponse} from "../model/responses/genericResponse";
 import {AuthService} from "../../auth/auth.service";
 import {LoginRequest} from "../model/requests/loginRequest";
 import {accountRequest} from "../model/requests/accountRequest";
+import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
 
 @Injectable({
   providedIn: 'root'
@@ -226,7 +227,6 @@ export class ApiService {
     console.log(message);
     return null;
   }
-
   updateAccount(account: Account) {
     let accountRequest: accountRequest = {account: account};
     const endpoint = 'update-account';
@@ -237,7 +237,25 @@ export class ApiService {
       .pipe(
         map(response => {
           if (response.status === 200) {
-            console.log('Account 200 updated');
+            console.log('Account update 200 ok');
+            this.authService.storeToken(response.headers);
+            return true;
+          }
+          return this.handleUnexpectedResponse(response, endpoint);
+        }),
+        catchError(this.handleError<null>(endpoint))
+      );
+  }
+  matchRequestDecision(matchRequestDecision: MatchRequestDecision): Observable<boolean | null> {
+    const endpoint = 'match-request-decision';
+    console.log(endpoint + ' triggered from ApiService')
+    let headers = this.authService.getHeaderWithToken();
+    return this.http.post<GenericResponse>(`${environment.baseUrl}${endpoint}`,
+      matchRequestDecision, {headers, observe: 'response' })
+      .pipe(
+        map(response => {
+          if (response.status === 200) {
+            console.log('matchRequestDecision 200 ok');
             this.authService.storeToken(response.headers);
             return true;
           }

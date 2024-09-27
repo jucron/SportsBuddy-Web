@@ -8,6 +8,8 @@ import {FlexModule} from "@angular/flex-layout";
 import {MatButton} from "@angular/material/button";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatIcon} from "@angular/material/icon";
+import {MatchService} from "../../integration/match.service";
+import {MatchRequestDecision} from "../../model/requests/matchRequestDecision";
 
 interface MatchRequestData {
   matchRequests: MatchRequest[]
@@ -31,11 +33,12 @@ export class MatchRequestDialogComponent implements OnInit {
   readonly matchRequests = model(this.data.matchRequests);
 
   constructor(private dialogService: DialogService,
-              private accountService: AccountService
-              ) {}
+              private accountService: AccountService,
+              private matchService: MatchService
+  ) {}
   ngOnInit(): void {
     console.log('matchRequests : '+JSON.stringify(this.matchRequests()));
-    }
+  }
 
   showAccountDialog(userIdRequested: string) {
     this.accountService.getAccount(userIdRequested)
@@ -50,4 +53,16 @@ export class MatchRequestDialogComponent implements OnInit {
   }
 
   protected readonly JSON = JSON;
+
+  matchRequestDecision(matchRequest: MatchRequest, accept: boolean) {
+    let message = `${accept ? 'accept' : 'decline'} this match request?`;
+    this.dialogService.confirmActionByDialog(message)
+      .subscribe(result => {
+        if (result) {
+          let matchRequestDecision: MatchRequestDecision = {matchRequest, accept};
+          this.matchService.matchRequestDecision(matchRequestDecision);
+          this.onCloseClick();
+        }
+      })
+  }
 }

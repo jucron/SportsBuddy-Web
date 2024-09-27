@@ -7,7 +7,7 @@ import {Router} from "@angular/router";
 export class RoutingService {
 
   constructor(private router: Router
-              ) { }
+  ) { }
 
   redirectTo(uri:string, hideLocation: boolean) {
     this.router.navigate([uri], {skipLocationChange: hideLocation, replaceUrl: true})
@@ -28,5 +28,10 @@ export class RoutingService {
         // Handle navigation error if needed
         console.error('Navigation error:', err);
       });
+  }
+  reloadPage() {
+    this.router.navigate([this.router.url]).then(() => {
+      window.location.reload();
+    });
   }
 }

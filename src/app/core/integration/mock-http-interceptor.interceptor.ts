@@ -15,6 +15,7 @@ import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {UrlHelper} from "../helper-components/urlHelper";
 import {LoginRequest} from "../model/requests/loginRequest";
 import {accountRequest} from "../model/requests/accountRequest";
+import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
 
 export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   const mockService = inject(MockResponseService);
@@ -80,6 +81,14 @@ export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => 
   } else if (req.url.endsWith('/match-request')) {
     let responseBody: GenericResponse = mockService.mockMatchRequestResponse(req.body as MatchRequest);
     const success = responseBody.message === 'match-request-sent';
+    mockResponse = new HttpResponse({
+      headers: new HttpHeaders({'Authorization': validToken}),
+      status: (success) ? 200: 404, //OK or Not found
+      body: responseBody as GenericResponse
+    });
+  } else if (req.url.endsWith('/match-request-decision')) {
+    let responseBody: GenericResponse = mockService.mockMatchRequestDecisionResponse(req.body as MatchRequestDecision);
+    const success = responseBody.message === 'match-request-decision-processed';
     mockResponse = new HttpResponse({
       headers: new HttpHeaders({'Authorization': validToken}),
       status: (success) ? 200: 404, //OK or Not found

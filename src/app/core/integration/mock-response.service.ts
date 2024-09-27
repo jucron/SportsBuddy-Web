@@ -17,6 +17,7 @@ import {MyMatchResponse} from "../model/responses/myMatchResponse";
 import {GenericResponse} from "../model/responses/genericResponse";
 import {LoginRequest} from "../model/requests/loginRequest";
 import {accountRequest} from "../model/requests/accountRequest";
+import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
 
 @Injectable({
   providedIn: 'root'
@@ -439,6 +440,33 @@ export class MockResponseService implements OnInit{
     return {
       message: 'account-updated'
     };
+  }
+
+  mockMatchRequestDecisionResponse(requestDecision: MatchRequestDecision) {
+    let response: GenericResponse = {
+      message: 'match-request-decision-processed'
+    }
+    //find match of owner
+    let matchOfOwner = this.matches.find(match => match.owner?.id === requestDecision.matchRequest.userIdOwner);
+    if (!matchOfOwner) {
+      return {message: 'match-not-found'};
+    }
+    //add participant to match, if accepted
+    if (requestDecision.accept) {
+      let participant = this.accounts.find(account => account.id === requestDecision.matchRequest.userIdRequested);
+      if (!participant) {
+        return {message: 'participant-not-found'};
+      }
+      matchOfOwner.participants.push(participant);
+      //add notification to participant
+      participant.notifications.push(this.factoryService.getNotificationFactory().createMatchRequestAcceptedNotification(matchOfOwner.id));
+    }
+    //remove matchRequest from match
+    matchOfOwner.matchRequests = matchOfOwner.matchRequests.filter(request => request.userIdRequested !== requestDecision.matchRequest.userIdRequested);
+    //save mockUp data
+    this.saveData();
+    //return response
+    return response;
   }
 }
 

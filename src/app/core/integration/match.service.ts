@@ -8,6 +8,7 @@ import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
 import {STORAGE_KEYS} from "../keys/storage-keys";
+import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +80,7 @@ export class MatchService {
         next: (response) => {
           if (response) {
             localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response);
-            this.notificationService.alertMatchRequestSuccess();
+            this.notificationService.alertCreateMatchSuccess();
             this.routingService.redirectTo('home', false);
           } else {
             this.notificationService.alertCreateMatchFailed();
@@ -131,12 +132,35 @@ export class MatchService {
       })
     );
   }
-
   getMyMatchLabel() {
     let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
     if (myMatchId) {
       return "Go to my Match-Room";
     }
     return "Create a new Match";
+  }
+  matchRequestDecision(matchRequestDecision: MatchRequestDecision) {
+    this.isLoading = true;
+    this.loadingDialogService.showLoadingDialog();
+
+    this.apiService.matchRequestDecision(matchRequestDecision)
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.notificationService.alertMatchRequestDecisionSuccess();
+            this.routingService.reloadPage();
+          } else {
+            this.notificationService.alertMatchRequestDecisionFailed();
+          }
+        },
+        error: err => {
+          console.error('matchRequestDecision failed', err);
+          this.notificationService.alertMatchRequestDecisionFailed();
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.loadingDialogService.closeLoadingDialog();
+        }
+      });
   }
 }

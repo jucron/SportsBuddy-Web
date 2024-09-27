@@ -13,4 +13,15 @@ export class NotificationFactory {
          status: NotificationStatus.UNREAD
        }
    }
+
+  createMatchRequestAcceptedNotification(id: string) {
+    return {
+      id: '2',
+      link: `match-room/${id}/participant`,
+      date: new Date(),
+      type: 'account-participation',
+      message: 'Your match request has been accepted!',
+      status: NotificationStatus.UNREAD
+    }
+  }
 }
