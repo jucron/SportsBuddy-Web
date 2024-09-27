@@ -20,6 +20,8 @@ import {MatchDialogComponent} from "../core/dialog/match-dialog/match-dialog.com
 import {MatchReadOnlyComponent} from "../match/match-read-only/match-read-only.component";
 import {STORAGE_KEYS} from "../core/keys/storage-keys";
 import {MatchRoomChatComponent} from "./match-room-chat/match-room-chat.component";
+import {Match} from "../core/model/match";
+import {MatchService} from "../core/integration/match.service";
 
 @Component({
   selector: 'app-chat-room',
@@ -54,22 +56,29 @@ import {MatchRoomChatComponent} from "./match-room-chat/match-room-chat.componen
 })
 export class MatchRoomComponent implements OnInit {
   currentState: PageState;
+  loadedMatch: Match | null = null;
 
   constructor(private routeService: RoutingService,
               private activatedRoute: ActivatedRoute,
+              private matchService: MatchService,
   ) {
     this.currentState = new ReadOnlyState();
   }
   ngOnInit(): void {
-    // this.loadMyMatch();
+    this.loadMatch();
     this.setCurrentStateBasedOnRouteData()
   }
-
   routeBackToHome() {
     this.routeService.redirectTo('home', false);
   }
-  getMatchIdByRoute(){
-    return this.activatedRoute.snapshot.paramMap.get('id');
+  private loadMatch(){
+    const matchId = this.getMatchIdByRoute();
+    if (matchId) {
+      this.matchService.getMatch(matchId)
+        .subscribe(match => {
+          this.loadedMatch = match
+        });
+    }
   }
   isCurrentUserOwner(){
     if (this.currentState.isOwnerState()) {
@@ -80,7 +89,6 @@ export class MatchRoomComponent implements OnInit {
     }
     return false;
   }
-
   setCurrentStateBasedOnRouteData(){
     this.activatedRoute.data
       .subscribe(data => {
@@ -97,5 +105,7 @@ export class MatchRoomComponent implements OnInit {
         }
       });
   }
-
+  private getMatchIdByRoute() {
+    return this.activatedRoute.snapshot.paramMap.get('id');
+  }
 }

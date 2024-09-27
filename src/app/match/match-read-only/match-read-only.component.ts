@@ -6,7 +6,6 @@ import {MatDialogRef} from "@angular/material/dialog";
 import {DialogService} from "../../core/dialog/dialog.service";
 import {AccountService} from "../../core/integration/account.service";
 import {NgForOf} from "@angular/common";
-import {MatchService} from "../../core/integration/match.service";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @Component({
@@ -20,37 +19,25 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   styleUrl: './match-read-only.component.css'
 })
 export class MatchReadOnlyComponent implements OnInit{
-  @Input() match!: Match;
-  @Input() matchId: string | null = null;
+  @Input() match: Match | null = null;
   @Input() dialogRef: MatDialogRef<any> | null = null;
-  isMatchLoading = true;
 
   protected readonly DateUtils = DateUtils;
 
   constructor(private dialogService: DialogService,
-              private accountService: AccountService,
-              private matchService: MatchService)
+              private accountService: AccountService)
   {  }
 
   ngOnInit(): void {
-    if (this.matchId) {
-      this.matchService.getMatch(this.matchId)
-        .subscribe(match => {
-          this.match = match!;
-          this.isMatchLoading = false;
-        });
-    } else {
-      this.isMatchLoading = false;
-    }
   }
   getParticipants() {
-    return this.match.participants.map(participant => ({
+    return this.match?.participants.map(participant => ({
       name: participant.name,
       id: participant.id
     }));
   }
   getSportIcon() {
-    switch (this.match.sport) {
+    switch (this.match?.sport) {
       case Sports.soccer:
         return '⚽';
       case Sports.basketball:
@@ -69,11 +56,10 @@ export class MatchReadOnlyComponent implements OnInit{
     if (this.dialogRef) {
       this.dialogRef.close();
     }
-    const account = this.accountService.getAccount(accountId)
+    this.accountService.getAccount(accountId)
       .subscribe(account => {
         this.dialogService.showAccountDialog(account!);
       });
   }
-
 
 }

@@ -43,4 +43,10 @@ export class FormFactory {
       return null;
     };
   }
+
+  createChatRoomForm() {
+    return this.fb.group({
+      message: ['', this.requiredValidation],
+    });
+  }
 }

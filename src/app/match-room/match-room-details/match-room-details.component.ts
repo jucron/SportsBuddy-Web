@@ -12,7 +12,6 @@ import {NgForOf} from "@angular/common";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {PageState} from "../../core/model/pageState";
 import {FactoryService} from "../../core/factory/factory.service";
-import {MatchService} from "../../core/integration/match.service";
 import {AccountService} from "../../core/integration/account.service";
 import {DialogService} from "../../core/dialog/dialog.service";
 import {DateUtils} from "../../core/utils/dateUtils";
@@ -43,32 +42,37 @@ import {ChangeHelper} from "../../core/audit/changeHelper";
   styleUrl: './match-room-details.component.css'
 })
 export class MatchRoomDetailsComponent implements OnInit{
-  @Input() matchId: string | null = null;
   @Input() currentState!: PageState;
-  match: Match | null = null;
+  @Input() match: Match | null = null;
   matchForm: FormGroup;
   changeHelper!: ChangeHelper;
 
   constructor(private accountService: AccountService,
               private dialogService: DialogService,
-              private matchService: MatchService,
               private factoryService: FactoryService,
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm()
   }
   ngOnInit(): void {
     //If matchId is not null, get the match from the server
-    if (this.matchId) {
-      this.matchService.getMatch(this.matchId)
-        .subscribe(match => {
-          this.match = match!
-          this.setMatchFormValues();
-          this.showMatchRequests();
-        });
+    // if (this.matchId) {
+    //   this.matchService.getMatch(this.matchId)
+    //     .subscribe(match => {
+    //       this.match = match!
+    //       this.setMatchFormValues();
+    //       this.showMatchRequests();
+    //     });
+    // }
+    if (this.match) {
+      this.setMatchFormValues();
+      this.showMatchRequests();
     }
   }
   onSubmit() {
-    //todo
+    //todo updateMatchDetails
+  }
+  onCancelMatch() {
+    //todo cancelMatch
   }
   private setMatchFormValues() {
     if (this.match) {
@@ -84,22 +88,18 @@ export class MatchRoomDetailsComponent implements OnInit{
       this.changeHelper = new ChangeHelper([this.matchForm.value])
     }
   }
-
   showAccountDialog(accountId: string) {
     this.accountService.getAccount(accountId)
       .subscribe(account => {
         this.dialogService.showAccountDialog(account!);
       });
   }
-
   isUpdateDisabled() {
     return this.matchForm.invalid || !this.changeHelper.hasAnyChange([this.matchForm.value]);
   }
-
   hasAnyMatchRequest() {
     return this.match!.matchRequests.length > 0;
   }
-
   private showMatchRequests() {
     if (this.hasAnyMatchRequest()) {
       this.dialogService.showMatchRequestsDialog(this.match!.matchRequests);
