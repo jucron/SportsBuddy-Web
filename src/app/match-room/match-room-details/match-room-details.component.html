@@ -56,8 +56,9 @@
 
           <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
             <div matTooltip='fields not valid' [matTooltipDisabled]="matchForm.valid">
-              <button mat-raised-button color="primary" type="submit" [disabled]="isUpdateDisabled()">Update</button>
+              <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="isUpdateDisabled()">Update</button>
             </div>
+            <button mat-stroked-button type="reset" (click)="onCancelMatch()" [disabled]="true">Cancel Match (todo)</button>
           </div>
         </form>
       </mat-card>

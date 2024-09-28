@@ -1,9 +1,6 @@
 <div class="content">
-  @if (isMatchLoading) {
-    <h2>Loading match details...</h2>
-  } @else {
+  @if (match) {
   <h1>{{getSportIcon()}}  <b>{{match.name}}</b></h1>
-
   <h3><b>When: </b>
     <i>{{DateUtils.getDateLabel(match.date)}}</i>
     <i>, at {{DateUtils.getTimeLabel(match.date)}}</i>

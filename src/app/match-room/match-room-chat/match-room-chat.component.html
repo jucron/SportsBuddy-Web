@@ -2,6 +2,31 @@
 <mat-toolbar fxLayoutAlign="center center"> Match Chat  </mat-toolbar>
 <div class="card">
   <mat-card>
-    <p>match-room-chat works!</p>
+    @if (isChatMessagesEmpty()) {
+      <p>Be the first one to send a message!</p>
+    }
+    @else {
+      <div *ngFor="let message of match?.chatData?.chatMessages">
+        <div class="message">
+          <div class="messageHeader">
+            <span class="messageOwner">{{message.sender}}</span>
+            <span class="messageDate">{{getMessageDateLabel(message.timestamp)}}</span>
+          </div>
+          <div class="messageContent">
+            <p>{{message.text}}</p>
+          </div>
+        </div>
+      </div>
+    }
+    <form [formGroup]="chatRoomForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label> Message </mat-label>
+        <textarea placeholder="Can I participate?" matInput formControlName="message" required></textarea>
+        <app-form-error [control]="chatRoomForm.get('message')"></app-form-error>
+      </mat-form-field>
+      <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
+        <button mat-button type="submit" [disabled]="!chatRoomForm.valid" color="primary">Send</button>
+      </div>
+    </form>
   </mat-card>
 </div>

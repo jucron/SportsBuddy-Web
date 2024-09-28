@@ -1,16 +1,23 @@
 <h1 fxLayoutAlign="center center">Match Room</h1>
 <div fxLayout="row" fxLayoutAlign="space-around start">
+  @if (loadedMatch) {
   <div fxFlex="45" fxLayout="column" fxLayoutAlign="center center">
     @if (isCurrentUserOwner()) {
-      <app-match-room-details [currentState]="currentState" [matchId]="getMatchIdByRoute()"></app-match-room-details>
+      <app-match-room-details [currentState]="currentState" [match]="loadedMatch"></app-match-room-details>
     } @else {
-      <app-match-read-only [matchId]="getMatchIdByRoute()"></app-match-read-only>
+      <app-match-read-only [match]="loadedMatch"></app-match-read-only>
     }
   </div>
 
   <div fxFlex="45" fxLayout="row" fxLayoutAlign="center center">
-    <app-match-room-chat></app-match-room-chat>
+    <app-match-room-chat [match]="loadedMatch"></app-match-room-chat>
   </div>
+
+  } @else {
+
+  <h2>Loading match details...</h2>
+
+  }
 </div>
 
 <p></p>
