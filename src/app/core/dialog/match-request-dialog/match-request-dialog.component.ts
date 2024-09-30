@@ -37,7 +37,6 @@ export class MatchRequestDialogComponent implements OnInit {
               private matchService: MatchService
   ) {}
   ngOnInit(): void {
-    console.log('matchRequests : '+JSON.stringify(this.matchRequests()));
   }
 
   showAccountDialog(userIdRequested: string) {

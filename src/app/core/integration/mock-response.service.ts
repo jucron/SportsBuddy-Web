@@ -18,6 +18,10 @@ import {GenericResponse} from "../model/responses/genericResponse";
 import {LoginRequest} from "../model/requests/loginRequest";
 import {accountRequest} from "../model/requests/accountRequest";
 import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
+import {MessageType} from "../model/messageType";
+import {MessageStatus} from "../model/messageStatus";
+import {ChatDataType} from "../model/chatDataType";
+import {ChatData} from "../model/chatData";
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +51,7 @@ export class MockResponseService implements OnInit{
         owner: this.accounts[1],
         participants: [this.accounts[2], this.accounts[4]],
         matchRequests: [],
-        chatData: null
+        chatData: this.generateMockMatchChatMessages()
       },
       {
         id: uuidv4(),
@@ -87,7 +91,7 @@ export class MockResponseService implements OnInit{
       }
     ];
   }
-  generateMockMatchRequests() {
+  private generateMockMatchRequests() {
     let matchRequest: MatchRequest = {
       userIdRequested: this.accounts[3].id,
       userNameRequested: this.accounts[3].name,
@@ -104,6 +108,38 @@ export class MockResponseService implements OnInit{
       comment: 'Let\'s do this!'
     };
     this.mockMatchRequestResponse(matchRequest);
+  }
+  private generateMockMatchChatMessages(): ChatData {
+    return {
+      chatMessages: [
+        {
+          id: uuidv4(),
+          sender: this.accounts[1],
+          text: 'Hey guys, I have the ball!',
+          timestamp: new Date(),
+          status: MessageStatus.SENT,
+          type: MessageType.TEXT
+        },
+        {
+          id: uuidv4(),
+          sender: this.accounts[2],
+          text: 'I am on my way!',
+          timestamp: new Date(),
+          status: MessageStatus.SENT,
+          type: MessageType.TEXT
+        },
+        {
+          id: uuidv4(),
+          sender: this.accounts[4],
+          text: 'I will be there in 10 minutes',
+          timestamp: new Date(),
+          status: MessageStatus.SENT,
+          type: MessageType.TEXT
+        }
+      ],
+      match: this.matches[0],
+      chatDataType: ChatDataType.MATCH
+    }
   }
   private bootstrapMockAccounts(): Account[] {
     return [
@@ -350,15 +386,18 @@ export class MockResponseService implements OnInit{
 
     if (storedMatches) {
       this.matches = JSON.parse(storedMatches);
-      this.matches.map((match: any) => {
-        // Convert date strings back to Date objects
-        match.date = new Date(match.date);
-        return match;
-      });
+      //Convert date strings back to Date objects:
       this.matches.forEach(match => {
+        //a) convert match date
+        match.date = new Date(match.date);
+        //b) convert matchRequests date
         match.matchRequests.map(request => {
           return request.date = new Date(request.date)
-        })
+        });
+        //c) convert chatMessages date
+        match.chatData?.chatMessages.map(message => {
+          return message.timestamp = new Date(message.timestamp);
+        });
       });
     } else {
       this.matches = this.bootstrapMockMatches();
@@ -468,5 +507,7 @@ export class MockResponseService implements OnInit{
     //return response
     return response;
   }
+
+
 }
 
