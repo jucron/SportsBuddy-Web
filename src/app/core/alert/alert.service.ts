@@ -11,128 +11,125 @@ export class AlertService {
 
   alertCreateAccountSuccess() {
     const message = 'New account created successfully!';
-    this._snackBar.open(message, 'Nice!',{
-      duration: this.alertTimeMls,
-      panelClass: ['success-snackbar']
-    });
+    this.generateSuccessSnackBar(message);
   }
   alertCreateAccountFailed() {
     const message = 'Some error was found while creating the new account, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertLoginSuccess() {
     const message = 'Welcome! 😁';
-    this._snackBar.open(message, 'Great!',{
-      duration: this.alertTimeMls,
-      panelClass: ['success-snackbar']
-    });
+    this.generateSuccessSnackBar(message);
   }
   alertLoginFailed() {
     const message = 'Login failed.. 😔';
-    this._snackBar.open(message, 'Oh no!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertGetMatchesError() {
     const message = 'Some error was found while getting the Matches List, please try again later';
-    this._snackBar.open(message, 'Ai ai ai!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertGetAccountFailed() {
     const message = 'Some error was found while getting the existing account, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertMatchRequestFailed() {
     const message = 'Some error was found while requesting to participate in this Match, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertMatchRequestSuccess() {
     const message = 'The request has been sent to the Owner of this Match! 🚀';
-    this._snackBar.open(message, 'Oh yeah!',{
-      duration: this.alertTimeMls,
-      panelClass: ['success-snackbar']
-    });
+    this.generateSuccessSnackBar(message);
   }
 
   alertGetUserNotificationsError() {
     const message = 'Some error was found while FETCHING the User Notifications, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertUpdateNotificationsError() {
     const message = 'Some error was found while UPDATING the User Notifications, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
 
   alertCreateMatchFailed() {
     const message = 'Some error was found while CREATING a new Match, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
   alertGetMatchError() {
     const message = 'Some error was found while fetching the desired Match, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
 
   alertUpdateAccountFailed() {
     const message = 'Some error was found while updating your Account, please try again later';
-    this._snackBar.open(message, 'Dang!',{
-      duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
-    });
+    this.generateFailSnackBar(message);
   }
 
   alertUpdateAccountSuccess() {
     const message = 'Your account was update successfully! 🚀';
-    this._snackBar.open(message, 'Nice one!',{
-      duration: this.alertTimeMls,
-      panelClass: ['success-snackbar']
-    });
+    this.generateSuccessSnackBar(message);
   }
 
   alertCreateMatchSuccess() {
     const message = 'Your match was created successfully! 🚀';
-    this._snackBar.open(message, 'Yaaaaaay!',{
-      duration: this.alertTimeMls,
-      panelClass: ['success-snackbar']
-    });
+    this.generateSuccessSnackBar(message);
   }
 
   alertMatchRequestDecisionSuccess() {
     const message = 'Your match request decision was sent!! 🚀';
-    this._snackBar.open(message, 'Good to hear!',{
-      duration: this.alertTimeMls,
-      panelClass: ['success-snackbar']
-    });
+    this.generateSuccessSnackBar(message);
   }
 
   alertMatchRequestDecisionFailed() {
     const message = 'Some error was found while sending the match request decision, please try again later';
-    this._snackBar.open(message, 'Dang!',{
+    this.generateFailSnackBar(message);
+  }
+
+  alertMatchRoomMessageSuccess() {
+    const message = 'Your message was sent successfully! 🚀';
+    this.generateSuccessSnackBar(message);
+  }
+
+  alertMatchRoomMessageFailed() {
+    const message = 'Some error was found while sending the message, please try again later';
+    this.generateFailSnackBar(message);
+  }
+
+  private generateSuccessSnackBar(message: string) {
+    this.generateSnackBar(message, this.getSuccessActionMessage(),'success-snackbar');
+  }
+
+  private generateFailSnackBar(message: string) {
+    this.generateSnackBar(message, this.getFailActionMessage(),'fail-snackbar');
+  }
+  private generateSnackBar(message: string,actionMessage: string, panelClass: string) {
+    this._snackBar.open(message, actionMessage,{
       duration: this.alertTimeMls,
-      panelClass: ['fail-snackbar']
+      panelClass: [panelClass]
     });
+  }
+
+  private getSuccessActionMessage() {
+    //return randomly 5 different messages
+    const messages = [
+      'Great!',
+      'Nice one!',
+      'Yay!',
+      'Oh yeah!',
+      'Good to hear!'
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+
+  private getFailActionMessage() {
+    //return randomly 5 different messages
+    const messages = [
+      'Dang!',
+      'Oh no!',
+      'Ai ai ai!',
+      'Hell no!',
+      'Stop testing me! >_<'
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
   }
 }
