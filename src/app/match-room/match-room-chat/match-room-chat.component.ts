@@ -12,6 +12,7 @@ import {FactoryService} from "../../core/factory/factory.service";
 import {Match} from "../../core/model/match";
 import {DateUtils} from "../../core/utils/dateUtils";
 import {AccountService} from "../../core/integration/account.service";
+import {SESSION_KEYS} from "../../core/keys/session-keys";
 
 @Component({
   selector: 'app-match-room-chat',
@@ -77,6 +78,13 @@ export class MatchRoomChatComponent implements OnInit {
 
   private generateUserColors() {
     this.isLoadingColors = true;
+    //getting user colors from local storage if they exist
+    let userColors = sessionStorage.getItem(SESSION_KEYS.USER_COLORS_KEY);
+    if (userColors) {
+      this.userColors = new Map(JSON.parse(userColors));
+    } else {
+      this.userColors = new Map();
+    }
     let chatMessages = this.match?.chatData?.chatMessages;
     if (chatMessages) {
       chatMessages.forEach(chatMessage => {
@@ -86,17 +94,21 @@ export class MatchRoomChatComponent implements OnInit {
         }
       });
     }
+    //saving user colors to local storage
+    sessionStorage.setItem(SESSION_KEYS.USER_COLORS_KEY, JSON.stringify(Array.from(this.userColors.entries())));
     this.isLoadingColors = false;
   }
 
-  getUserAssignedColor(userId: string): string {
-    let result = '';
-    if (this.match) {
-      if (this.userColors.has(userId)) {
-        result = this.userColors.get(userId) || '';
-      }
+  getUserAssignedColor(userId: string, isSecondTry: boolean = false): string {
+    if (this.userColors.has(userId)) {
+      return this.userColors.get(userId) || '';
     }
-    return result;
+    if (isSecondTry) {
+      //if this is reached, the generation of colors is not working properly
+      return '';
+    }
+    this.generateUserColors();
+    return this.getUserAssignedColor(userId, true);
   }
 
   protected isCurrentUserMessage(userId: string): boolean {

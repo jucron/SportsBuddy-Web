@@ -22,6 +22,7 @@ import {MessageType} from "../model/messageType";
 import {MessageStatus} from "../model/messageStatus";
 import {ChatDataType} from "../model/chatDataType";
 import {ChatData} from "../model/chatData";
+import {SESSION_KEYS} from "../keys/session-keys";
 
 @Injectable({
   providedIn: 'root'
@@ -29,8 +30,8 @@ import {ChatData} from "../model/chatData";
 export class MockResponseService implements OnInit{
   accounts: Account[] = [];
   matches: Match[] = [];
-  accountKeys = 'account-keys';
-  matchesKeys = 'matches-keys';
+  accountKeys = SESSION_KEYS.ACCOUNT_KEY;
+  matchesKeys = SESSION_KEYS.MATCHES_KEY;
   JWTKeys = 'jwt-keys'
 
   constructor(private factoryService: FactoryService) {
