@@ -23,6 +23,8 @@ import {MessageStatus} from "../model/messageStatus";
 import {ChatDataType} from "../model/chatDataType";
 import {ChatData} from "../model/chatData";
 import {SESSION_KEYS} from "../keys/session-keys";
+import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
+import {ChatMessage} from "../model/chatMessage";
 
 @Injectable({
   providedIn: 'root'
@@ -138,7 +140,6 @@ export class MockResponseService implements OnInit{
           type: MessageType.TEXT
         }
       ],
-      match: this.matches[0],
       chatDataType: ChatDataType.MATCH
     }
   }
@@ -411,8 +412,12 @@ export class MockResponseService implements OnInit{
     // console.log('debug users data: '+JSON.stringify(this.accounts[2]));
   }
   private saveData(): void {
-    sessionStorage.setItem(this.accountKeys, JSON.stringify(this.accounts));
-    sessionStorage.setItem(this.matchesKeys, JSON.stringify(this.matches));
+    try {
+      sessionStorage.setItem(this.accountKeys, JSON.stringify(this.accounts));
+      sessionStorage.setItem(this.matchesKeys, JSON.stringify(this.matches));
+    } catch (error) {
+      console.error('Error saving data to sessionStorage:', error);
+    }
   }
   mockCreateMatchResponse(request: CreateMatchRequest) {
     let response: GenericResponse = {
@@ -510,5 +515,45 @@ export class MockResponseService implements OnInit{
   }
 
 
+  getMockSendMatchRoomMessageResponse(request: SendMatchRoomMessageRequest): GenericResponse {
+    //find match
+    let existingMatch = this.matches.find(match => match.id === request.matchId);
+    if (!existingMatch) {
+      return {message: 'match-not-found'};
+    }
+    //find sender
+    let sender = this.accounts.find(account => account.id === request.senderId);
+    if (!sender) {
+      return {message: 'sender-not-found'};
+    }
+    //breaking circular reference in Account's object
+    sender.participatingMatches = [];
+    //create new chatMessage with sender and timestamp
+    let newMessage: ChatMessage = request.message;
+    newMessage.id = uuidv4();
+    newMessage.sender = sender;
+    newMessage.timestamp = new Date();
+    //check if chatData and chatMessages exists, if not create it
+    // console.log('chatData: ' + JSON.stringify(existingMatch.chatData));
+    console.log(`!existingMatch.chatData: ${!existingMatch.chatData} - !existingMatch.chatData.chatMessages: ${!existingMatch.chatData?.chatMessages}`)
+    if (!existingMatch.chatData) {
+      existingMatch.chatData = {
+        chatDataType: ChatDataType.MATCH,
+        chatMessages: []
+      };
+    }
+    if (!existingMatch.chatData.chatMessages) {
+      existingMatch.chatData.chatMessages = [];
+    }
+    //add message to match chatData
+    existingMatch.chatData.chatMessages.push(newMessage);
+    console.log('message sent')
+    //save mockUp data
+    this.saveData()
+    //return response
+    return {
+      message: 'message-sent'
+    };
+  }
 }
 

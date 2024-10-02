@@ -16,6 +16,7 @@ import {UrlHelper} from "../helper-components/urlHelper";
 import {LoginRequest} from "../model/requests/loginRequest";
 import {accountRequest} from "../model/requests/accountRequest";
 import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
+import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
 
 export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   const mockService = inject(MockResponseService);
@@ -125,6 +126,16 @@ export const mockHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => 
       headers: new HttpHeaders({'Authorization': validToken}),
       status: (success) ? 200: 404, //OK or Not found
       body: responseBody as MyMatchResponse
+    });
+  } else if (req.url.includes('/send-match-room-message')) {
+    console.log('send-match-room-message request', JSON.stringify(req.body));
+    let responseBody: GenericResponse = mockService.getMockSendMatchRoomMessageResponse(req.body as SendMatchRoomMessageRequest);
+    console.log('send-match-room-message response', JSON.stringify(responseBody));
+    const success = responseBody.message === 'message-sent';
+    mockResponse = new HttpResponse({
+      headers: new HttpHeaders({'Authorization': validToken}),
+      status: (success) ? 200: 404, //OK or Not found
+      body: responseBody as GenericResponse
     });
   }
 

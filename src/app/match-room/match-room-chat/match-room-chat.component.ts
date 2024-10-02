@@ -13,6 +13,10 @@ import {Match} from "../../core/model/match";
 import {DateUtils} from "../../core/utils/dateUtils";
 import {AccountService} from "../../core/integration/account.service";
 import {SESSION_KEYS} from "../../core/keys/session-keys";
+import {DialogService} from "../../core/dialog/dialog.service";
+import {MatchService} from "../../core/integration/match.service";
+import {ChatMessage} from "../../core/model/chatMessage";
+import {AlertService} from "../../core/alert/alert.service";
 
 @Component({
   selector: 'app-match-room-chat',
@@ -42,17 +46,34 @@ export class MatchRoomChatComponent implements OnInit {
   private userId: string | null = null;
 
   constructor(private factoryService: FactoryService,
-              private accountService: AccountService) {
+              private accountService: AccountService,
+              private dialogService: DialogService,
+              private matchService: MatchService,
+              private alertService: AlertService,) {
     this.chatRoomForm = this.factoryService.getFormFactory().createChatRoomForm();
     this.userId = this.accountService.getLoggedAccountId()
   }
 
   ngOnInit(): void {
     this.generateUserColors();
+    this.alertService.releaseCachedAlert();
   }
 
   onSubmit() {
-    //todo sendChatMessage
+    if (this.chatRoomForm.valid) {
+      let message: ChatMessage = this.chatRoomForm.value;
+      const userId = this.accountService.getLoggedAccountId();
+      if (message && this.match && userId) {
+        this.dialogService.confirmActionByDialog('send this message')
+          .subscribe(result => {
+          if (result && this.match) {
+            this.matchService.sendMatchRoomMessage(this.match.id,userId, message);
+            this.chatRoomForm.reset();
+          }
+        });
+      }
+    }
+
   }
 
   isChatMessagesEmpty() {

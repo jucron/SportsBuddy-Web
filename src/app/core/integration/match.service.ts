@@ -9,6 +9,11 @@ import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
+import {ChatMessage} from "../model/chatMessage";
+import {MessageType} from "../model/messageType";
+import {MessageStatus} from "../model/messageStatus";
+import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
+import {ALERT_CACHE_KEYS} from "../keys/alert-cache-keys";
 
 @Injectable({
   providedIn: 'root'
@@ -147,7 +152,7 @@ export class MatchService {
       .subscribe({
         next: (response) => {
           if (response) {
-            this.notificationService.alertMatchRequestDecisionSuccess();
+            this.notificationService.cacheAlert(ALERT_CACHE_KEYS.MATCH_REQUEST_DECISION_SUCCESS);
             this.routingService.reloadPage();
           } else {
             this.notificationService.alertMatchRequestDecisionFailed();
@@ -156,6 +161,40 @@ export class MatchService {
         error: err => {
           console.error('matchRequestDecision failed', err);
           this.notificationService.alertMatchRequestDecisionFailed();
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.loadingDialogService.closeLoadingDialog();
+        }
+      });
+  }
+
+  sendMatchRoomMessage(matchId: string,senderId: string, message: ChatMessage) {
+    this.isLoading = true;
+    this.loadingDialogService.showLoadingDialog();
+    // Set message properties
+    message.type = MessageType.TEXT;
+    message.status = MessageStatus.SENT;
+    // Set request properties
+    let sendMatchRoomMessageRequest: SendMatchRoomMessageRequest = {
+      matchId: matchId,
+      senderId: senderId,
+      message: message
+    }
+    //Call API
+    this.apiService.sendMatchRoomMessage(sendMatchRoomMessageRequest)
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.notificationService.cacheAlert(ALERT_CACHE_KEYS.MATCH_ROOM_MESSAGE_SUCCESS);
+            this.routingService.reloadPage();
+          } else {
+            this.notificationService.alertMatchRoomMessageFailed();
+          }
+        },
+        error: err => {
+          console.error('sendMatchRoomMessage failed', err);
+          this.notificationService.alertMatchRoomMessageFailed();
         },
         complete: () => {
           this.isLoading = false;
