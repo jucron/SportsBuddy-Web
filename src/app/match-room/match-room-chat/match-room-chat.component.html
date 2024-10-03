@@ -32,10 +32,9 @@
       </div>
     }
     <form [formGroup]="chatRoomForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="stretch" class="form">
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="align-content-md-stretch" hideRequiredMarker>
         <mat-label> Message </mat-label>
-        <textarea placeholder="I want to ask something.." matInput formControlName="message"></textarea>
-        <app-form-error [control]="chatRoomForm.get('message')"></app-form-error>
+        <textarea placeholder="I want to ask something.." matInput formControlName="text"></textarea>
       </mat-form-field>
       <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
         <button mat-button type="submit" [disabled]="!chatRoomForm.valid" color="primary">Send</button>

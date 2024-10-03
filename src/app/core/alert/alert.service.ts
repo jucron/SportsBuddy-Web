@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ALERT_CACHE_KEYS} from "../keys/alert-cache-keys";
 
 @Injectable({
   providedIn: 'root'
@@ -131,5 +132,27 @@ export class AlertService {
       'Stop testing me! >_<'
     ];
     return messages[Math.floor(Math.random() * messages.length)];
+  }
+
+  cacheAlert(alertKey: string) {
+    sessionStorage.setItem(ALERT_CACHE_KEYS.STORE_KEY,alertKey)
+  }
+
+  releaseCachedAlert() {
+    const storedAlertKey = sessionStorage.getItem(ALERT_CACHE_KEYS.STORE_KEY);
+    if (storedAlertKey) {
+      switch (storedAlertKey) {
+        case ALERT_CACHE_KEYS.MATCH_ROOM_MESSAGE_SUCCESS:
+          this.alertMatchRoomMessageSuccess();
+          break;
+        case ALERT_CACHE_KEYS.MATCH_REQUEST_DECISION_SUCCESS:
+          this.alertMatchRequestDecisionSuccess();
+          break;
+        default:
+          console.warn('Cached alert not found in expected values');
+          break;
+      }
+      sessionStorage.removeItem(ALERT_CACHE_KEYS.STORE_KEY)
+    }
   }
 }

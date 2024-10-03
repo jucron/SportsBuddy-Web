@@ -10,6 +10,7 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {MatIcon} from "@angular/material/icon";
 import {MatchService} from "../../integration/match.service";
 import {MatchRequestDecision} from "../../model/requests/matchRequestDecision";
+import {AlertService} from "../../alert/alert.service";
 
 interface MatchRequestData {
   matchRequests: MatchRequest[]
@@ -34,9 +35,12 @@ export class MatchRequestDialogComponent implements OnInit {
 
   constructor(private dialogService: DialogService,
               private accountService: AccountService,
-              private matchService: MatchService
-  ) {}
+              private matchService: MatchService,
+              private alertService: AlertService) {
+
+  }
   ngOnInit(): void {
+    this.alertService.releaseCachedAlert()
   }
 
   showAccountDialog(userIdRequested: string) {
