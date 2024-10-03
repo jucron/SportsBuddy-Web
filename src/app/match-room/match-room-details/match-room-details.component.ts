@@ -54,15 +54,6 @@ export class MatchRoomDetailsComponent implements OnInit{
     this.matchForm = this.factoryService.getFormFactory().createMatchForm()
   }
   ngOnInit(): void {
-    //If matchId is not null, get the match from the server
-    // if (this.matchId) {
-    //   this.matchService.getMatch(this.matchId)
-    //     .subscribe(match => {
-    //       this.match = match!
-    //       this.setMatchFormValues();
-    //       this.showMatchRequests();
-    //     });
-    // }
     if (this.match) {
       this.setMatchFormValues();
       this.showMatchRequests();

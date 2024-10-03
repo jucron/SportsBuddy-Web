@@ -182,24 +182,26 @@ export class MatchService {
       message: message
     }
     //Call API
-    this.apiService.sendMatchRoomMessage(sendMatchRoomMessageRequest)
-      .subscribe({
-        next: (response) => {
+    return this.apiService.sendMatchRoomMessage(sendMatchRoomMessageRequest)
+      .pipe(
+        map(response => {
           if (response) {
-            this.notificationService.cacheAlert(ALERT_CACHE_KEYS.MATCH_ROOM_MESSAGE_SUCCESS);
-            this.routingService.reloadPage();
+            this.notificationService.alertMatchRoomMessageSuccess();
+            return response;
           } else {
             this.notificationService.alertMatchRoomMessageFailed();
+            return null;
           }
-        },
-        error: err => {
-          console.error('sendMatchRoomMessage failed', err);
-          this.notificationService.alertMatchRoomMessageFailed();
-        },
-        complete: () => {
+        }),
+        catchError(err => {
+          console.error('getMatch failed', err);
+          this.notificationService.alertGetMatchError();
+          return of(null);
+        }),
+        finalize(() => {
           this.isLoading = false;
           this.loadingDialogService.closeLoadingDialog();
-        }
-      });
+        })
+      )
   }
 }

@@ -37,7 +37,7 @@
         <textarea placeholder="I want to ask something.." matInput formControlName="text"></textarea>
       </mat-form-field>
       <div class="buttons" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="20px">
-        <button mat-button type="submit" [disabled]="!chatRoomForm.valid" color="primary">Send</button>
+        <button mat-button type="submit" [disabled]="!isChatRoomFormValid()" color="primary">Send</button>
       </div>
     </form>
   </mat-card>

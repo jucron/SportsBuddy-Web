@@ -16,7 +16,6 @@ import {SESSION_KEYS} from "../../core/keys/session-keys";
 import {DialogService} from "../../core/dialog/dialog.service";
 import {MatchService} from "../../core/integration/match.service";
 import {ChatMessage} from "../../core/model/chatMessage";
-import {AlertService} from "../../core/alert/alert.service";
 
 @Component({
   selector: 'app-match-room-chat',
@@ -48,26 +47,30 @@ export class MatchRoomChatComponent implements OnInit {
   constructor(private factoryService: FactoryService,
               private accountService: AccountService,
               private dialogService: DialogService,
-              private matchService: MatchService,
-              private alertService: AlertService,) {
+              private matchService: MatchService) {
     this.chatRoomForm = this.factoryService.getFormFactory().createChatRoomForm();
     this.userId = this.accountService.getLoggedAccountId()
   }
 
   ngOnInit(): void {
     this.generateUserColors();
-    this.alertService.releaseCachedAlert();
   }
 
   onSubmit() {
-    if (this.chatRoomForm.valid) {
+    if (this.isChatRoomFormValid()) {
       let message: ChatMessage = this.chatRoomForm.value;
       const userId = this.accountService.getLoggedAccountId();
       if (message && this.match && userId) {
         this.dialogService.confirmActionByDialog('send this message')
           .subscribe(result => {
           if (result && this.match) {
-            this.matchService.sendMatchRoomMessage(this.match.id,userId, message);
+            const matchId = this.match.id;
+            this.matchService.sendMatchRoomMessage(matchId, userId, message)
+              .subscribe(chatData => {
+                if (chatData) {
+                  this.match!.chatData = chatData;
+                }
+              });
             this.chatRoomForm.reset();
           }
         });
@@ -137,5 +140,11 @@ export class MatchRoomChatComponent implements OnInit {
       this.userId = this.accountService.getLoggedAccountId();
     }
     return this.userId === userId;
+  }
+
+  isChatRoomFormValid() {
+    let message: ChatMessage = this.chatRoomForm.value;
+    //check if text is not empty or null or undefined
+    return message && message.text && message.text.trim() !== '';
   }
 }

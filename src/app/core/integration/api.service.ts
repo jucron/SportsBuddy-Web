@@ -22,6 +22,8 @@ import {LoginRequest} from "../model/requests/loginRequest";
 import {accountRequest} from "../model/requests/accountRequest";
 import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
 import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
+import {SendMatchRoomMessageResponse} from "../model/responses/sendMatchRoomMessageResponse";
+import {ChatData} from "../model/chatData";
 
 @Injectable({
   providedIn: 'root'
@@ -266,18 +268,18 @@ export class ApiService {
       );
   }
 
-  sendMatchRoomMessage(sendMatchRoomMessageRequest: SendMatchRoomMessageRequest): Observable<boolean | null> {
+  sendMatchRoomMessage(sendMatchRoomMessageRequest: SendMatchRoomMessageRequest): Observable<ChatData | null> {
     const endpoint = 'send-match-room-message';
     console.log(endpoint + ' triggered from ApiService')
     let headers = this.authService.getHeaderWithToken();
-    return this.http.post<GenericResponse>(`${environment.baseUrl}${endpoint}`,
+    return this.http.post<SendMatchRoomMessageResponse>(`${environment.baseUrl}${endpoint}`,
       sendMatchRoomMessageRequest, {headers, observe: 'response' })
       .pipe(
         map(response => {
-          if (response.status === 200) {
+          if (response.status === 200 && response.body) {
             console.log('sendMatchRoomMessage 200 ok');
             this.authService.storeToken(response.headers);
-            return true;
+            return response.body.chatData;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),

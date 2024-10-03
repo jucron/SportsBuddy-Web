@@ -46,7 +46,7 @@ export class FormFactory {
 
   createChatRoomForm() {
     return this.fb.group({
-      text: ['', this.requiredValidation],
+      text: [''],
     });
   }
 }

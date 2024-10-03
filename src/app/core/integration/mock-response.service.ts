@@ -25,6 +25,7 @@ import {ChatData} from "../model/chatData";
 import {SESSION_KEYS} from "../keys/session-keys";
 import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
 import {ChatMessage} from "../model/chatMessage";
+import {SendMatchRoomMessageResponse} from "../model/responses/sendMatchRoomMessageResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -515,16 +516,16 @@ export class MockResponseService implements OnInit{
   }
 
 
-  getMockSendMatchRoomMessageResponse(request: SendMatchRoomMessageRequest): GenericResponse {
+  getMockSendMatchRoomMessageResponse(request: SendMatchRoomMessageRequest): SendMatchRoomMessageResponse {
     //find match
     let existingMatch = this.matches.find(match => match.id === request.matchId);
     if (!existingMatch) {
-      return {message: 'match-not-found'};
+      return {message: 'match-not-found', chatData: null};
     }
     //find sender
     let sender = this.accounts.find(account => account.id === request.senderId);
     if (!sender) {
-      return {message: 'sender-not-found'};
+      return {message: 'sender-not-found', chatData: null};
     }
     //breaking circular reference in Account's object
     sender.participatingMatches = [];
@@ -552,7 +553,8 @@ export class MockResponseService implements OnInit{
     this.saveData()
     //return response
     return {
-      message: 'message-sent'
+      message: 'message-sent',
+      chatData: existingMatch.chatData
     };
   }
 }
