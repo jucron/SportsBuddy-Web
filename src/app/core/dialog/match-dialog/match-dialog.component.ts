@@ -7,7 +7,6 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {Match} from "../../model/match";
 import {MatCard, MatCardContent} from "@angular/material/card";
 import {DateUtils} from "../../utils/dateUtils";
-import {STORAGE_KEYS} from "../../keys/storage-keys";
 import {FormErrorComponent} from "../../helper-components/form-error/form-error.component";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
@@ -15,10 +14,12 @@ import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {FactoryService} from "../../factory/factory.service";
 import {NgForOf, NgIf} from "@angular/common";
 import {MatchService} from "../../integration/match.service";
-import {MatchRequest} from "../../model/requests/matchRequest";
 import {MatchReadOnlyComponent} from "../../../match/match-read-only/match-read-only.component";
 import {RoutingService} from "../../routing/routing.service";
 import {DialogService} from "../dialog.service";
+import {AccountService} from "../../integration/account.service";
+import {AlertService} from "../../alert/alert.service";
+import {finalize} from "rxjs";
 
 interface MatchDialogData {
   match: Match
@@ -51,16 +52,19 @@ export class MatchDialogComponent {
   readonly dialogRef = inject(MatDialogRef<MatchDialogComponent>);
   readonly data = inject<MatchDialogData>(MAT_DIALOG_DATA);
   readonly match = model(this.data.match);
-  loggedUserId =  localStorage.getItem(STORAGE_KEYS.MAIN_ID);
+  loggedUserId;
   showFiller = false;
   matchRequestForm: FormGroup;
   protected readonly DateUtils = DateUtils;
 
   constructor(private factoryService: FactoryService,
               private matchService: MatchService,
-              private routeService: RoutingService,
-              private dialogService: DialogService
+              private routingService: RoutingService,
+              private dialogService: DialogService,
+              private accountService: AccountService,
+              private alertService: AlertService,
   ) {
+    this.loggedUserId = this.accountService.getLoggedAccountId();
     this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
   }
 
@@ -95,17 +99,10 @@ export class MatchDialogComponent {
   }
   onSubmit() {
     if (this.matchRequestForm.valid) {
-      let matchRequest: MatchRequest = this.matchRequestForm.value;
-      matchRequest.userIdRequested = this.loggedUserId ?? 'not-found';
-      matchRequest.userNameRequested = 'to be filled';
-      matchRequest.date = new Date();
-      matchRequest.userIdOwner = this.match().owner!.id;
-
       this.dialogService.confirmActionByDialog('ask to participate in this match')
         .subscribe((result: boolean) => {
           if (result) {
-            this.matchService.matchRequest(matchRequest);
-            this.onCloseClick();
+            this.onConfirmAskToParticipate();
           }
         });
     }
@@ -113,11 +110,34 @@ export class MatchDialogComponent {
 
   goToMatchRoom() {
     this.onCloseClick();
-    this.routeService.redirectTo('match-room/'+this.match().id+'/participant', false);
+    this.routingService.redirectTo('match-room/'+this.match().id+'/participant', false);
   }
 
   goToMyMatchRoom() {
     this.onCloseClick();
-    this.routeService.redirectTo('match-room/'+this.match().id+'/owner', false);
+    this.routingService.redirectTo('match-room/'+this.match().id+'/owner', false);
+  }
+
+  private onConfirmAskToParticipate() {
+    this.dialogService.showLoadingDialog();
+    this.matchService.matchRequest(this.matchRequestForm, this.loggedUserId ?? 'not-found', this.match())
+      .pipe(
+        finalize(() => this.dialogService.closeLoadingDialog())
+      )
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.alertService.alertMatchRequestSuccess();
+            this.routingService.redirectTo('home', false);
+          } else {
+            this.alertService.alertMatchRequestFailed();
+          }
+        },
+        error: err => {
+          console.error('matchRequest failed', err);
+          this.alertService.alertMatchRequestFailed();
+        }
+      });
+    this.onCloseClick();
   }
 }

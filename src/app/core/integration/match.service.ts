@@ -13,6 +13,7 @@ import {MessageType} from "../model/messageType";
 import {MessageStatus} from "../model/messageStatus";
 import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
 import {ALERT_CACHE_KEYS} from "../keys/alert-cache-keys";
+import {FormGroup} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
@@ -42,28 +43,20 @@ export class MatchService {
     );
   }
 
-  matchRequest(matchRequest: MatchRequest) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
-    this.apiService.submitMatchRequest(matchRequest)
-      .subscribe({
-        next: (response) => {
-          if (response) {
-            this.notificationService.alertMatchRequestSuccess();
-            this.routingService.redirectTo('home', false);
-          } else {
-            this.notificationService.alertMatchRequestFailed();
-          }
-        },
-        error: err => {
-          console.error('matchRequest failed', err);
-          this.notificationService.alertMatchRequestFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
-        }
-      });
+  matchRequest(matchRequestForm: FormGroup, loggedUserId: string, match: Match): Observable<boolean | null> {
+    let matchRequest: MatchRequest = matchRequestForm.value;
+    matchRequest.userIdRequested = loggedUserId;
+    matchRequest.userNameRequested = 'to be filled';
+    matchRequest.date = new Date();
+    matchRequest.userIdOwner = match.owner!.id;
+
+    return this.apiService.submitMatchRequest(matchRequest)
+      .pipe(
+        map(result => {
+          return result;
+        })
+      )
+
   }
   createMatch(match: Match) {
     this.isLoading = true;
