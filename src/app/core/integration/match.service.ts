@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {RoutingService} from "../routing/routing.service";
-import {MatchResponse} from "../model/responses/matchResponse";
 import {Match} from "../model/match";
 import {catchError, finalize, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
@@ -28,32 +27,21 @@ export class MatchService {
     private loadingDialogService: DialogService,
   ) {
   }
-  getMatches(): Observable<MatchResponse> {
+
+  getMatches(): Observable<Match[] | null> {
     return this.apiService.getMatches().pipe(
       map(response => {
-        if (response) {
-          return response;
-        } else {
-          this.notificationService.alertGetMatchesError();
-          return this.getEmptyMatchResponse();
-        }
+        return response;
       }),
       catchError(err => {
         console.error('getMatches failed', err);
-        this.notificationService.alertGetMatchesError();
-        return of(this.getEmptyMatchResponse());
+        return of(null);
       }),
       finalize(() => {
-        this.isLoading = false;
       })
     );
   }
-  private getEmptyMatchResponse(): MatchResponse {
-    return {
-      message: 'getMatches-failed',
-      matches: [],
-    };
-  }
+
   matchRequest(matchRequest: MatchRequest) {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();

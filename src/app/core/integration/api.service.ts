@@ -75,7 +75,7 @@ export class ApiService {
         catchError(this.handleError<null>(endpoint))
       );
   }
-  getMatches(): Observable<MatchResponse | null> {
+  getMatches(): Observable<Match[] | null> {
     //todo: get matches with pagination
     const endpoint = 'get-matches';
     console.log(endpoint + ' triggered from ApiService');
@@ -87,7 +87,7 @@ export class ApiService {
           if (response.status === 200 && response.body) {
             console.log('getMatches 200 Ok');
             this.authService.storeToken(response.headers);
-            return response.body;
+            return response.body.matches;
           }
           return this.handleUnexpectedResponse(response, endpoint);
         }),

@@ -23,6 +23,7 @@ import {DialogService} from "../core/dialog/dialog.service";
 import {DateUtils} from "../core/utils/dateUtils";
 import {NotificationService} from "../core/integration/notification.service";
 import {STORAGE_KEYS} from "../core/keys/storage-keys";
+import {AlertService} from "../core/alert/alert.service";
 
 @Component({
   selector: 'app-home',
@@ -55,7 +56,8 @@ export class HomeComponent implements OnInit {
   constructor(private matchService: MatchService,
               private routingService: RoutingService,
               private dialogService: DialogService,
-              private notificationService: NotificationService
+              private notificationService: NotificationService,
+              private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -71,11 +73,16 @@ export class HomeComponent implements OnInit {
     this.isLoadingTable = true;
     this.matchService.getMatches()
       .subscribe({
-    next: matchResponse => {
-      this.matchesTable = matchResponse.matches;
+    next: matches => {
+      if (matches){
+        this.matchesTable = matches;
+      } else {
+        this.matchesTable = [];
+        this.alertService.alertGetMatchesError();
+      }
     },
       error: error => {
-      console.error('error in updating updateMatchTable'+error)
+      console.error('error in updateMatchTable: '+error)
     },
       complete: () => {
       this.isLoadingTable = false; // Hide the loading spinner
