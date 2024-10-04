@@ -15,7 +15,6 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [authGuard]},
   { path: 'account/create', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.CREATE_STATE }, canActivate: [authGuard] },
   { path: 'account/update/:id', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.UPDATE_STATE }, canActivate: [authGuard] },
-  // { path: 'account/read-only/:id', component: AccountComponent, data: { state: ACCOUNT_STATE_KEYS.READONLY_STATE }, canActivate: [authGuard] },
   { path: 'match', component: MatchComponent, canActivate: [authGuard]},
   { path: 'match-room/:id/owner', component: MatchRoomComponent, data: { state: MATCH_ROOM_STATE_KEYS.OWNER_STATE }, canActivate: [authGuard] },
   { path: 'match-room/:id/participant', component: MatchRoomComponent, data: { state: MATCH_ROOM_STATE_KEYS.PARTICIPANT_STATE }, canActivate: [authGuard] },

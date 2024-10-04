@@ -20,10 +20,11 @@ import {
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {Sports} from "../core/model/sports";
 import {FactoryService} from "../core/factory/factory.service";
-import {Match} from "../core/model/match";
-import {DateUtils} from "../core/utils/dateUtils";
 import {MatchService} from "../core/integration/match.service";
 import {DialogService} from "../core/dialog/dialog.service";
+import {AlertService} from "../core/alert/alert.service";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-match',
@@ -59,26 +60,24 @@ import {DialogService} from "../core/dialog/dialog.service";
 export class MatchComponent {
   matchForm: FormGroup;
   protected readonly sports = Sports;
+  isLoading: boolean = false;
 
   constructor(
     private factoryService: FactoryService,
     private routingService: RoutingService,
     private matchService: MatchService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private alertService: AlertService,
+    private integrationUIService: IntegrationUiService
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
   onSubmit() {
     if (this.matchForm.valid) {
-      const date = this.matchForm.get('date')?.value;
-      const time = this.matchForm.get('time')?.value;
-      const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
-      let match: Match = this.matchForm.value;
-      match.date = combinedDateTime ?? match.date;
       this.dialogService.confirmActionByDialog('create this match')
         .subscribe((result: boolean) => {
           if (result) {
-            this.matchService.createMatch(match);
+            this.onConfirmCreateMatch(this.matchForm);
           }
         });
     }
@@ -86,5 +85,19 @@ export class MatchComponent {
 
   routeBackToHome() {
     this.routingService.redirectTo('home', false);
+  }
+
+  private onConfirmCreateMatch(matchForm: FormGroup) {
+    let params = UIServiceParams.builder().withLoadingDialog().withSuccessAlert().withErrorAlert();
+    let operation  =  this.matchService.createMatch(matchForm);
+    this.integrationUIService
+      .executeCall<string>(operation, params)
+      .subscribe((matchId) => {
+          if (matchId) {
+            this.matchService.storeMatchId(matchId);
+            this.routingService.redirectTo('home', false);
+          }
+        }
+      );
   }
 }

@@ -9,8 +9,10 @@ import {MatButton} from "@angular/material/button";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatIcon} from "@angular/material/icon";
 import {MatchService} from "../../integration/match.service";
-import {MatchRequestDecision} from "../../model/requests/matchRequestDecision";
 import {AlertService} from "../../alert/alert.service";
+import {UIServiceParams} from "../../integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../../integration/ui-features/integration-ui.service";
+import {RoutingService} from "../../routing/routing.service";
 
 interface MatchRequestData {
   matchRequests: MatchRequest[]
@@ -36,9 +38,11 @@ export class MatchRequestDialogComponent implements OnInit {
   constructor(private dialogService: DialogService,
               private accountService: AccountService,
               private matchService: MatchService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private integrationUIService: IntegrationUiService,
+              private routingService: RoutingService)
+  {}
 
-  }
   ngOnInit(): void {
     this.alertService.releaseCachedAlert()
   }
@@ -62,10 +66,15 @@ export class MatchRequestDialogComponent implements OnInit {
     this.dialogService.confirmActionByDialog(message)
       .subscribe(result => {
         if (result) {
-          let matchRequestDecision: MatchRequestDecision = {matchRequest, accept};
-          this.matchService.matchRequestDecision(matchRequestDecision);
-          this.onCloseClick();
-        }
-      })
+          let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
+          let operation = this.matchService.matchRequestDecision(matchRequest, accept);
+          this.integrationUIService.executeCall<boolean>(operation, params)
+            .subscribe((result) => {
+                if (result) {
+                  this.routingService.reloadPage();
+                }
+              },
+            )}
+      });
   }
 }

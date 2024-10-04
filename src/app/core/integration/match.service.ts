@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {RoutingService} from "../routing/routing.service";
 import {Match} from "../model/match";
-import {catchError, finalize, map, Observable, of} from "rxjs";
+import {catchError, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
@@ -12,8 +12,14 @@ import {ChatMessage} from "../model/chatMessage";
 import {MessageType} from "../model/messageType";
 import {MessageStatus} from "../model/messageStatus";
 import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
-import {ALERT_CACHE_KEYS} from "../keys/alert-cache-keys";
 import {FormGroup} from "@angular/forms";
+import {DateUtils} from "../utils/dateUtils";
+import {IntegrationCallResponse} from "./ui-features/integration-call-response";
+
+function handleApiResponse(data: any, operationType: string): IntegrationCallResponse {
+  if (!data) throw new Error('No data received');
+  return IntegrationCallResponse.getSuccess(data, operationType);
+}
 
 @Injectable({
   providedIn: 'root'
@@ -29,21 +35,21 @@ export class MatchService {
   ) {
   }
 
-  getMatches(): Observable<Match[] | null> {
-    return this.apiService.getMatches().pipe(
-      map(response => {
-        return response;
-      }),
-      catchError(err => {
-        console.error('getMatches failed', err);
-        return of(null);
-      }),
-      finalize(() => {
-      })
-    );
+  getMatches(): Observable<IntegrationCallResponse> {
+    const opType = 'getMatches';
+    return this.apiService.getMatches()
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 
-  matchRequest(matchRequestForm: FormGroup, loggedUserId: string, match: Match): Observable<boolean | null> {
+  matchRequest(matchRequestForm: FormGroup, loggedUserId: string, match: Match): Observable<IntegrationCallResponse> {
+    const opType = 'matchRequest';
+
     let matchRequest: MatchRequest = matchRequestForm.value;
     matchRequest.userIdRequested = loggedUserId;
     matchRequest.userNameRequested = 'to be filled';
@@ -52,107 +58,71 @@ export class MatchService {
 
     return this.apiService.submitMatchRequest(matchRequest)
       .pipe(
-        map(result => {
-          return result;
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
         })
-      )
+      );
+  }
 
+  createMatch(matchForm: FormGroup): Observable<IntegrationCallResponse> {
+    const opType = 'createMatch';
+    const date = matchForm.get('date')?.value;
+    const time = matchForm.get('time')?.value;
+    const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
+    let match: Match = matchForm.value;
+    match.date = combinedDateTime ?? match.date;
+
+    return this.apiService.submitCreateMatch(match)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
-  createMatch(match: Match) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
-    this.apiService.submitCreateMatch(match)
-      .subscribe({
-        next: (response) => {
-          if (response) {
-            localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response);
-            this.notificationService.alertCreateMatchSuccess();
-            this.routingService.redirectTo('home', false);
-          } else {
-            this.notificationService.alertCreateMatchFailed();
-          }
-        },
-        error: err => {
-          console.error('matchRequest failed', err);
-          this.notificationService.alertCreateMatchFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
-        }
-      });
+
+  getMatch(matchId: string): Observable<IntegrationCallResponse> {
+    const opType = 'getMatch';
+    return this.apiService.getMatch(matchId)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
-  private getEmptyMatch(): Match {
-    return  {
-      id: '-1',
-      name: 'No Match',
-      date: new Date(),
-      location: 'No Match',
-      matchRequests: [],
-      sport: 'No Match',
-      comments: 'No Match',
-      participants: [],
-      chatData: null
-    }
+
+  getMyMatchId() {
+    return localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
   }
-  getMatch(id: string) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
-    return this.apiService.getMatch(id).pipe(
-      map((match) => {
-        if (match) {
-          return match;
-        } else {
-          this.notificationService.alertGetMatchError();
-          return this.getEmptyMatch();
-        }
-      }),
-      catchError(err => {
-        console.error('getMatch failed', err);
-        this.notificationService.alertGetMatchError();
-        return of(this.getEmptyMatch());
-      }),
-      finalize(() => {
-        this.isLoading = false;
-        this.loadingDialogService.closeLoadingDialog();
-      })
-    );
-  }
+
   getMyMatchLabel() {
-    let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    let myMatchId = this.getMyMatchId();
     if (myMatchId) {
       return "Go to my Match-Room";
     }
     return "Create a new Match";
   }
-  matchRequestDecision(matchRequestDecision: MatchRequestDecision) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
 
-    this.apiService.matchRequestDecision(matchRequestDecision)
-      .subscribe({
-        next: (response) => {
-          if (response) {
-            this.notificationService.cacheAlert(ALERT_CACHE_KEYS.MATCH_REQUEST_DECISION_SUCCESS);
-            this.routingService.reloadPage();
-          } else {
-            this.notificationService.alertMatchRequestDecisionFailed();
-          }
-        },
-        error: err => {
-          console.error('matchRequestDecision failed', err);
-          this.notificationService.alertMatchRequestDecisionFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
-        }
-      });
+  matchRequestDecision(matchRequest: MatchRequest, accept: boolean): Observable<IntegrationCallResponse> {
+    const opType = 'matchRequestDecision';
+    let matchRequestDecision: MatchRequestDecision = {matchRequest, accept};
+    return this.apiService.matchRequestDecision(matchRequestDecision)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 
-  sendMatchRoomMessage(matchId: string,senderId: string, message: ChatMessage) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
+  sendMatchRoomMessage(matchId: string,senderId: string, message: ChatMessage): Observable<IntegrationCallResponse> {
+    const opType = 'sendMatchRoomMessage';
     // Set message properties
     message.type = MessageType.TEXT;
     message.status = MessageStatus.SENT;
@@ -165,24 +135,15 @@ export class MatchService {
     //Call API
     return this.apiService.sendMatchRoomMessage(sendMatchRoomMessageRequest)
       .pipe(
-        map(response => {
-          if (response) {
-            this.notificationService.alertMatchRoomMessageSuccess();
-            return response;
-          } else {
-            this.notificationService.alertMatchRoomMessageFailed();
-            return null;
-          }
-        }),
+        map(data => handleApiResponse(data, opType)),
         catchError(err => {
-          console.error('getMatch failed', err);
-          this.notificationService.alertGetMatchError();
-          return of(null);
-        }),
-        finalize(() => {
-          this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
         })
-      )
+      );
+  }
+
+  storeMatchId(response: string) {
+    localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response);
   }
 }

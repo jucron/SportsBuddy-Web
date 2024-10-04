@@ -22,6 +22,9 @@ import {STORAGE_KEYS} from "../core/keys/storage-keys";
 import {MatchRoomChatComponent} from "./match-room-chat/match-room-chat.component";
 import {Match} from "../core/model/match";
 import {MatchService} from "../core/integration/match.service";
+import {AlertService} from "../core/alert/alert.service";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-chat-room',
@@ -57,10 +60,13 @@ import {MatchService} from "../core/integration/match.service";
 export class MatchRoomComponent implements OnInit {
   currentState: PageState;
   loadedMatch: Match | null = null;
+  isLoading: boolean = false;
 
   constructor(private routeService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private matchService: MatchService,
+              private alertService: AlertService,
+              private integrationUIService: IntegrationUiService
   ) {
     this.currentState = new ReadOnlyState();
   }
@@ -74,9 +80,14 @@ export class MatchRoomComponent implements OnInit {
   private loadMatch(){
     const matchId = this.getMatchIdByRoute();
     if (matchId) {
-      this.matchService.getMatch(matchId)
-        .subscribe(match => {
-          this.loadedMatch = match
+      let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
+      let operation = this.matchService.getMatch(matchId);
+      this.integrationUIService
+        .executeCall<Match>(operation, params)
+        .subscribe((match) => {
+          if (match) {
+            this.loadedMatch = match
+          }
         });
     }
   }
@@ -99,7 +110,7 @@ export class MatchRoomComponent implements OnInit {
           case MATCH_ROOM_STATE_KEYS.OWNER_STATE:
             this.currentState = new OwnerState();
             break;
-            default:
+          default:
             this.currentState = new ReadOnlyState();
             break;
         }

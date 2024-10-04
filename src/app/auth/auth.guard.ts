@@ -2,13 +2,14 @@ import {CanActivateFn} from '@angular/router';
 import {inject} from "@angular/core";
 import {RoutingService} from "../core/routing/routing.service";
 import {AccountService} from "../core/integration/account.service";
-import {STORAGE_KEYS} from "../core/keys/storage-keys";
 import {map} from "rxjs";
+import {MatchService} from "../core/integration/match.service";
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AccountService);
   const routerService = inject(RoutingService);
   const accountService = inject(AccountService);
+  const matchService = inject(MatchService);
   const isAuthenticated = authService.isAuthenticated();
   const currentRoute = state.url;
   const id = route.paramMap.get('id');
@@ -29,16 +30,17 @@ export const authGuard: CanActivateFn = (route, state) => {
 
     //3rd: Handling match creation route when user already have a match
   } else if (currentRoute === '/match') {
-    const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    const myMatchId = matchService.getMyMatchId();
     if (myMatchId) {
       console.log('authGuard: user have a Match already, redirecting to match-room');
       routerService.redirectTo(`/match-room/${myMatchId}/owner`, false);
+      return false;
     }
-    return false;
+    return true;
 
     //4th: Handling match-room-owner routes when user is not the owner
   } else if (id && currentRoute === `/match-room/${id}/owner`) {
-    const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    const myMatchId = matchService.getMyMatchId();
     if (myMatchId) {
       if (myMatchId !== id) {
         console.log('authGuard: user is NOT the owner of the match, redirecting to home');
@@ -50,7 +52,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     //5th: Handling match-room-participant routes ..
   } else if (id && currentRoute === `/match-room/${id}/participant`) {
     //5.1: user is the owner
-    const myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
+    const myMatchId = matchService.getMyMatchId();
     if (myMatchId) {
       if (myMatchId === id) {
         console.log('authGuard: user IS the owner of the match, redirecting to my match as owner');

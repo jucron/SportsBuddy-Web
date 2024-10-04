@@ -19,7 +19,8 @@ import {RoutingService} from "../../routing/routing.service";
 import {DialogService} from "../dialog.service";
 import {AccountService} from "../../integration/account.service";
 import {AlertService} from "../../alert/alert.service";
-import {finalize} from "rxjs";
+import {UIServiceParams} from "../../integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../../integration/ui-features/integration-ui.service";
 
 interface MatchDialogData {
   match: Match
@@ -63,6 +64,7 @@ export class MatchDialogComponent {
               private dialogService: DialogService,
               private accountService: AccountService,
               private alertService: AlertService,
+              private integrationUIService: IntegrationUiService
   ) {
     this.loggedUserId = this.accountService.getLoggedAccountId();
     this.matchRequestForm = this.factoryService.getFormFactory().createMatchRequestForm();
@@ -119,23 +121,13 @@ export class MatchDialogComponent {
   }
 
   private onConfirmAskToParticipate() {
-    this.dialogService.showLoadingDialog();
-    this.matchService.matchRequest(this.matchRequestForm, this.loggedUserId ?? 'not-found', this.match())
-      .pipe(
-        finalize(() => this.dialogService.closeLoadingDialog())
-      )
-      .subscribe({
-        next: (response) => {
-          if (response) {
-            this.alertService.alertMatchRequestSuccess();
-            this.routingService.redirectTo('home', false);
-          } else {
-            this.alertService.alertMatchRequestFailed();
-          }
-        },
-        error: err => {
-          console.error('matchRequest failed', err);
-          this.alertService.alertMatchRequestFailed();
+    let params = UIServiceParams.builder().withLoadingDialog().withSuccessAlert().withErrorAlert();
+    let operation  =  this.matchService.matchRequest(this.matchRequestForm, this.loggedUserId ?? 'not-found', this.match());
+    this.integrationUIService
+      .executeCall<boolean>(operation, params)
+      .subscribe((result) => {
+        if (result) {
+          this.routingService.redirectTo('home', false);
         }
       });
     this.onCloseClick();
