@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {RoutingService} from "../routing/routing.service";
-import {MatchResponse} from "../model/responses/matchResponse";
 import {Match} from "../model/match";
-import {catchError, finalize, map, Observable, of, startWith} from "rxjs";
+import {catchError, finalize, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
