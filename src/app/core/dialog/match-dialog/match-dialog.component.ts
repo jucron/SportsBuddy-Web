@@ -56,6 +56,7 @@ export class MatchDialogComponent {
   showFiller = false;
   matchRequestForm: FormGroup;
   protected readonly DateUtils = DateUtils;
+  private isLoading: boolean = false;
 
   constructor(private factoryService: FactoryService,
               private matchService: MatchService,
@@ -119,10 +120,14 @@ export class MatchDialogComponent {
   }
 
   private onConfirmAskToParticipate() {
-    this.dialogService.showLoadingDialog();
+    this.isLoading = true;
+    this.triggerLoadingEffects();
     this.matchService.matchRequest(this.matchRequestForm, this.loggedUserId ?? 'not-found', this.match())
       .pipe(
-        finalize(() => this.dialogService.closeLoadingDialog())
+        finalize(() => {
+          this.isLoading = false;
+          this.triggerLoadingEffects();
+        })
       )
       .subscribe({
         next: (response) => {
@@ -139,5 +144,13 @@ export class MatchDialogComponent {
         }
       });
     this.onCloseClick();
+  }
+
+  private triggerLoadingEffects() {
+    if (this.isLoading) {
+      this.dialogService.showLoadingDialog();
+    } else {
+      this.dialogService.closeLoadingDialog();
+    }
   }
 }

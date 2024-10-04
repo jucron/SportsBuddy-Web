@@ -15,15 +15,14 @@ import {
 import {FlexModule} from "@angular/flex-layout";
 import {MatCard} from "@angular/material/card";
 import {MatButton} from "@angular/material/button";
-import {RoutingService} from "../core/routing/routing.service";
 import {MatchService} from "../core/integration/match.service";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {Account} from "../core/model/account";
 import {DialogService} from "../core/dialog/dialog.service";
 import {DateUtils} from "../core/utils/dateUtils";
 import {NotificationService} from "../core/integration/notification.service";
-import {STORAGE_KEYS} from "../core/keys/storage-keys";
 import {AlertService} from "../core/alert/alert.service";
+import {RoutingService} from "../core/routing/routing.service";
 
 @Component({
   selector: 'app-home',
@@ -54,21 +53,20 @@ export class HomeComponent implements OnInit {
   protected readonly DateUtils = DateUtils;
 
   constructor(private matchService: MatchService,
-              private routingService: RoutingService,
               private dialogService: DialogService,
               private notificationService: NotificationService,
-              private alertService: AlertService
+              private alertService: AlertService,
+              private routingService: RoutingService
   ) {}
 
   ngOnInit(): void {
     this.updateMatchTable();
     this.notificationService.loadUserNotifications();
   }
-  routeToCreateMatchOrMatchRoom() {
-    let myMatchId = localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
-    const direction = myMatchId ? `match-room/${myMatchId}/owner` : 'match';
-    this.routingService.redirectTo(direction, false);
+  routeToMatch() {
+    this.routingService.redirectTo('match',false);
   }
+
   updateMatchTable() {
     this.isLoadingTable = true;
     this.matchService.getMatches()

@@ -20,10 +20,10 @@ import {
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {Sports} from "../core/model/sports";
 import {FactoryService} from "../core/factory/factory.service";
-import {Match} from "../core/model/match";
-import {DateUtils} from "../core/utils/dateUtils";
 import {MatchService} from "../core/integration/match.service";
 import {DialogService} from "../core/dialog/dialog.service";
+import {AlertService} from "../core/alert/alert.service";
+import {finalize} from "rxjs";
 
 @Component({
   selector: 'app-match',
@@ -59,26 +59,23 @@ import {DialogService} from "../core/dialog/dialog.service";
 export class MatchComponent {
   matchForm: FormGroup;
   protected readonly sports = Sports;
+  isLoading: boolean = false;
 
   constructor(
     private factoryService: FactoryService,
     private routingService: RoutingService,
     private matchService: MatchService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private alertService: AlertService
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
   onSubmit() {
     if (this.matchForm.valid) {
-      const date = this.matchForm.get('date')?.value;
-      const time = this.matchForm.get('time')?.value;
-      const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
-      let match: Match = this.matchForm.value;
-      match.date = combinedDateTime ?? match.date;
       this.dialogService.confirmActionByDialog('create this match')
         .subscribe((result: boolean) => {
           if (result) {
-            this.matchService.createMatch(match);
+            this.onConfirmCreateMatch(this.matchForm);
           }
         });
     }
@@ -86,5 +83,39 @@ export class MatchComponent {
 
   routeBackToHome() {
     this.routingService.redirectTo('home', false);
+  }
+
+  private onConfirmCreateMatch(matchForm: FormGroup) {
+    this.isLoading = true;
+    this.triggerLoadingEffects();
+    this.matchService.createMatch(matchForm)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.triggerLoadingEffects();
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.matchService.storeMatchId(response);
+            this.alertService.alertCreateMatchSuccess();
+            this.routingService.redirectTo('home', false);
+          } else {
+            this.alertService.alertCreateMatchFailed();
+          }
+        },
+        error: err => {
+          console.error('matchRequest failed', err);
+          this.alertService.alertCreateMatchFailed();
+        }
+      });
+  }
+  private triggerLoadingEffects() {
+    if (this.isLoading) {
+      this.dialogService.showLoadingDialog();
+    } else {
+      this.dialogService.closeLoadingDialog();
+    }
   }
 }
