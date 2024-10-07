@@ -52,7 +52,6 @@ export class MatchService {
     matchRequest.userIdOwner = match.owner!.id;
 
     return this.apiService.submitMatchRequest(matchRequest);
-
   }
 
   createMatch(matchForm: FormGroup) {
@@ -65,45 +64,14 @@ export class MatchService {
     return this.apiService.submitCreateMatch(match);
   }
 
-  private getEmptyMatch(): Match {
-    return  {
-      id: '-1',
-      name: 'No Match',
-      date: new Date(),
-      location: 'No Match',
-      matchRequests: [],
-      sport: 'No Match',
-      comments: 'No Match',
-      participants: [],
-      chatData: null
-    }
+  getMatch(matchId: string) {
+    return this.apiService.getMatch(matchId);
   }
-  getMatch(id: string) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
-    return this.apiService.getMatch(id).pipe(
-      map((match) => {
-        if (match) {
-          return match;
-        } else {
-          this.notificationService.alertGetMatchError();
-          return this.getEmptyMatch();
-        }
-      }),
-      catchError(err => {
-        console.error('getMatch failed', err);
-        this.notificationService.alertGetMatchError();
-        return of(this.getEmptyMatch());
-      }),
-      finalize(() => {
-        this.isLoading = false;
-        this.loadingDialogService.closeLoadingDialog();
-      })
-    );
-  }
+
   getMyMatchId() {
     return localStorage.getItem(STORAGE_KEYS.MY_MATCH_ID);
   }
+
   getMyMatchLabel() {
     let myMatchId = this.getMyMatchId();
     if (myMatchId) {

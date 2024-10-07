@@ -9,6 +9,8 @@ import {MatCard} from "@angular/material/card";
 import {DateUtils} from "../../utils/dateUtils";
 import {MatchService} from "../../integration/match.service";
 import {DialogService} from "../dialog.service";
+import {finalize} from "rxjs";
+import {AlertService} from "../../alert/alert.service";
 
 
 interface AccountDialogData {
@@ -31,11 +33,13 @@ export class AccountDialogComponent {
   readonly dialogRef = inject(MatDialogRef<MatchDialogComponent>);
   readonly data = inject<AccountDialogData>(MAT_DIALOG_DATA);
   readonly account = model(this.data.account);
+  isLoading: boolean = false;
 
   protected readonly sports = Sports;
 
   constructor(private dialogService: DialogService,
-              private matchService: MatchService) {
+              private matchService: MatchService,
+              private alertService: AlertService) {
   }
 
   onCloseClick(): void {
@@ -47,10 +51,28 @@ export class AccountDialogComponent {
   }
 
   showMatchDialog(matchId: string) {
+    this.isLoading = true;
+    this.dialogService.showLoadingDialog()
     this.onCloseClick();
     this.matchService.getMatch(matchId)
-      .subscribe(match => {
-        this.dialogService.showMatchDialog(match);
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.dialogService.closeLoadingDialog();
+        })
+      )
+      .subscribe({
+        next: (match) => {
+          if (match) {
+            this.dialogService.showMatchDialog(match);
+          } else {
+            this.alertService.alertGetMatchError();
+          }
+        },
+        error: err => {
+          console.error('showMatchDialog failed', err);
+          this.alertService.alertGetMatchError();
+        }
       });
   }
 

@@ -87,12 +87,12 @@ export class MatchComponent {
 
   private onConfirmCreateMatch(matchForm: FormGroup) {
     this.isLoading = true;
-    this.triggerLoadingEffects();
+    this.dialogService.showLoadingDialog();
     this.matchService.createMatch(matchForm)
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          this.triggerLoadingEffects();
+          this.dialogService.closeLoadingDialog();
         })
       )
       .subscribe({
@@ -110,12 +110,5 @@ export class MatchComponent {
           this.alertService.alertCreateMatchFailed();
         }
       });
-  }
-  private triggerLoadingEffects() {
-    if (this.isLoading) {
-      this.dialogService.showLoadingDialog();
-    } else {
-      this.dialogService.closeLoadingDialog();
-    }
   }
 }
