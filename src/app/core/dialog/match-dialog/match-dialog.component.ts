@@ -122,6 +122,7 @@ export class MatchDialogComponent {
   private onConfirmAskToParticipate() {
     this.isLoading = true;
     this.triggerLoadingEffects();
+    
     this.matchService.matchRequest(this.matchRequestForm, this.loggedUserId ?? 'not-found', this.match())
       .pipe(
         finalize(() => {

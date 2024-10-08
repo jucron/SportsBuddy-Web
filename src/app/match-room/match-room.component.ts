@@ -22,6 +22,7 @@ import {STORAGE_KEYS} from "../core/keys/storage-keys";
 import {MatchRoomChatComponent} from "./match-room-chat/match-room-chat.component";
 import {Match} from "../core/model/match";
 import {MatchService} from "../core/integration/match.service";
+import {AlertService} from "../core/alert/alert.service";
 
 @Component({
   selector: 'app-chat-room',
@@ -57,10 +58,12 @@ import {MatchService} from "../core/integration/match.service";
 export class MatchRoomComponent implements OnInit {
   currentState: PageState;
   loadedMatch: Match | null = null;
+  isLoading: boolean = false;
 
   constructor(private routeService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private matchService: MatchService,
+              private alertService: AlertService
   ) {
     this.currentState = new ReadOnlyState();
   }
@@ -74,9 +77,21 @@ export class MatchRoomComponent implements OnInit {
   private loadMatch(){
     const matchId = this.getMatchIdByRoute();
     if (matchId) {
+      this.isLoading = true;
+
       this.matchService.getMatch(matchId)
-        .subscribe(match => {
-          this.loadedMatch = match
+        .subscribe({
+          next: (match) => {
+            if (match) {
+              // this.loadedMatch = match
+            } else {
+              this.alertService.alertGetMatchError();
+            }
+          },
+          error: err => {
+            console.error('showMatchDialog failed', err);
+            this.alertService.alertGetMatchError();
+          }
         });
     }
   }

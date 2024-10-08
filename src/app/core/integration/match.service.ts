@@ -15,6 +15,7 @@ import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessag
 import {ALERT_CACHE_KEYS} from "../keys/alert-cache-keys";
 import {FormGroup} from "@angular/forms";
 import {DateUtils} from "../utils/dateUtils";
+import {IntegrationCallResponse} from "./ui-features/integration-call-response";
 
 @Injectable({
   providedIn: 'root'
@@ -30,18 +31,19 @@ export class MatchService {
   ) {
   }
 
-  getMatches(): Observable<Match[] | null> {
-    return this.apiService.getMatches().pipe(
-      map(response => {
-        return response;
-      }),
-      catchError(err => {
-        console.error('getMatches failed', err);
-        return of(null);
-      }),
-      finalize(() => {
-      })
-    );
+  getMatches(): Observable<IntegrationCallResponse> {
+    const opType = 'getMatches';
+    return this.apiService.getMatches()
+      .pipe(
+        map(data => {
+          if (!data) throw new Error('No data received');
+          return IntegrationCallResponse.getSuccess(data, opType);
+        }),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 
   matchRequest(matchRequestForm: FormGroup, loggedUserId: string, match: Match): Observable<boolean | null> {
@@ -64,8 +66,25 @@ export class MatchService {
     return this.apiService.submitCreateMatch(match);
   }
 
-  getMatch(matchId: string) {
-    return this.apiService.getMatch(matchId);
+  getMatch(matchId: string): Observable<IntegrationCallResponse> {
+    const opType = 'getMatch';
+    return this.apiService.getMatch(matchId)
+      .pipe(
+        map(data => ({
+            data: data,
+            operationType: opType,
+            success: true
+          })
+        ),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of({
+            data: null,
+            operationType: opType,
+            success: false
+          });
+        })
+      );
   }
 
   getMyMatchId() {
@@ -79,6 +98,7 @@ export class MatchService {
     }
     return "Create a new Match";
   }
+
   matchRequestDecision(matchRequestDecision: MatchRequestDecision) {
     this.isLoading = true;
     this.loadingDialogService.showLoadingDialog();

@@ -21,28 +21,29 @@ import {Account} from "../core/model/account";
 import {DialogService} from "../core/dialog/dialog.service";
 import {DateUtils} from "../core/utils/dateUtils";
 import {NotificationService} from "../core/integration/notification.service";
-import {AlertService} from "../core/alert/alert.service";
 import {RoutingService} from "../core/routing/routing.service";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-    imports: [
-        MatTable,
-        MatColumnDef,
-        MatHeaderCell,
-        MatCell,
-        MatHeaderCellDef,
-        MatCellDef,
-        MatHeaderRowDef,
-        MatHeaderRow,
-        MatRow,
-        MatRowDef,
-        FlexModule,
-        MatCard,
-        MatButton,
-      MatProgressSpinnerModule
-    ],
+  imports: [
+    MatTable,
+    MatColumnDef,
+    MatHeaderCell,
+    MatCell,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRow,
+    MatRowDef,
+    FlexModule,
+    MatCard,
+    MatButton,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -55,8 +56,8 @@ export class HomeComponent implements OnInit {
   constructor(private matchService: MatchService,
               private dialogService: DialogService,
               private notificationService: NotificationService,
-              private alertService: AlertService,
-              private routingService: RoutingService
+              private routingService: RoutingService,
+              private integrationUIService: IntegrationUiService
   ) {}
 
   ngOnInit(): void {
@@ -68,25 +69,17 @@ export class HomeComponent implements OnInit {
   }
 
   updateMatchTable() {
-    this.isLoadingTable = true;
-    this.matchService.getMatches()
-      .subscribe({
-    next: matches => {
-      if (matches){
-        this.matchesTable = matches;
-      } else {
-        this.matchesTable = [];
-        this.alertService.alertGetMatchesError();
-      }
-    },
-      error: error => {
-      console.error('error in updateMatchTable: '+error)
-    },
-      complete: () => {
-      this.isLoadingTable = false; // Hide the loading spinner
-    }
-  });
+    let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
+
+    this.integrationUIService
+      .executeCall<Match[]>(this.matchService.getMatches(), params)
+      .subscribe((matches) => {
+          if (matches) {
+            this.matchesTable = matches;
+          }
+        });
   }
+
   getMatchTable() {
     return this.matchesTable;
   }
@@ -106,11 +99,15 @@ export class HomeComponent implements OnInit {
   }
 
   showMatch(row: Match) {
-    console.log('showMatch triggered from HomeComponent: id - '+row.id);
-    this.matchService.getMatch(row.id)
-      .subscribe(match => {
-        this.dialogService.showMatchDialog(match);
-      });
+    let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
+    this.integrationUIService
+      .executeCall<Match>(this.matchService.getMatch(row.id), params)
+      .subscribe((match) => {
+          if (match) {
+            this.dialogService.showMatchDialog(match);
+          }
+        },
+      );
   }
 
   getMyMatchLabel() {

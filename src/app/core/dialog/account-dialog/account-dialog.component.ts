@@ -64,7 +64,7 @@ export class AccountDialogComponent {
       .subscribe({
         next: (match) => {
           if (match) {
-            this.dialogService.showMatchDialog(match);
+            // this.dialogService.showMatchDialog(match);
           } else {
             this.alertService.alertGetMatchError();
           }
