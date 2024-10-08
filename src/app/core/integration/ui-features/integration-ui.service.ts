@@ -51,9 +51,24 @@ export class IntegrationUiService {
       case 'getMatches':
         this.alertService.alertGetMatchesError();
         break;
+      case 'matchRequest':
+        this.alertService.alertMatchRequestFailed();
+        break;
+      case 'createMatch':
+        this.alertService.alertCreateMatchFailed();
+        break;
     }
+
   }
 
   private alertSuccess(operationType: string) {
+    switch (operationType) {
+      case 'matchRequest':
+        this.alertService.alertMatchRequestSuccess();
+        break;
+      case 'createMatch':
+        this.alertService.alertCreateMatchSuccess();
+        break;
+    }
   }
 }

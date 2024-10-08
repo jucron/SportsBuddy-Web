@@ -70,9 +70,9 @@ export class HomeComponent implements OnInit {
 
   updateMatchTable() {
     let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
-
+    let operation = this.matchService.getMatches();
     this.integrationUIService
-      .executeCall<Match[]>(this.matchService.getMatches(), params)
+      .executeCall<Match[]>(operation, params)
       .subscribe((matches) => {
           if (matches) {
             this.matchesTable = matches;
@@ -100,8 +100,9 @@ export class HomeComponent implements OnInit {
 
   showMatch(row: Match) {
     let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
+    let operation = this.matchService.getMatch(row.id);
     this.integrationUIService
-      .executeCall<Match>(this.matchService.getMatch(row.id), params)
+      .executeCall<Match>(operation, params)
       .subscribe((match) => {
           if (match) {
             this.dialogService.showMatchDialog(match);

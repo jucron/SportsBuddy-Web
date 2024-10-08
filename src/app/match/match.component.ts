@@ -23,7 +23,8 @@ import {FactoryService} from "../core/factory/factory.service";
 import {MatchService} from "../core/integration/match.service";
 import {DialogService} from "../core/dialog/dialog.service";
 import {AlertService} from "../core/alert/alert.service";
-import {finalize} from "rxjs";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-match',
@@ -66,7 +67,8 @@ export class MatchComponent {
     private routingService: RoutingService,
     private matchService: MatchService,
     private dialogService: DialogService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private integrationUIService: IntegrationUiService
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm();
   }
@@ -86,29 +88,16 @@ export class MatchComponent {
   }
 
   private onConfirmCreateMatch(matchForm: FormGroup) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.matchService.createMatch(matchForm)
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        })
-      )
-      .subscribe({
-        next: (response) => {
-          if (response) {
-            this.matchService.storeMatchId(response);
-            this.alertService.alertCreateMatchSuccess();
+    let params = UIServiceParams.builder().withLoadingDialog().withSuccessAlert().withErrorAlert();
+    let operation  =  this.matchService.createMatch(matchForm);
+    this.integrationUIService
+      .executeCall<string>(operation, params)
+      .subscribe((matchId) => {
+          if (matchId) {
+            this.matchService.storeMatchId(matchId);
             this.routingService.redirectTo('home', false);
-          } else {
-            this.alertService.alertCreateMatchFailed();
           }
-        },
-        error: err => {
-          console.error('matchRequest failed', err);
-          this.alertService.alertCreateMatchFailed();
         }
-      });
+      );
   }
 }

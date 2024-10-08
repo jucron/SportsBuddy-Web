@@ -23,6 +23,8 @@ import {MatchRoomChatComponent} from "./match-room-chat/match-room-chat.componen
 import {Match} from "../core/model/match";
 import {MatchService} from "../core/integration/match.service";
 import {AlertService} from "../core/alert/alert.service";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-chat-room',
@@ -63,7 +65,8 @@ export class MatchRoomComponent implements OnInit {
   constructor(private routeService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private matchService: MatchService,
-              private alertService: AlertService
+              private alertService: AlertService,
+              private integrationUIService: IntegrationUiService
   ) {
     this.currentState = new ReadOnlyState();
   }
@@ -77,22 +80,16 @@ export class MatchRoomComponent implements OnInit {
   private loadMatch(){
     const matchId = this.getMatchIdByRoute();
     if (matchId) {
-      this.isLoading = true;
-
-      this.matchService.getMatch(matchId)
-        .subscribe({
-          next: (match) => {
+      let params = UIServiceParams.builder().withErrorAlert();
+      let operation = this.matchService.getMatch(matchId);
+      this.integrationUIService
+        .executeCall<Match>(operation, params)
+        .subscribe((match) => {
             if (match) {
-              // this.loadedMatch = match
-            } else {
-              this.alertService.alertGetMatchError();
+              this.loadedMatch = match
             }
           },
-          error: err => {
-            console.error('showMatchDialog failed', err);
-            this.alertService.alertGetMatchError();
-          }
-        });
+        );
     }
   }
   isCurrentUserOwner(){

@@ -9,8 +9,10 @@ import {MatCard} from "@angular/material/card";
 import {DateUtils} from "../../utils/dateUtils";
 import {MatchService} from "../../integration/match.service";
 import {DialogService} from "../dialog.service";
-import {finalize} from "rxjs";
 import {AlertService} from "../../alert/alert.service";
+import {UIServiceParams} from "../../integration/ui-features/ui-service-params";
+import {Match} from "../../model/match";
+import {IntegrationUiService} from "../../integration/ui-features/integration-ui.service";
 
 
 interface AccountDialogData {
@@ -39,7 +41,8 @@ export class AccountDialogComponent {
 
   constructor(private dialogService: DialogService,
               private matchService: MatchService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private integrationUIService: IntegrationUiService) {
   }
 
   onCloseClick(): void {
@@ -51,27 +54,14 @@ export class AccountDialogComponent {
   }
 
   showMatchDialog(matchId: string) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog()
-    this.onCloseClick();
-    this.matchService.getMatch(matchId)
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        })
-      )
-      .subscribe({
-        next: (match) => {
-          if (match) {
-            // this.dialogService.showMatchDialog(match);
-          } else {
-            this.alertService.alertGetMatchError();
-          }
-        },
-        error: err => {
-          console.error('showMatchDialog failed', err);
-          this.alertService.alertGetMatchError();
+    let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
+    let operation = this.matchService.getMatch(matchId);
+    this.integrationUIService
+      .executeCall<Match>(operation, params)
+      .subscribe((match) => {
+        if (match) {
+          this.onCloseClick();
+          this.dialogService.showMatchDialog(match);
         }
       });
   }

@@ -17,6 +17,11 @@ import {FormGroup} from "@angular/forms";
 import {DateUtils} from "../utils/dateUtils";
 import {IntegrationCallResponse} from "./ui-features/integration-call-response";
 
+function handleApiResponse(data: any, operationType: string): IntegrationCallResponse {
+  if (!data) throw new Error('No data received');
+  return IntegrationCallResponse.getSuccess(data, operationType);
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,10 +40,7 @@ export class MatchService {
     const opType = 'getMatches';
     return this.apiService.getMatches()
       .pipe(
-        map(data => {
-          if (!data) throw new Error('No data received');
-          return IntegrationCallResponse.getSuccess(data, opType);
-        }),
+        map(data => handleApiResponse(data, opType)),
         catchError(err => {
           console.error(`${opType} failed`, err);
           return of(IntegrationCallResponse.getFail(opType));
@@ -46,43 +48,52 @@ export class MatchService {
       );
   }
 
-  matchRequest(matchRequestForm: FormGroup, loggedUserId: string, match: Match): Observable<boolean | null> {
+  matchRequest(matchRequestForm: FormGroup, loggedUserId: string, match: Match): Observable<IntegrationCallResponse> {
+    const opType = 'matchRequest';
+
     let matchRequest: MatchRequest = matchRequestForm.value;
     matchRequest.userIdRequested = loggedUserId;
     matchRequest.userNameRequested = 'to be filled';
     matchRequest.date = new Date();
     matchRequest.userIdOwner = match.owner!.id;
 
-    return this.apiService.submitMatchRequest(matchRequest);
+    return this.apiService.submitMatchRequest(matchRequest)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 
-  createMatch(matchForm: FormGroup) {
+  createMatch(matchForm: FormGroup): Observable<IntegrationCallResponse> {
+    const opType = 'createMatch';
+
     const date = matchForm.get('date')?.value;
     const time = matchForm.get('time')?.value;
     const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
     let match: Match = matchForm.value;
     match.date = combinedDateTime ?? match.date;
 
-    return this.apiService.submitCreateMatch(match);
+    return this.apiService.submitCreateMatch(match)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 
   getMatch(matchId: string): Observable<IntegrationCallResponse> {
     const opType = 'getMatch';
     return this.apiService.getMatch(matchId)
       .pipe(
-        map(data => ({
-            data: data,
-            operationType: opType,
-            success: true
-          })
-        ),
+        map(data => handleApiResponse(data, opType)),
         catchError(err => {
           console.error(`${opType} failed`, err);
-          return of({
-            data: null,
-            operationType: opType,
-            success: false
-          });
+          return of(IntegrationCallResponse.getFail(opType));
         })
       );
   }
