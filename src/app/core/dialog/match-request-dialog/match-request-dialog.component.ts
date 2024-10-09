@@ -9,7 +9,6 @@ import {MatButton} from "@angular/material/button";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatIcon} from "@angular/material/icon";
 import {MatchService} from "../../integration/match.service";
-import {MatchRequestDecision} from "../../model/requests/matchRequestDecision";
 import {AlertService} from "../../alert/alert.service";
 import {UIServiceParams} from "../../integration/ui-features/ui-service-params";
 import {IntegrationUiService} from "../../integration/ui-features/integration-ui.service";
@@ -68,18 +67,14 @@ export class MatchRequestDialogComponent implements OnInit {
       .subscribe(result => {
         if (result) {
           let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
-          let matchRequestDecision: MatchRequestDecision = {matchRequest, accept};
-          let operation = this.matchService.matchRequestDecision(matchRequestDecision);
-          this.integrationUIService
-            .executeCall<boolean>(operation, params)
+          let operation = this.matchService.matchRequestDecision(matchRequest, accept);
+          this.integrationUIService.executeCall<boolean>(operation, params)
             .subscribe((result) => {
                 if (result) {
                   this.routingService.reloadPage();
                 }
               },
-            );
-        }
-        // this.onCloseClick();
-      })
+            )}
+      });
   }
 }

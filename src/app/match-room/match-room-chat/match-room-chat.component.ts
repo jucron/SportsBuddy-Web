@@ -16,6 +16,9 @@ import {SESSION_KEYS} from "../../core/keys/session-keys";
 import {DialogService} from "../../core/dialog/dialog.service";
 import {MatchService} from "../../core/integration/match.service";
 import {ChatMessage} from "../../core/model/chatMessage";
+import {UIServiceParams} from "../../core/integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../../core/integration/ui-features/integration-ui.service";
+import {ChatData} from "../../core/model/chatData";
 
 @Component({
   selector: 'app-match-room-chat',
@@ -47,7 +50,8 @@ export class MatchRoomChatComponent implements OnInit {
   constructor(private factoryService: FactoryService,
               private accountService: AccountService,
               private dialogService: DialogService,
-              private matchService: MatchService) {
+              private matchService: MatchService,
+              private integrationUIService: IntegrationUiService) {
     this.chatRoomForm = this.factoryService.getFormFactory().createChatRoomForm();
     this.userId = this.accountService.getLoggedAccountId()
   }
@@ -63,20 +67,21 @@ export class MatchRoomChatComponent implements OnInit {
       if (message && this.match && userId) {
         this.dialogService.confirmActionByDialog('send this message')
           .subscribe(result => {
-          if (result && this.match) {
-            const matchId = this.match.id;
-            this.matchService.sendMatchRoomMessage(matchId, userId, message)
-              .subscribe(chatData => {
-                if (chatData) {
-                  this.match!.chatData = chatData;
-                }
-              });
-            this.chatRoomForm.reset();
-          }
-        });
+            if (result && this.match) {
+              const matchId = this.match.id;
+              let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog().withSuccessAlert();
+              let operation = this.matchService.sendMatchRoomMessage(matchId, userId, message);
+              this.integrationUIService.executeCall<ChatData>(operation, params)
+                .subscribe(chatData => {
+                  if (chatData) {
+                    this.match!.chatData = chatData;
+                  }
+                });
+              this.chatRoomForm.reset();
+            }
+          });
       }
     }
-
   }
 
   isChatMessagesEmpty() {

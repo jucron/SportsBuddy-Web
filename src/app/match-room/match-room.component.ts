@@ -80,16 +80,15 @@ export class MatchRoomComponent implements OnInit {
   private loadMatch(){
     const matchId = this.getMatchIdByRoute();
     if (matchId) {
-      let params = UIServiceParams.builder().withErrorAlert();
+      let params = UIServiceParams.builder().withErrorAlert().withLoadingDialog();
       let operation = this.matchService.getMatch(matchId);
       this.integrationUIService
         .executeCall<Match>(operation, params)
         .subscribe((match) => {
-            if (match) {
-              this.loadedMatch = match
-            }
-          },
-        );
+          if (match) {
+            this.loadedMatch = match
+          }
+        });
     }
   }
   isCurrentUserOwner(){
@@ -111,7 +110,7 @@ export class MatchRoomComponent implements OnInit {
           case MATCH_ROOM_STATE_KEYS.OWNER_STATE:
             this.currentState = new OwnerState();
             break;
-            default:
+          default:
             this.currentState = new ReadOnlyState();
             break;
         }

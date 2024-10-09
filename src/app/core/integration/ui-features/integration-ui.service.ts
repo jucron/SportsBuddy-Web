@@ -52,6 +52,9 @@ export class IntegrationUiService {
       case 'getMatches':
         this.alertService.alertGetMatchesError();
         break;
+      case 'getMatch':
+        this.alertService.alertGetMatchError();
+        break;
       case 'matchRequest':
         this.alertService.alertMatchRequestFailed();
         break;
@@ -60,6 +63,9 @@ export class IntegrationUiService {
         break;
       case 'matchRequestDecision':
         this.alertService.alertMatchRequestDecisionFailed();
+        break;
+      case 'sendMatchRoomMessage':
+        this.alertService.alertMatchRoomMessageFailed();
         break;
     }
 
@@ -76,6 +82,10 @@ export class IntegrationUiService {
       case 'matchRequestDecision':
         this.alertService.cacheAlert(ALERT_CACHE_KEYS.MATCH_REQUEST_DECISION_SUCCESS);
         break;
+      case 'sendMatchRoomMessage':
+        this.alertService.alertMatchRoomMessageSuccess();
+        break;
+
     }
   }
 }

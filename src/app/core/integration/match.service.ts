@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
 import {RoutingService} from "../routing/routing.service";
 import {Match} from "../model/match";
-import {catchError, finalize, map, Observable, of} from "rxjs";
+import {catchError, map, Observable, of} from "rxjs";
 import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
 import {DialogService} from "../dialog/dialog.service";
@@ -68,7 +68,6 @@ export class MatchService {
 
   createMatch(matchForm: FormGroup): Observable<IntegrationCallResponse> {
     const opType = 'createMatch';
-
     const date = matchForm.get('date')?.value;
     const time = matchForm.get('time')?.value;
     const combinedDateTime = DateUtils.getCombinedDateTime(date,time);
@@ -109,8 +108,9 @@ export class MatchService {
     return "Create a new Match";
   }
 
-  matchRequestDecision(matchRequestDecision: MatchRequestDecision) {
+  matchRequestDecision(matchRequest: MatchRequest, accept: boolean): Observable<IntegrationCallResponse> {
     const opType = 'matchRequestDecision';
+    let matchRequestDecision: MatchRequestDecision = {matchRequest, accept};
     return this.apiService.matchRequestDecision(matchRequestDecision)
       .pipe(
         map(data => handleApiResponse(data, opType)),
@@ -121,9 +121,8 @@ export class MatchService {
       );
   }
 
-  sendMatchRoomMessage(matchId: string,senderId: string, message: ChatMessage) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
+  sendMatchRoomMessage(matchId: string,senderId: string, message: ChatMessage): Observable<IntegrationCallResponse> {
+    const opType = 'sendMatchRoomMessage';
     // Set message properties
     message.type = MessageType.TEXT;
     message.status = MessageStatus.SENT;
@@ -136,25 +135,12 @@ export class MatchService {
     //Call API
     return this.apiService.sendMatchRoomMessage(sendMatchRoomMessageRequest)
       .pipe(
-        map(response => {
-          if (response) {
-            this.notificationService.alertMatchRoomMessageSuccess();
-            return response;
-          } else {
-            this.notificationService.alertMatchRoomMessageFailed();
-            return null;
-          }
-        }),
+        map(data => handleApiResponse(data, opType)),
         catchError(err => {
-          console.error('getMatch failed', err);
-          this.notificationService.alertGetMatchError();
-          return of(null);
-        }),
-        finalize(() => {
-          this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
         })
-      )
+      );
   }
 
   storeMatchId(response: string) {
