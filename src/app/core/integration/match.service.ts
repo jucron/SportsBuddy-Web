@@ -12,7 +12,6 @@ import {ChatMessage} from "../model/chatMessage";
 import {MessageType} from "../model/messageType";
 import {MessageStatus} from "../model/messageStatus";
 import {SendMatchRoomMessageRequest} from "../model/requests/sendMatchRoomMessageRequest";
-import {ALERT_CACHE_KEYS} from "../keys/alert-cache-keys";
 import {FormGroup} from "@angular/forms";
 import {DateUtils} from "../utils/dateUtils";
 import {IntegrationCallResponse} from "./ui-features/integration-call-response";
@@ -111,28 +110,15 @@ export class MatchService {
   }
 
   matchRequestDecision(matchRequestDecision: MatchRequestDecision) {
-    this.isLoading = true;
-    this.loadingDialogService.showLoadingDialog();
-
-    this.apiService.matchRequestDecision(matchRequestDecision)
-      .subscribe({
-        next: (response) => {
-          if (response) {
-            this.notificationService.cacheAlert(ALERT_CACHE_KEYS.MATCH_REQUEST_DECISION_SUCCESS);
-            this.routingService.reloadPage();
-          } else {
-            this.notificationService.alertMatchRequestDecisionFailed();
-          }
-        },
-        error: err => {
-          console.error('matchRequestDecision failed', err);
-          this.notificationService.alertMatchRequestDecisionFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.loadingDialogService.closeLoadingDialog();
-        }
-      });
+    const opType = 'matchRequestDecision';
+    return this.apiService.matchRequestDecision(matchRequestDecision)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 
   sendMatchRoomMessage(matchId: string,senderId: string, message: ChatMessage) {

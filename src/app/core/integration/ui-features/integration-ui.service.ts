@@ -4,6 +4,7 @@ import {AlertService} from "../../alert/alert.service";
 import {catchError, finalize, map, Observable, of} from "rxjs";
 import {IntegrationCallResponse} from "./integration-call-response";
 import {UIServiceParams} from "./ui-service-params";
+import {ALERT_CACHE_KEYS} from "../../keys/alert-cache-keys";
 
 
 @Injectable({
@@ -57,6 +58,9 @@ export class IntegrationUiService {
       case 'createMatch':
         this.alertService.alertCreateMatchFailed();
         break;
+      case 'matchRequestDecision':
+        this.alertService.alertMatchRequestDecisionFailed();
+        break;
     }
 
   }
@@ -68,6 +72,9 @@ export class IntegrationUiService {
         break;
       case 'createMatch':
         this.alertService.alertCreateMatchSuccess();
+        break;
+      case 'matchRequestDecision':
+        this.alertService.cacheAlert(ALERT_CACHE_KEYS.MATCH_REQUEST_DECISION_SUCCESS);
         break;
     }
   }
