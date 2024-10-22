@@ -11,9 +11,10 @@ import {MatToolbar} from "@angular/material/toolbar";
 import {MatTooltip} from "@angular/material/tooltip";
 import {FormErrorComponent} from "../../core/helper-components/form-error/form-error.component";
 import {AccountService} from "../../core/integration/account.service";
-import {Credentials} from "../../core/model/credentials";
 import {RoutingService} from "../../core/routing/routing.service";
 import {FactoryService} from "../../core/factory/factory.service";
+import {IntegrationUiService} from "../../core/integration/ui-features/integration-ui.service";
+import {UIServiceParams} from "../../core/integration/ui-features/ui-service-params";
 
 @Component({
   selector: 'app-login-form',
@@ -46,7 +47,8 @@ export class LoginFormComponent {
   constructor(
     private factoryService: FactoryService,
     private accountService: AccountService,
-    private routingService: RoutingService
+    private routingService: RoutingService,
+    private integrationUIService: IntegrationUiService
   ) {
     this.loginForm = this.factoryService.getFormFactory().createLoginForm();
     this.isLoadingLogin = this.accountService.isLoading;
@@ -54,8 +56,15 @@ export class LoginFormComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      let credentials: Credentials = this.loginForm.value;
-      this.accountService.executeLogin(credentials);
+      let params = UIServiceParams.builder().withLoadingDialog().withSuccessAlert().withErrorAlert();
+      let operation  =  this.accountService.executeLogin(this.loginForm);
+      this.integrationUIService
+        .executeCall<boolean>(operation, params)
+        .subscribe((result) => {
+          if (result) {
+            this.routingService.redirectTo('home', false);
+          }
+        });
     }
   }
 

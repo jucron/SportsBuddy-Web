@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
-import {RoutingService} from "../routing/routing.service";
 import {Match} from "../model/match";
 import {catchError, map, Observable, of} from "rxjs";
-import {AlertService} from "../alert/alert.service";
 import {MatchRequest} from "../model/requests/matchRequest";
-import {DialogService} from "../dialog/dialog.service";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {MatchRequestDecision} from "../model/requests/matchRequestDecision";
 import {ChatMessage} from "../model/chatMessage";
@@ -25,13 +22,9 @@ function handleApiResponse(data: any, operationType: string): IntegrationCallRes
   providedIn: 'root'
 })
 export class MatchService {
-  isLoading = false;
 
   constructor(
     private apiService: ApiService,
-    private routingService: RoutingService,
-    private notificationService: AlertService,
-    private loadingDialogService: DialogService,
   ) {
   }
 

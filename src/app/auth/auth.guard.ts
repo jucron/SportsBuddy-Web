@@ -4,12 +4,16 @@ import {RoutingService} from "../core/routing/routing.service";
 import {AccountService} from "../core/integration/account.service";
 import {map} from "rxjs";
 import {MatchService} from "../core/integration/match.service";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
+import {Account} from "../core/model/account";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AccountService);
   const routerService = inject(RoutingService);
   const accountService = inject(AccountService);
   const matchService = inject(MatchService);
+  const integrationUIService = inject(IntegrationUiService);
   const isAuthenticated = authService.isAuthenticated();
   const currentRoute = state.url;
   const id = route.paramMap.get('id');
@@ -60,20 +64,26 @@ export const authGuard: CanActivateFn = (route, state) => {
         return false;
       }
     }
-    //5.2: user is not participating
+    //5.2: user is not participating the selected match
     const myUserId = authService.getLoggedAccountId();
     if (myUserId) {
-      return accountService.getAccount(myUserId)
+      let params = UIServiceParams.builder().withErrorAlert();
+      let operation = accountService.getAccount(myUserId);
+      return integrationUIService
+        .executeCall<Account>(operation, params)
         .pipe(
           map(account => {
-          let isParticipant = account?.participatingMatches?.some(match => match.id === id);
-          if (!isParticipant) {
-            console.log('authGuard: user is NOT a participant of the match, redirecting to home');
-            routerService.redirectTo('home', false);
-            return false;
-          }
-          return true;
-        }));
+            if (account) {
+              let isParticipant = account.participatingMatches?.some(match => match.id === id);
+              if (!isParticipant) {
+                console.log('authGuard: user is NOT a participant of the match, redirecting to home');
+                routerService.redirectTo('home', false);
+                return false;
+              }
+            }
+            return true;
+          })
+        )
     }
   }
   //

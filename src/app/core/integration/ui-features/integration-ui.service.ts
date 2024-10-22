@@ -27,6 +27,7 @@ export class IntegrationUiService {
         callResponse => {
           operationType = callResponse.operationType;
           if (callResponse.success) {
+            if (serviceParams.hasSuccessAlert()) { this.alertSuccess(operationType); }
             return callResponse.data as T;
           } else {
             throw new Error(callResponse.data);
@@ -36,7 +37,6 @@ export class IntegrationUiService {
       finalize(() => {
         this.isLoading = false;
         if (serviceParams.hasLoadingDialog()) { this.dialogService.closeLoadingDialog(); }
-        if (serviceParams.hasSuccessAlert()) { this.alertSuccess(operationType); }
       }),
       catchError((error) => {
         console.warn(`operation ${operationType} failed`, error)
@@ -67,8 +67,22 @@ export class IntegrationUiService {
       case 'sendMatchRoomMessage':
         this.alertService.alertMatchRoomMessageFailed();
         break;
+      case 'executeLogin':
+        this.alertService.alertLoginFailed();
+        break;
+      case 'createAccount':
+        this.alertService.alertCreateAccountFailed();
+        break;
+      case 'getAccount':
+        this.alertService.alertGetAccountFailed();
+        break;
+      case 'updateAccount':
+        this.alertService.alertUpdateAccountFailed();
+        break;
+      default:
+        console.log('Failed Operation type not found ', operationType);
+        break;
     }
-
   }
 
   private alertSuccess(operationType: string) {
@@ -85,7 +99,18 @@ export class IntegrationUiService {
       case 'sendMatchRoomMessage':
         this.alertService.alertMatchRoomMessageSuccess();
         break;
-
+      case 'executeLogin':
+        this.alertService.alertLoginSuccess();
+        break;
+      case 'createAccount':
+        this.alertService.alertCreateAccountSuccess();
+        break;
+      case 'updateAccount':
+        this.alertService.alertUpdateAccountSuccess();
+        break;
+      default:
+        console.log('Success Operation type not found ', operationType);
+        break;
     }
   }
 }

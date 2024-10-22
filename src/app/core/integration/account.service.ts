@@ -5,10 +5,18 @@ import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
-import {catchError, finalize, map, of} from "rxjs";
+import {catchError, map, Observable, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
 import {AuthService} from "../../auth/auth.service";
+import {IntegrationCallResponse} from "./ui-features/integration-call-response";
+import {FormGroup} from "@angular/forms";
+import {Sports} from "../model/sports";
+
+function handleApiResponse(data: any, operationType: string): IntegrationCallResponse {
+  if (!data) throw new Error('No data received');
+  return IntegrationCallResponse.getSuccess(data, operationType);
+}
 
 @Injectable({
   providedIn: 'root'
@@ -25,85 +33,68 @@ export class AccountService {
     private authService: AuthService
   ) {}
 
-  executeLogin(credentials: Credentials) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.apiService.executeLogin(credentials)
-      .subscribe({
-        next: response => {
-          if (response) {
-            localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
-            localStorage.setItem(STORAGE_KEYS.MAIN_ID, response.userId);
-            if (response.myMatchId) {
-              localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response.myMatchId);
-            }
-            this.notificationService.alertLoginSuccess();
-            this.routingService.redirectTo('home', false);
-          } else {
-            this.notificationService.alertLoginFailed();
+  executeLogin(loginForm: FormGroup): Observable<IntegrationCallResponse> {
+    const opType = 'executeLogin';
+    let credentials: Credentials = loginForm.value;
+    return this.apiService.executeLogin(credentials)
+      .pipe(
+        map(data => {
+          if (data) {
+            this.storeLoginData(credentials, data);
+            return handleApiResponse(true, opType);
           }
-        },
-        error: err => {
-          console.error('Login failed', err);
-          this.notificationService.alertLoginFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        }
-      });
+          return handleApiResponse(null, opType);
+        }),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
+
+  private storeLoginData(credentials: Credentials,loginResponse: LoginResponse) {
+    localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
+    localStorage.setItem(STORAGE_KEYS.MAIN_ID, loginResponse.userId);
+    if (loginResponse.myMatchId) {
+      localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, loginResponse.myMatchId);
+    }
+  }
+
   executeLogout() {
     this.authService.disconnect();
 
     //todo: call logout to backend
     this.routingService.redirectTo('', false);
   }
-  createAccount(account: Account) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.apiService.createAccount(account)
-      .subscribe({
-        next: response => {
-          if (response) {
-            this.notificationService.alertCreateAccountSuccess();
-            this.routingService.redirectTo('', false);
-          } else {
-            this.notificationService.alertCreateAccountFailed();
-          }
-        },
-        error: err => {
-          console.error('accountService.createAccount() failed', err);
-          this.notificationService.alertCreateAccountFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        }
-      });
+
+  createAccount(accountForm: FormGroup, sportsSelected: Sports[], currentAccountId: string): Observable<IntegrationCallResponse> {
+    const opType = 'createAccount';
+
+    let account: Account = accountForm.value;
+    account.favouriteSports = sportsSelected;
+    account.id = currentAccountId;
+
+    return this.apiService.createAccount(account)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
-  getAccount(accountId: string, withLoadingDialog: boolean = true) {
-    this.isLoading = true;
-    if (withLoadingDialog) {this.dialogService.showLoadingDialog();}
-    return this.apiService.getAccount(accountId).pipe(
-      map(account => {
-        if (account) {
-          return account;
-        } else {
-          this.notificationService.alertGetAccountFailed();
-          return null;
-        }
-      }),
-      catchError(err => {
-        console.error('getAccount failed', err);
-        this.notificationService.alertGetAccountFailed();
-        return of(null); // Return null on error
-      }),
-      finalize(() => {
-        this.isLoading = false;
-        this.dialogService.closeLoadingDialog();
-      })
-    );
+
+  getAccount(accountId: string): Observable<IntegrationCallResponse> {
+    const opType = 'getAccount';
+
+    return this.apiService.getAccount(accountId)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
   isAuthenticated() {
     return localStorage.getItem(STORAGE_KEYS.TOKEN) !== null;
@@ -115,27 +106,16 @@ export class AccountService {
     return localStorage.getItem(STORAGE_KEYS.MAIN_ID)
   }
 
-  updateAccount(account: Account) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.apiService.updateAccount(account)
-      .subscribe({
-        next: response => {
-          if (response) {
-            this.notificationService.alertUpdateAccountSuccess();
-            this.routingService.redirectTo('', false);
-          } else {
-            this.notificationService.alertUpdateAccountFailed();
-          }
-        },
-        error: err => {
-          console.error('accountService.createAccount() failed', err);
-          this.notificationService.alertUpdateAccountFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        }
-      });
+  updateAccount(account: Account): Observable<IntegrationCallResponse> {
+    const opType = 'updateAccount';
+
+    return this.apiService.updateAccount(account)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
 }
