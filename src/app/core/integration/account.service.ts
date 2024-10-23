@@ -5,10 +5,17 @@ import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
-import {catchError, finalize, map, of} from "rxjs";
+import {catchError, finalize, map, Observable, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
 import {AuthService} from "../../auth/auth.service";
+import {IntegrationCallResponse} from "./ui-features/integration-call-response";
+import {FormGroup} from "@angular/forms";
+
+function handleApiResponse(data: any, operationType: string): IntegrationCallResponse {
+  if (!data) throw new Error('No data received');
+  return IntegrationCallResponse.getSuccess(data, operationType);
+}
 
 @Injectable({
   providedIn: 'root'
@@ -25,33 +32,31 @@ export class AccountService {
     private authService: AuthService
   ) {}
 
-  executeLogin(credentials: Credentials) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.apiService.executeLogin(credentials)
-      .subscribe({
-        next: response => {
-          if (response) {
-            localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
-            localStorage.setItem(STORAGE_KEYS.MAIN_ID, response.userId);
-            if (response.myMatchId) {
-              localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, response.myMatchId);
-            }
-            this.notificationService.alertLoginSuccess();
-            this.routingService.redirectTo('home', false);
-          } else {
-            this.notificationService.alertLoginFailed();
+  executeLogin(loginForm: FormGroup): Observable<IntegrationCallResponse> {
+    const opType = 'executeLogin';
+    let credentials: Credentials = loginForm.value;
+    return this.apiService.executeLogin(credentials)
+      .pipe(
+        map(data => {
+          if (data) {
+            this.storeLoginData(credentials, data);
+            return handleApiResponse(true, opType);
           }
-        },
-        error: err => {
-          console.error('Login failed', err);
-          this.notificationService.alertLoginFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        }
-      });
+          return handleApiResponse(null, opType);
+        }),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
+  }
+
+  private storeLoginData(credentials: Credentials,loginResponse: LoginResponse) {
+    localStorage.setItem(STORAGE_KEYS.MAIN_USERNAME, credentials.username);
+    localStorage.setItem(STORAGE_KEYS.MAIN_ID, loginResponse.userId);
+    if (loginResponse.myMatchId) {
+      localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, loginResponse.myMatchId);
+    }
   }
   executeLogout() {
     this.authService.disconnect();
@@ -138,4 +143,6 @@ export class AccountService {
         }
       });
   }
+
+
 }

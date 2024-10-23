@@ -27,6 +27,7 @@ export class IntegrationUiService {
         callResponse => {
           operationType = callResponse.operationType;
           if (callResponse.success) {
+            if (serviceParams.hasSuccessAlert()) { this.alertSuccess(operationType); }
             return callResponse.data as T;
           } else {
             throw new Error(callResponse.data);
@@ -36,7 +37,6 @@ export class IntegrationUiService {
       finalize(() => {
         this.isLoading = false;
         if (serviceParams.hasLoadingDialog()) { this.dialogService.closeLoadingDialog(); }
-        if (serviceParams.hasSuccessAlert()) { this.alertSuccess(operationType); }
       }),
       catchError((error) => {
         console.warn(`operation ${operationType} failed`, error)
@@ -67,6 +67,9 @@ export class IntegrationUiService {
       case 'sendMatchRoomMessage':
         this.alertService.alertMatchRoomMessageFailed();
         break;
+      case 'executeLogin':
+        this.alertService.alertLoginFailed();
+        break;
     }
 
   }
@@ -85,7 +88,9 @@ export class IntegrationUiService {
       case 'sendMatchRoomMessage':
         this.alertService.alertMatchRoomMessageSuccess();
         break;
-
+      case 'executeLogin':
+        this.alertService.alertLoginSuccess();
+        break;
     }
   }
 }
