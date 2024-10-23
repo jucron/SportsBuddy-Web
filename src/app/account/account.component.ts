@@ -20,6 +20,8 @@ import {ACCOUNT_STATE_KEYS} from "../core/keys/account-state-keys";
 import {ActivatedRoute} from "@angular/router";
 import {ChangeHelper} from "../core/audit/changeHelper";
 import {DialogService} from "../core/dialog/dialog.service";
+import {UIServiceParams} from "../core/integration/ui-features/ui-service-params";
+import {IntegrationUiService} from "../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-account',
@@ -52,10 +54,11 @@ export class AccountComponent implements OnInit {
 
   constructor(
     private factoryService: FactoryService,
-    private loginService: AccountService,
+    private accountService: AccountService,
     private routingService: RoutingService,
     private activatedRoute: ActivatedRoute,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private integrationUIService:  IntegrationUiService
   ) {
     this.sportsSelected = [];
     this.currentState = new ReadOnlyState();
@@ -73,19 +76,28 @@ export class AccountComponent implements OnInit {
       account.favouriteSports = this.sportsSelected;
       account.id = this.currentAccountId ?? 'id-not-found';
 
+      let currentAccountId = this.currentAccountId ?? 'id-not-found';
+
       if (this.currentState.isCreateState()) {
         this.dialogService.confirmActionByDialog('create this new account')
           .subscribe((result: boolean) => {
             if (result) {
-              this.loginService.createAccount(account);
-              this.clickReturnButton();
+              let params = UIServiceParams.builder().withLoadingDialog().withSuccessAlert().withErrorAlert();
+              let operation  =  this.accountService.createAccount(this.accountForm,this.sportsSelected,currentAccountId);
+              this.integrationUIService
+                .executeCall<boolean>(operation, params)
+                .subscribe((result) => {
+                  if (result) {
+                    this.clickReturnButton();
+                  }
+                });
             }
           });
       } else if(this.currentState.isUpdateState()) {
         this.dialogService.confirmActionByDialog('update this existing account')
           .subscribe((result: boolean) => {
             if (result) {
-              this.loginService.updateAccount(account);
+              this.accountService.updateAccount(account);
               this.clickReturnButton();
             }
           });
@@ -129,7 +141,7 @@ export class AccountComponent implements OnInit {
   private loadAccountData() {
     const accountId = this.activatedRoute.snapshot.paramMap.get('id');
     if (accountId != null) {
-      this.loginService.getAccount(accountId)
+      this.accountService.getAccount(accountId)
         .subscribe({
           next: (account: Account | null) => {
             if (account && this.accountForm) {

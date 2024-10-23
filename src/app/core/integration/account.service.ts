@@ -11,6 +11,7 @@ import {AlertService} from "../alert/alert.service";
 import {AuthService} from "../../auth/auth.service";
 import {IntegrationCallResponse} from "./ui-features/integration-call-response";
 import {FormGroup} from "@angular/forms";
+import {Sports} from "../model/sports";
 
 function handleApiResponse(data: any, operationType: string): IntegrationCallResponse {
   if (!data) throw new Error('No data received');
@@ -58,35 +59,31 @@ export class AccountService {
       localStorage.setItem(STORAGE_KEYS.MY_MATCH_ID, loginResponse.myMatchId);
     }
   }
+
   executeLogout() {
     this.authService.disconnect();
 
     //todo: call logout to backend
     this.routingService.redirectTo('', false);
   }
-  createAccount(account: Account) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.apiService.createAccount(account)
-      .subscribe({
-        next: response => {
-          if (response) {
-            this.notificationService.alertCreateAccountSuccess();
-            this.routingService.redirectTo('', false);
-          } else {
-            this.notificationService.alertCreateAccountFailed();
-          }
-        },
-        error: err => {
-          console.error('accountService.createAccount() failed', err);
-          this.notificationService.alertCreateAccountFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        }
-      });
+
+  createAccount(accountForm: FormGroup, sportsSelected: Sports[], currentAccountId: string): Observable<IntegrationCallResponse> {
+    const opType = 'createAccount';
+
+    let account: Account = accountForm.value;
+    account.favouriteSports = sportsSelected;
+    account.id = currentAccountId;
+
+    return this.apiService.createAccount(account)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
+
   getAccount(accountId: string, withLoadingDialog: boolean = true) {
     this.isLoading = true;
     if (withLoadingDialog) {this.dialogService.showLoadingDialog();}

@@ -70,8 +70,10 @@ export class IntegrationUiService {
       case 'executeLogin':
         this.alertService.alertLoginFailed();
         break;
+      case 'createAccount':
+        this.alertService.alertCreateAccountFailed();
+        break;
     }
-
   }
 
   private alertSuccess(operationType: string) {
@@ -90,6 +92,9 @@ export class IntegrationUiService {
         break;
       case 'executeLogin':
         this.alertService.alertLoginSuccess();
+        break;
+      case 'createAccount':
+        this.alertService.alertCreateAccountSuccess();
         break;
     }
   }

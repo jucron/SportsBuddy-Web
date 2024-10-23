@@ -67,7 +67,6 @@ export class ApiService {
         map(response => {
           if (response.status === 201) {
             console.log('Account 201 created');
-            this.authService.storeToken(response.headers);
             return true;
           }
           return this.handleUnexpectedResponse(response, endpoint);
