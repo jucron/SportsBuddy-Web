@@ -13,6 +13,7 @@ import {AlertService} from "../../alert/alert.service";
 import {UIServiceParams} from "../../integration/ui-features/ui-service-params";
 import {IntegrationUiService} from "../../integration/ui-features/integration-ui.service";
 import {RoutingService} from "../../routing/routing.service";
+import {Account} from "../../model/account";
 
 interface MatchRequestData {
   matchRequests: MatchRequest[]
@@ -48,7 +49,10 @@ export class MatchRequestDialogComponent implements OnInit {
   }
 
   showAccountDialog(userIdRequested: string) {
-    this.accountService.getAccount(userIdRequested)
+    let params = UIServiceParams.builder().withLoadingDialog().withErrorAlert();
+    let operation = this.accountService.getAccount(userIdRequested);
+    return this.integrationUIService
+      .executeCall<Account>(operation, params)
       .subscribe(account => {
         if (account) {
           this.dialogService.showAccountDialog(account);

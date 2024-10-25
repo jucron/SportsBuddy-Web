@@ -7,6 +7,9 @@ import {DialogService} from "../../core/dialog/dialog.service";
 import {AccountService} from "../../core/integration/account.service";
 import {NgForOf} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {UIServiceParams} from "../../core/integration/ui-features/ui-service-params";
+import {Account} from "../../core/model/account";
+import {IntegrationUiService} from "../../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-match-read-only',
@@ -25,7 +28,8 @@ export class MatchReadOnlyComponent implements OnInit{
   protected readonly DateUtils = DateUtils;
 
   constructor(private dialogService: DialogService,
-              private accountService: AccountService)
+              private accountService: AccountService,
+              private integrationUIService: IntegrationUiService)
   {  }
 
   ngOnInit(): void {
@@ -56,9 +60,14 @@ export class MatchReadOnlyComponent implements OnInit{
     if (this.dialogRef) {
       this.dialogRef.close();
     }
-    this.accountService.getAccount(accountId)
+    let params = UIServiceParams.builder().withLoadingDialog().withErrorAlert();
+    let operation = this.accountService.getAccount(accountId);
+    return this.integrationUIService
+      .executeCall<Account>(operation, params)
       .subscribe(account => {
-        this.dialogService.showAccountDialog(account!);
+        if (account) {
+          this.dialogService.showAccountDialog(account);
+        }
       });
   }
 

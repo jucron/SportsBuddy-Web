@@ -5,7 +5,7 @@ import {Credentials} from "../model/credentials";
 import {STORAGE_KEYS} from "../keys/storage-keys";
 import {RoutingService} from "../routing/routing.service";
 import {Account} from "../model/account";
-import {catchError, finalize, map, Observable, of} from "rxjs";
+import {catchError, map, Observable, of} from "rxjs";
 import {DialogService} from "../dialog/dialog.service";
 import {AlertService} from "../alert/alert.service";
 import {AuthService} from "../../auth/auth.service";
@@ -84,28 +84,17 @@ export class AccountService {
       );
   }
 
-  getAccount(accountId: string, withLoadingDialog: boolean = true) {
-    this.isLoading = true;
-    if (withLoadingDialog) {this.dialogService.showLoadingDialog();}
-    return this.apiService.getAccount(accountId).pipe(
-      map(account => {
-        if (account) {
-          return account;
-        } else {
-          this.notificationService.alertGetAccountFailed();
-          return null;
-        }
-      }),
-      catchError(err => {
-        console.error('getAccount failed', err);
-        this.notificationService.alertGetAccountFailed();
-        return of(null); // Return null on error
-      }),
-      finalize(() => {
-        this.isLoading = false;
-        this.dialogService.closeLoadingDialog();
-      })
-    );
+  getAccount(accountId: string): Observable<IntegrationCallResponse> {
+    const opType = 'getAccount';
+
+    return this.apiService.getAccount(accountId)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
   isAuthenticated() {
     return localStorage.getItem(STORAGE_KEYS.TOKEN) !== null;

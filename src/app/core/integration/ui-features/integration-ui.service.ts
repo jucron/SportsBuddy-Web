@@ -73,6 +73,9 @@ export class IntegrationUiService {
       case 'createAccount':
         this.alertService.alertCreateAccountFailed();
         break;
+      case 'getAccount':
+        this.alertService.alertGetAccountFailed();
+        break;
     }
   }
 

@@ -17,6 +17,9 @@ import {DialogService} from "../../core/dialog/dialog.service";
 import {DateUtils} from "../../core/utils/dateUtils";
 import {Match} from "../../core/model/match";
 import {ChangeHelper} from "../../core/audit/changeHelper";
+import {UIServiceParams} from "../../core/integration/ui-features/ui-service-params";
+import {Account} from "../../core/model/account";
+import {IntegrationUiService} from "../../core/integration/ui-features/integration-ui.service";
 
 @Component({
   selector: 'app-match-room-details',
@@ -50,6 +53,7 @@ export class MatchRoomDetailsComponent implements OnInit{
   constructor(private accountService: AccountService,
               private dialogService: DialogService,
               private factoryService: FactoryService,
+              private integrationUIService: IntegrationUiService,
   ) {
     this.matchForm = this.factoryService.getFormFactory().createMatchForm()
   }
@@ -80,9 +84,14 @@ export class MatchRoomDetailsComponent implements OnInit{
     }
   }
   showAccountDialog(accountId: string) {
-    this.accountService.getAccount(accountId)
+    let params = UIServiceParams.builder().withLoadingDialog().withErrorAlert();
+    let operation = this.accountService.getAccount(accountId);
+    return this.integrationUIService
+      .executeCall<Account>(operation, params)
       .subscribe(account => {
-        this.dialogService.showAccountDialog(account!);
+        if (account) {
+          this.dialogService.showAccountDialog(account);
+        }
       });
   }
   isUpdateDisabled() {

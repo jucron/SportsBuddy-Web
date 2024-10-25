@@ -140,32 +140,33 @@ export class AccountComponent implements OnInit {
   }
   private loadAccountData() {
     const accountId = this.activatedRoute.snapshot.paramMap.get('id');
-    if (accountId != null) {
-      this.accountService.getAccount(accountId)
-        .subscribe({
-          next: (account: Account | null) => {
-            if (account && this.accountForm) {
-              this.accountForm.patchValue(
-                {
-                  id: account?.id,
-                  username: account?.username,
-                  name: account?.name,
-                  email: account?.email,
-                  favouriteSports:account?.favouriteSports
-                }
-              );
-              this.currentAccountId = account.id;
-              this.sportsSelected = account.favouriteSports;
-              this.changeHelper = new ChangeHelper([this.accountForm.value,this.sportsSelected])
-            }
-          },
-          error: (err) => {
-            console.error('Error loading account - integration error', err);
-          }
-        });
-    } else {
+
+    if (accountId === null) {
       console.error('Error loading account - account not found with current Id');
+      return;
     }
+    let params = UIServiceParams.builder().withLoadingDialog().withErrorAlert();
+    let operation = this.accountService.getAccount(accountId);
+    return this.integrationUIService
+      .executeCall<Account>(operation, params)
+      .subscribe(account => {
+        if (account) {
+          if (account && this.accountForm) {
+            this.accountForm.patchValue(
+              {
+                id: account?.id,
+                username: account?.username,
+                name: account?.name,
+                email: account?.email,
+                favouriteSports:account?.favouriteSports
+              }
+            );
+            this.currentAccountId = account.id;
+            this.sportsSelected = account.favouriteSports;
+            this.changeHelper = new ChangeHelper([this.accountForm.value,this.sportsSelected])
+          }
+        }
+      });
   }
   getSubmitButtonLabel(): string {
     return this.currentState.isCreateState() ? 'Create' : 'Update';
