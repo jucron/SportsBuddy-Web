@@ -472,14 +472,17 @@ export class MockResponseService implements OnInit{
 
   getUpdateAccountMockResponse(accountRequest: accountRequest) {
     //check if username is taken
-    let existingMatch = this.accounts.find(account => accountRequest.account.id === account.id);
-    if (!existingMatch) {
-      return {message: 'match-not-found'};
+    let existingAccount = this.accounts.find(account => accountRequest.account.id === account.id);
+    if (!existingAccount) {
+      return {message: 'account-not-found'};
     }
     //path updated data to existing match
-    existingMatch.name = accountRequest.account.name;
-    existingMatch.email = accountRequest.account.email;
-    existingMatch.favouriteSports = accountRequest.account.favouriteSports;
+    existingAccount.name = accountRequest.account.name;
+    existingAccount.email = accountRequest.account.email;
+    existingAccount.favouriteSports = accountRequest.account.favouriteSports;
+    //removing circular structure
+    existingAccount.participatingMatches = [];
+    existingAccount.myMatch = null;
     //save mockUp data
     this.saveData();
     //response
@@ -536,7 +539,6 @@ export class MockResponseService implements OnInit{
     newMessage.timestamp = new Date();
     //check if chatData and chatMessages exists, if not create it
     // console.log('chatData: ' + JSON.stringify(existingMatch.chatData));
-    console.log(`!existingMatch.chatData: ${!existingMatch.chatData} - !existingMatch.chatData.chatMessages: ${!existingMatch.chatData?.chatMessages}`)
     if (!existingMatch.chatData) {
       existingMatch.chatData = {
         chatDataType: ChatDataType.MATCH,

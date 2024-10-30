@@ -106,29 +106,16 @@ export class AccountService {
     return localStorage.getItem(STORAGE_KEYS.MAIN_ID)
   }
 
-  updateAccount(account: Account) {
-    this.isLoading = true;
-    this.dialogService.showLoadingDialog();
-    this.apiService.updateAccount(account)
-      .subscribe({
-        next: response => {
-          if (response) {
-            this.notificationService.alertUpdateAccountSuccess();
-            this.routingService.redirectTo('', false);
-          } else {
-            this.notificationService.alertUpdateAccountFailed();
-          }
-        },
-        error: err => {
-          console.error('accountService.createAccount() failed', err);
-          this.notificationService.alertUpdateAccountFailed();
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.dialogService.closeLoadingDialog();
-        }
-      });
+  updateAccount(account: Account): Observable<IntegrationCallResponse> {
+    const opType = 'updateAccount';
+
+    return this.apiService.updateAccount(account)
+      .pipe(
+        map(data => handleApiResponse(data, opType)),
+        catchError(err => {
+          console.error(`${opType} failed`, err);
+          return of(IntegrationCallResponse.getFail(opType));
+        })
+      );
   }
-
-
 }

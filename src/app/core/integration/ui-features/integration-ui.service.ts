@@ -76,6 +76,12 @@ export class IntegrationUiService {
       case 'getAccount':
         this.alertService.alertGetAccountFailed();
         break;
+      case 'updateAccount':
+        this.alertService.alertUpdateAccountFailed();
+        break;
+      default:
+        console.log('Failed Operation type not found ', operationType);
+        break;
     }
   }
 
@@ -98,6 +104,12 @@ export class IntegrationUiService {
         break;
       case 'createAccount':
         this.alertService.alertCreateAccountSuccess();
+        break;
+      case 'updateAccount':
+        this.alertService.alertUpdateAccountSuccess();
+        break;
+      default:
+        console.log('Success Operation type not found ', operationType);
         break;
     }
   }

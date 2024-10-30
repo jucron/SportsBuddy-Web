@@ -97,8 +97,15 @@ export class AccountComponent implements OnInit {
         this.dialogService.confirmActionByDialog('update this existing account')
           .subscribe((result: boolean) => {
             if (result) {
-              this.accountService.updateAccount(account);
-              this.clickReturnButton();
+              let params = UIServiceParams.builder().withLoadingDialog().withSuccessAlert().withErrorAlert();
+              let operation  =  this.accountService.updateAccount(account);
+              this.integrationUIService
+                .executeCall<boolean>(operation, params)
+                .subscribe((result) => {
+                  if (result) {
+                    this.clickReturnButton();
+                  }
+                });
             }
           });
       }
